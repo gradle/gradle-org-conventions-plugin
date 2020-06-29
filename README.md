@@ -1,6 +1,6 @@
 # Gradle Enterprise Helper Plugin
 
-Inspired by https://github.com/spring-gradle-plugins/gradle-enterprise-conventions-plugin , this plugin configure public [Gradle projects](https://github.com/gradle)
+Inspired by https://github.com/spring-gradle-plugins/gradle-enterprise-conventions-plugin, this plugin configures public [Gradle projects](https://github.com/gradle)
 to use the public Gradle Enterprise instance at [ge.gradle.org](https://ge.gradle.org).
 
 Requires Gradle 6.0+.
