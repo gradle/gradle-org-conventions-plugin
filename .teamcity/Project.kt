@@ -42,6 +42,7 @@ object Verify : BuildType({
         gradle {
             useGradleWrapper = true
             tasks = "check"
+            buildFile = "build.gradle.kts"
         }
     }
 })
@@ -68,9 +69,9 @@ object ReleasePlugin : BuildType({
             useGradleWrapper = true
             gradleParams = "-Dgradle.publish.skip.namespace.check=true -Pgradle.publish.key=%GRADLE_PUBLISH_KEY% -Pgradle.publish.secret=%GRADLE_PUBLISH_SECRET%"
             tasks = "publishPlugins"
+            buildFile = "build.gradle.kts"
         }
     }
-
     params {
         param("env.JAVA_HOME", "%linux.java8.oracle.64bit%")
         password("GRADLE_PUBLISH_KEY", "credentialsJSON:8b35ff9d-0de0-4266-8850-9162aa31b4bf", display = jetbrains.buildServer.configs.kotlin.v2019_2.ParameterDisplay.HIDDEN)
