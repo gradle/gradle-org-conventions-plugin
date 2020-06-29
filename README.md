@@ -47,7 +47,7 @@ This is done by configuring a plugin management repository in `settings.gradle`,
 plugins {
     // …
     id "com.gradle.enterprise" version "<<version>>"
-    id "org.gradle.enterprise.gradle-enterprise-conventions-plugin" version "<<version>>"
+    id "com.gradle.enterprise.gradle-enterprise-conventions-plugin" version "<<version>>"
     // …
 }
 ```
