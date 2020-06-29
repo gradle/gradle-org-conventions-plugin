@@ -1,4 +1,4 @@
-# Gradle Enterprise Helper Plugin
+# Gradle Enterprise Conventions Plugin
 
 Inspired by https://github.com/spring-gradle-plugins/gradle-enterprise-conventions-plugin, this plugin configures public [Gradle projects](https://github.com/gradle)
 to use the public Gradle Enterprise instance at [ge.gradle.org](https://ge.gradle.org).
