@@ -1,8 +1,8 @@
-import jetbrains.buildServer.configs.kotlin.v2018_2.ParameterDisplay
 import jetbrains.buildServer.configs.kotlin.v2019_2.AbsoluteId
 import jetbrains.buildServer.configs.kotlin.v2019_2.BuildType
 import jetbrains.buildServer.configs.kotlin.v2019_2.CheckoutMode
 import jetbrains.buildServer.configs.kotlin.v2019_2.Project
+import jetbrains.buildServer.configs.kotlin.v2019_2.buildFeatures.commitStatusPublisher
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.gradle
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
 
@@ -43,6 +43,18 @@ object Verify : BuildType({
             useGradleWrapper = true
             tasks = "check"
             buildFile = "build.gradle.kts"
+        }
+    }
+
+    features {
+        commitStatusPublisher {
+            vcsRootExtId = "GradlePlugins_GradleEnterpriseConventionsPlugin_Master"
+            publisher = github {
+                githubUrl = "https://api.github.com"
+                authType = personalToken {
+                    token = "%github.bot-teamcity.token%"
+                }
+            }
         }
     }
 })
