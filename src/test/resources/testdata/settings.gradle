@@ -1,0 +1,39 @@
+import groovy.json.JsonOutput
+
+plugins {
+    id "com.gradle.enterprise"
+    id "com.gradle.enterprise.gradle-enterprise-conventions-plugin"
+}
+
+gradle.afterProject { project ->
+    try {
+        project.file('remoteCacheConfiguration.json') << toJson(settings.buildCache?.remote ?: new HttpBuildCache())
+        project.file('localCacheConfiguration.json') << toJson(settings.buildCache?.local ?: new DirectoryBuildCache())
+    } catch (Throwable e) {
+        e.printStackTrace()
+    }
+}
+
+// Avoid StackOverflow caused by HttpBuildCache_Decorated: getMetaClass getAsDynamicObject etc.
+def toJson(HttpBuildCache httpBuildCache) {
+    return JsonOutput.toJson([
+        url: httpBuildCache.getUrl()?.toString(),
+        allowUntrustedServer: httpBuildCache.allowUntrustedServer,
+        allowInsecureProtocol: httpBuildCache.allowInsecureProtocol,
+        enabled: httpBuildCache.enabled,
+        push: httpBuildCache.push,
+        credentials: [
+            username: httpBuildCache.credentials?.username,
+            password: httpBuildCache.credentials?.password
+        ]
+    ])
+}
+
+def toJson(DirectoryBuildCache localCache) {
+    return JsonOutput.toJson([
+        directory: localCache.directory,
+        removeUnusedEntriesAfterDays: localCache.removeUnusedEntriesAfterDays,
+        enabled: localCache.enabled,
+        push: localCache.push
+    ])
+}
