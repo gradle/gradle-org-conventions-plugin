@@ -1,6 +1,5 @@
-package Marketing_DevProdEbook
-
-import jetbrains.buildServer.configs.kotlin.v2019_2.*
+import jetbrains.buildServer.configs.kotlin.v2019_2.project
+import jetbrains.buildServer.configs.kotlin.v2019_2.version
 
 version = "2019.2"
-project(Marketing_DevProdEbook.Project)
+project(Project)
