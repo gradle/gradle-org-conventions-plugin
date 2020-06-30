@@ -5,7 +5,7 @@ plugins {
 }
 
 rootProject.group = "com.gradle.enterprise"
-rootProject.version = "0.1"
+rootProject.version = "0.2"
 
 repositories {
     jcenter()
@@ -44,6 +44,10 @@ pluginBundle {
     website = "https://github.com/gradle/gradle-enterprise-conventions-plugin"
     vcsUrl = "https://github.com/gradle/gradle-enterprise-conventions-plugin.git"
     tags = listOf("gradle", "gradle enterprise")
+}
+
+tasks.named("publishPlugins", Task::class.java) {
+    dependsOn("check")
 }
 
 tasks.named("test", Test::class.java) {
