@@ -10,6 +10,9 @@ import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
 object Project : Project({
     buildType(Verify)
     buildType(ReleasePlugin)
+    params {
+        param("env.GRADLE_ENTERPRISE_ACCESS_KEY", "%ge.gradle.org.access.key%")
+    }
 })
 
 object Verify : BuildType({
