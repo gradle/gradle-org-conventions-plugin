@@ -42,6 +42,7 @@ object Verify : BuildType({
         gradle {
             useGradleWrapper = true
             tasks = "check"
+            gradleParams = "--build-cache -Dgradle.cache.remote.username=%gradle.cache.remote.public.username% -Dgradle.cache.remote.password=%gradle.cache.remote.public.password%"
             buildFile = "build.gradle.kts"
         }
     }
