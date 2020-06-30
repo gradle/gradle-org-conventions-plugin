@@ -9,8 +9,10 @@ public class GitInformationCustomValueProvider implements BuildScanCustomValuePr
         buildScan.background(__ -> {
             Utils.execAndGetStdout(settings.getRootDir(), "git", "status", "--porcelain")
                 .ifPresent(output -> {
-                    buildScan.tag("dirty");
-                    buildScan.value("Git Status", output);
+                    if (!output.isEmpty()) {
+                        buildScan.tag("dirty");
+                        buildScan.value("Git Status", output);
+                    }
                 });
             Utils.execAndGetStdout(settings.getRootDir(), "git", "rev-parse", "--abbrev-ref", "HEAD")
                 .ifPresent(output -> buildScan.value("Git Branch Name", output));

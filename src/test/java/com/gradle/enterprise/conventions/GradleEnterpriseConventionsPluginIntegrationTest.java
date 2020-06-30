@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGradleEnterprisePluginIntegrationTest {
     @Test
     void configureBuildCacheOnlyWhenBuildCacheEnabled() throws URISyntaxException {
-        withEnvironmentVariable("CI", "");
         succeeds("help", "--build-cache");
 
         assertEquals(new URI(EU_CACHE_NODE), getConfiguredRemoteCache().getUrl());
@@ -27,7 +26,6 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
 
     @Test
     void configureBuildScanButNotBuildCacheByDefault() {
-        withEnvironmentVariable("CI", "");
         succeeds("help");
 
         assertNull(getConfiguredRemoteCache().getUrl());
@@ -60,7 +58,6 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
 
     @Test
     void configureBuildScanViaSystemProperties() {
-        withEnvironmentVariable("CI", "");
         succeeds("help", "-DcacheNode=us", "-Dgradle.enterprise.url=https://ge.mycompany.com");
 
         assertEquals("https://ge.mycompany.com", getConfiguredBuildScan().getServer());

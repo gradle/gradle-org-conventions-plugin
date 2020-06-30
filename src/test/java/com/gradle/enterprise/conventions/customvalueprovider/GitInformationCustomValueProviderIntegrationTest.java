@@ -28,14 +28,17 @@ public class GitInformationCustomValueProviderIntegrationTest extends AbstractGr
 
     @Test
     public void addGitBranchNameIfAvailable() {
+        write(".gitignore", "*", "!fileToCommit.txt");
         write("fileToCommit.txt", "hello");
         Utils.execAndGetStdout(projectDir, "git", "init");
         Utils.execAndGetStdout(projectDir, "git", "checkout", "-b", "new-branch");
-        Utils.execAndGetStdout(projectDir, "git", "add", "fileToCommit.txt");
+        Utils.execAndGetStdout(projectDir, "git", "add", ".");
         Utils.execAndGetStdout(projectDir, "git", "commit", "-m", "Initial commit");
 
         succeeds("help");
 
+        Assertions.assertFalse(getConfiguredBuildScan().containsBackgroundTag("dirty"));
+        Assertions.assertFalse(getConfiguredBuildScan().containsBackgroundValue("Git Status"));
         Assertions.assertTrue(getConfiguredBuildScan().containsBackgroundValue("Git Branch Name", "new-branch"));
     }
 }

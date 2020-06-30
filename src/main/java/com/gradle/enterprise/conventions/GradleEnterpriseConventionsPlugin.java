@@ -1,9 +1,11 @@
 package com.gradle.enterprise.conventions;
 
+import com.gradle.enterprise.conventions.customvalueprovider.BuildCacheCustomValueProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.BuildScanCustomValueProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.CITagProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.GitInformationCustomValueProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.LocalBuildCustomValueProvider;
+import com.gradle.enterprise.conventions.customvalueprovider.WatchFilesystemCustomValueProvider;
 import com.gradle.enterprise.gradleplugin.GradleEnterpriseExtension;
 import com.gradle.enterprise.gradleplugin.GradleEnterprisePlugin;
 import com.gradle.scan.plugin.BuildScanExtension;
@@ -36,6 +38,8 @@ public class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
     public static boolean disableLocalCache = Boolean.getBoolean("disableLocalCache");
 
     private List<BuildScanCustomValueProvider> buildScanCustomValueProviders = Arrays.asList(
+        new BuildCacheCustomValueProvider(),
+        new WatchFilesystemCustomValueProvider(),
         new CITagProvider(),
         new GitHubActionsCustomValueProvider(),
         new JenkinsCustomValueProvider(),
