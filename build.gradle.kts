@@ -7,6 +7,11 @@ plugins {
 rootProject.group = "com.gradle.enterprise"
 rootProject.version = "0.2"
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 repositories {
     jcenter()
     gradlePluginPortal()
