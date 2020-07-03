@@ -23,6 +23,9 @@ public class LocalBuildCustomValueProvider implements BuildScanCustomValueProvid
                 buildScan.value("IDEA version", ideaVersion);
             }
         }
+
+        Utils.execAndGetStdout(settings.getRootDir(), "git", "log", "-1", "--format=%H")
+            .ifPresent(commitId -> Utils.setCommitId(settings.getRootDir(), buildScan, commitId));
     }
 }
 

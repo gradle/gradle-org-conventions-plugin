@@ -66,6 +66,7 @@ public class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
 
         buildScan.setServer(gradleEnterpriseServerUrl);
         buildScan.setCaptureTaskInputFiles(true);
+        buildScan.publishAlways();
         ((BuildScanExtensionWithHiddenFeatures) buildScan).publishIfAuthenticated();
         try {
             buildScan.setUploadInBackground(!isCiServer);

@@ -28,27 +28,6 @@ public class GitInformationCustomValueProviderIntegrationTest extends AbstractGr
 
     @Test
     public void addGitBranchNameIfAvailable() {
-        String headCommit = prepareGitCommit();
-
-        succeeds("help");
-
-        Assertions.assertFalse(getConfiguredBuildScan().containsBackgroundTag("dirty"));
-        Assertions.assertFalse(getConfiguredBuildScan().containsBackgroundValue("Git Status"));
-        Assertions.assertTrue(getConfiguredBuildScan().containsBackgroundValue("Git Branch Name", "new-branch"));
-        Assertions.assertTrue(getConfiguredBuildScan().containsBackgroundLink("Source", "https://github.com/gradle/gradle/commit/" + headCommit));
-    }
-
-    @Test
-    public void onlyAddGitCommitLinkLocally() {
-        withEnvironmentVariable("CI", "1");
-        prepareGitCommit();
-
-        succeeds("help");
-
-        Assertions.assertFalse(getConfiguredBuildScan().containsBackgroundLink("Source"));
-    }
-
-    private String prepareGitCommit() {
         write(".gitignore", "*", "!fileToCommit.txt");
         write("fileToCommit.txt", "hello");
         Utils.execAndGetStdout(projectDir, "git", "init");
@@ -57,6 +36,10 @@ public class GitInformationCustomValueProviderIntegrationTest extends AbstractGr
         Utils.execAndGetStdout(projectDir, "git", "add", ".");
         Utils.execAndGetStdout(projectDir, "git", "commit", "-m", "Initial commit");
 
-        return Utils.execAndGetStdout(projectDir, "git", "log", "-1", "--format=%H").get();
+        succeeds("help");
+
+        Assertions.assertFalse(getConfiguredBuildScan().containsBackgroundTag("dirty"));
+        Assertions.assertFalse(getConfiguredBuildScan().containsBackgroundValue("Git Status"));
+        Assertions.assertTrue(getConfiguredBuildScan().containsBackgroundValue("Git Branch Name", "new-branch"));
     }
 }
