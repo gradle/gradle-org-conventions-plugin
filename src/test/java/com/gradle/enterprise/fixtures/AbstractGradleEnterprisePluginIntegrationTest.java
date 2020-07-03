@@ -15,6 +15,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -155,7 +156,9 @@ public class AbstractGradleEnterprisePluginIntegrationTest {
     protected HttpBuildCache getConfiguredRemoteCache() {
         if (configuredRemoteCache == null) {
             try {
-                configuredRemoteCache = OBJECT_MAPPER.readValue(new File(projectDir, "remoteCacheConfiguration.json"), HttpBuildCache.class);
+                String json = toString(new FileInputStream(new File(projectDir, "remoteCacheConfiguration.json")));
+                System.out.println("configuredRemoteCache: " + json);
+                configuredRemoteCache = OBJECT_MAPPER.readValue(json, HttpBuildCache.class);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -169,7 +172,9 @@ public class AbstractGradleEnterprisePluginIntegrationTest {
     protected DirectoryBuildCache getConfiguredLocalCache() {
         if (configuredLocalCache == null) {
             try {
-                configuredLocalCache = OBJECT_MAPPER.readValue(new File(projectDir, "localCacheConfiguration.json"), DirectoryBuildCache.class);
+                String json = toString(new FileInputStream(new File(projectDir, "localCacheConfiguration.json")));
+                System.out.println("configuredLocalCache: " + json);
+                configuredLocalCache = OBJECT_MAPPER.readValue(json, DirectoryBuildCache.class);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -180,7 +185,9 @@ public class AbstractGradleEnterprisePluginIntegrationTest {
     protected GradleEnterpriseExtensionForTest getConfiguredGradleEnterprise() {
         if (configuredGradleEnterprise == null) {
             try {
-                configuredGradleEnterprise = OBJECT_MAPPER.readValue(new File(projectDir, "gradleEnterpriseConfiguration.json"), GradleEnterpriseExtensionForTest.class);
+                String json = toString(new FileInputStream(new File(projectDir, "gradleEnterpriseConfiguration.json")));
+                System.out.println("configuredGradleEnterprise: " + json);
+                configuredGradleEnterprise = OBJECT_MAPPER.readValue(json, GradleEnterpriseExtensionForTest.class);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }

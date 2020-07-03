@@ -1,5 +1,6 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
+import com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin;
 import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.initialization.Settings;
 
@@ -16,6 +17,11 @@ public class GitInformationCustomValueProvider implements BuildScanCustomValuePr
                 });
             Utils.execAndGetStdout(settings.getRootDir(), "git", "rev-parse", "--abbrev-ref", "HEAD")
                 .ifPresent(output -> buildScan.value("Git Branch Name", output));
+
+            if (!GradleEnterpriseConventionsPlugin.isCiServer) {
+                Utils.execAndGetStdout(settings.getRootDir(), "git", "log", "-1", "--format=%H")
+                    .ifPresent(commitId -> Utils.setCommitId(settings.getRootDir(), buildScan, commitId));
+            }
         });
     }
 }
