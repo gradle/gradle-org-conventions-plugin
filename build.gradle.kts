@@ -20,9 +20,7 @@ repositories {
 dependencies {
     val gradleEnterprisePluginVersion = "3.3.4"
     val junit5Version = "5.6.2"
-    val commonsIOVersion = "2.7"
     val jacksonVersion = "2.10.3"
-    implementation("commons-io:commons-io:$commonsIOVersion")
 
     compileOnly("com.gradle:gradle-enterprise-gradle-plugin:${gradleEnterprisePluginVersion}")
     testImplementation("com.gradle:gradle-enterprise-gradle-plugin:${gradleEnterprisePluginVersion}")

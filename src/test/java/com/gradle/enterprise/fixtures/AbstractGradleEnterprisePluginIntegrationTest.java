@@ -7,18 +7,19 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.apache.commons.io.IOUtils;
 import org.gradle.caching.http.HttpBuildCache;
 import org.gradle.caching.local.DirectoryBuildCache;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,14 +104,14 @@ public class AbstractGradleEnterprisePluginIntegrationTest {
         environmentVariables.put(key, value);
     }
 
+    private static String toString(InputStream is) {
+        return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
+    }
+
     protected void succeeds(String... args) {
-        try {
-            write("settings.gradle", IOUtils.toString(getClass().getResourceAsStream("/testdata/settings.gradle"), Charset.defaultCharset()));
-            gradleHomeDir = new File(projectDir, "gradleHome");
-            Assertions.assertTrue(gradleHomeDir.mkdirs());
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        write("settings.gradle", toString(getClass().getResourceAsStream("/testdata/settings.gradle")));
+        gradleHomeDir = new File(projectDir, "gradleHome");
+        Assertions.assertTrue(gradleHomeDir.mkdirs());
 
         // Separate tasks and system properties as withJvmArguments is not public API
         // https://github.com/gradle/gradle/issues/1043

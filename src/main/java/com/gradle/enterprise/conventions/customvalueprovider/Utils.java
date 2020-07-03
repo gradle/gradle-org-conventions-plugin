@@ -3,15 +3,16 @@ package com.gradle.enterprise.conventions.customvalueprovider;
 
 import com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin;
 import com.gradle.scan.plugin.BuildScanExtension;
-import org.apache.commons.io.IOUtils;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,12 +50,17 @@ class Utils {
         return ret;
     }
 
+
+    private static String toString(InputStream is) {
+        return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
+    }
+
     static Optional<String> execAndGetStdout(File workingDir, String... args) {
         try {
             Process process = new ProcessBuilder(args).directory(workingDir).start();
             process.waitFor(1, TimeUnit.MINUTES);
-            String stdout = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
-            String stderr = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
+            String stdout = toString(process.getInputStream());
+            String stderr = toString(process.getErrorStream());
             if (process.exitValue() != 0) {
                 LOGGER.info("Run " + Arrays.toString(args) + " in " + workingDir.getAbsolutePath()
                     + " returns " + process.exitValue() + ", outputs: \n" + stdout + "\n" + stderr);
