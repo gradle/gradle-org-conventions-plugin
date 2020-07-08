@@ -1,12 +1,16 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.File;
 import java.io.IOException;
+
+import static com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions.execAndGetStdout;
+import static com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions.getRemoteGitHubRepository;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class GradleEnterpriseConventionsTest {
     @TempDir
@@ -16,16 +20,16 @@ class GradleEnterpriseConventionsTest {
     @CsvSource({"https://github.com/gradle/gradle.git", "git@github.com:gradle/gradle.git", "not_a_url"})
     public void getRemoteGitHubRepositoryTest(String url) throws IOException {
         new File(projectDir, "fileToCommit.txt").createNewFile();
-        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "init");
-        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "checkout", "-b", "new-branch");
-        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "add", "fileToCommit.txt");
-        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "commit", "-m", "Initial commit");
-        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "config", "--add", "remote.origin.url", url);
+        execAndGetStdout(projectDir, "git", "init");
+        execAndGetStdout(projectDir, "git", "checkout", "-b", "new-branch");
+        execAndGetStdout(projectDir, "git", "add", "fileToCommit.txt");
+        execAndGetStdout(projectDir, "git", "commit", "-m", "Initial commit");
+        execAndGetStdout(projectDir, "git", "config", "--add", "remote.origin.url", url);
 
         if ("not_a_url".equals(url)) {
-            Assertions.assertFalse(GradleEnterpriseConventions.getRemoteGitHubRepository(projectDir).isPresent());
+            assertFalse(getRemoteGitHubRepository(projectDir).isPresent());
         } else {
-            Assertions.assertEquals("https://github.com/gradle/gradle", GradleEnterpriseConventions.getRemoteGitHubRepository(projectDir).get());
+            assertEquals("https://github.com/gradle/gradle", getRemoteGitHubRepository(projectDir).get());
         }
     }
 }

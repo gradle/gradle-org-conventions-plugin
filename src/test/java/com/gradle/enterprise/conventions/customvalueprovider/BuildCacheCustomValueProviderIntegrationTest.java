@@ -1,9 +1,10 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
 import com.gradle.enterprise.fixtures.AbstractGradleEnterprisePluginIntegrationTest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BuildCacheCustomValueProviderIntegrationTest extends AbstractGradleEnterprisePluginIntegrationTest {
     @ParameterizedTest
@@ -13,6 +14,6 @@ public class BuildCacheCustomValueProviderIntegrationTest extends AbstractGradle
     public void tagCachedIfBuildCacheEnabled(boolean buildCacheEnabled) {
         succeeds("help", buildCacheEnabled ? "--build-cache" : "--no-build-cache");
 
-        Assertions.assertEquals(buildCacheEnabled, getConfiguredBuildScan().containsTag("CACHED"));
+        assertEquals(buildCacheEnabled, getConfiguredBuildScan().containsTag("CACHED"));
     }
 }

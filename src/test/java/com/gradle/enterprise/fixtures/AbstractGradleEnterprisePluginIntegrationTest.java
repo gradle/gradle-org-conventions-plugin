@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.gradle.caching.http.HttpBuildCache;
 import org.gradle.caching.local.DirectoryBuildCache;
 import org.gradle.testkit.runner.GradleRunner;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.BufferedReader;
@@ -32,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AbstractGradleEnterprisePluginIntegrationTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -112,7 +112,7 @@ public class AbstractGradleEnterprisePluginIntegrationTest {
     protected void succeeds(String... args) {
         write("settings.gradle", toString(getClass().getResourceAsStream("/testdata/settings.gradle")));
         gradleHomeDir = new File(projectDir, "gradleHome");
-        Assertions.assertTrue(gradleHomeDir.mkdirs());
+        assertTrue(gradleHomeDir.mkdirs());
 
         // Separate tasks and system properties as withJvmArguments is not public API
         // https://github.com/gradle/gradle/issues/1043
