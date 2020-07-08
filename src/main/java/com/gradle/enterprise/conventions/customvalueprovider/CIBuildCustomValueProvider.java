@@ -3,11 +3,10 @@ package com.gradle.enterprise.conventions.customvalueprovider;
 import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.initialization.Settings;
 
+import java.util.Collections;
+
 import static com.gradle.enterprise.conventions.customvalueprovider.Utils.GIT_COMMIT_NAME;
-import static com.gradle.enterprise.conventions.customvalueprovider.Utils.customValueSearchUrl;
 import static com.gradle.enterprise.conventions.customvalueprovider.Utils.getRemoteGitHubRepository;
-import static com.gradle.enterprise.conventions.customvalueprovider.Utils.mapOf;
-import static com.gradle.enterprise.conventions.customvalueprovider.Utils.setCommitId;
 
 
 public abstract class CIBuildCustomValueProvider extends BuildScanCustomValueProvider {
@@ -33,7 +32,7 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
             String commitId = System.getenv("GITHUB_SHA");
             buildScan.value("Build ID", String.format("%s %s", System.getenv("GITHUB_RUN_ID"), System.getenv("GITHUB_RUN_NUMBER")));
             buildScan.value(GIT_COMMIT_NAME, commitId);
-            buildScan.link("Git Commit Scans", customValueSearchUrl(mapOf(GIT_COMMIT_NAME, commitId)));
+            buildScan.link("Git Commit Scans", getUtils().customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId)));
             buildScan.background(__ ->
                 getRemoteGitHubRepository(settings.getRootDir()).ifPresent(repoUrl -> {
                     buildScan.link("GitHub Actions Build", String.format("%s/runs/%s", repoUrl, System.getenv("GITHUB_RUN_ID")));
@@ -52,7 +51,7 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
         public void accept(Settings settings, BuildScanExtension buildScan) {
             buildScan.link("Jenkins Build", System.getenv("BUILD_URL"));
             buildScan.value("Build ID", System.getenv("BUILD_ID"));
-            setCommitId(settings.getRootDir(), buildScan, System.getenv("GIT_COMMIT"));
+            getUtils().setCommitId(settings.getRootDir(), buildScan, System.getenv("GIT_COMMIT"));
         }
     }
 
@@ -65,7 +64,7 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
         public void accept(Settings settings, BuildScanExtension buildScan) {
             buildScan.link("TeamCity Build", System.getenv("BUILD_URL"));
             buildScan.value("Build ID", System.getenv("BUILD_ID"));
-            setCommitId(settings.getRootDir(), buildScan, System.getenv("BUILD_VCS_NUMBER"));
+            getUtils().setCommitId(settings.getRootDir(), buildScan, System.getenv("BUILD_VCS_NUMBER"));
         }
     }
 
@@ -78,7 +77,7 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
         public void accept(Settings settings, BuildScanExtension buildScan) {
             buildScan.link("Travis Build", System.getenv("TRAVIS_BUILD_WEB_URL"));
             buildScan.value("Build ID", System.getenv("TRAVIS_BUILD_ID"));
-            setCommitId(settings.getRootDir(), buildScan, System.getenv("TRAVIS_COMMIT"));
+            getUtils().setCommitId(settings.getRootDir(), buildScan, System.getenv("TRAVIS_COMMIT"));
         }
     }
 }

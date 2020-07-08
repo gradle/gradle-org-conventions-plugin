@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +34,7 @@ public class Utils {
         this.providerFactory = providerFactory;
     }
 
-    static String customValueSearchUrl(Map<String, String> search) {
+    public String customValueSearchUrl(Map<String, String> search) {
         String query = search.entrySet()
             .stream()
             .map(entry -> String.format("search.names=%s&search.values=%s", urlEncode(entry.getKey()), urlEncode(entry.getValue())))
@@ -42,26 +42,19 @@ public class Utils {
         return String.format("%s/scans?%s", GradleEnterpriseConventionsPlugin.gradleEnterpriseServerUrl, query);
     }
 
-    static void setCommitId(File projectDir, BuildScanExtension buildScan, String commitId) {
+    public void setCommitId(File projectDir, BuildScanExtension buildScan, String commitId) {
         buildScan.value(GIT_COMMIT_NAME, commitId);
-        buildScan.link("Git Commit Scans", customValueSearchUrl(mapOf(GIT_COMMIT_NAME, commitId)));
+        buildScan.link("Git Commit Scans", customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId)));
         buildScan.background(__ -> {
             getRemoteGitHubRepository(projectDir).ifPresent(repoUrl -> buildScan.link("Source", String.format("%s/commit/%s", repoUrl, commitId)));
         });
     }
 
-    static Map<String, String> mapOf(String key, String value) {
-        Map<String, String> ret = new HashMap<>();
-        ret.put(key, value);
-        return ret;
-    }
-
-
     private static String toString(InputStream is) {
         return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
     }
 
-    static Optional<String> execAndGetStdout(File workingDir, String... args) {
+    public static Optional<String> execAndGetStdout(File workingDir, String... args) {
         try {
             Process process = new ProcessBuilder(args).directory(workingDir).start();
             process.waitFor(1, TimeUnit.MINUTES);
@@ -81,7 +74,7 @@ public class Utils {
         }
     }
 
-    static Optional<String> getRemoteGitHubRepository(File projectDir) {
+    public static Optional<String> getRemoteGitHubRepository(File projectDir) {
         return execAndGetStdout(projectDir, "git", "config", "--get", "remote.origin.url").flatMap(Utils::parseGitHubRemoteUrl);
     }
 
