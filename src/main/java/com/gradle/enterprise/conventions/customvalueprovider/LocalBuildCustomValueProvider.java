@@ -7,6 +7,8 @@ import org.gradle.api.initialization.Settings;
 
 import java.util.stream.Stream;
 
+import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.IDEA_VERSION;
+
 public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider {
     public LocalBuildCustomValueProvider(Utils utils) {
         super(utils);
@@ -24,7 +26,7 @@ public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider 
             buildScan.tag("IDEA");
             String ideaVersion = System.getProperty("idea.paths.selector");
             if (ideaVersion != null) {
-                buildScan.value("IDEA version", ideaVersion);
+                buildScan.value(IDEA_VERSION, ideaVersion);
             }
         }
 

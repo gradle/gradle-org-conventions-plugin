@@ -23,9 +23,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.GIT_COMMIT_NAME;
+
 public class Utils {
     private static final Logger LOGGER = Logging.getLogger(Utils.class);
-    static String GIT_COMMIT_NAME = "Git Commit ID";
     private final static Pattern SSH_URL_PATTERN = Pattern.compile("git@github\\.com:([\\w-]+)/([\\w-]+)\\.git");
     private final static Pattern HTTPS_URL_PATTERN = Pattern.compile("https://github\\.com/([\\w-]+)/([\\w-]+)\\.git");
     private final ProviderFactory providerFactory;

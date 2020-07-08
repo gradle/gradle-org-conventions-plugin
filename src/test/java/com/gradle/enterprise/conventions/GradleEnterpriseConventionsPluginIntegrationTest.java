@@ -6,9 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin.EU_CACHE_NODE;
 import static com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin.PUBLIC_GRADLE_ENTERPRISE_SERVER;
-import static com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin.US_CACHE_NODE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
