@@ -7,7 +7,11 @@ import org.gradle.api.initialization.Settings;
 
 import java.util.stream.Stream;
 
-public class LocalBuildCustomValueProvider implements BuildScanCustomValueProvider {
+public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider {
+    public LocalBuildCustomValueProvider(Utils utils) {
+        super(utils);
+    }
+
     @Override
     public boolean isEnabled() {
         return !GradleEnterpriseConventionsPlugin.isCiServer;

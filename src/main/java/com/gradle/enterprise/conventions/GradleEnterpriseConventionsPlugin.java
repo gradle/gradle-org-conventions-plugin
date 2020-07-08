@@ -5,6 +5,7 @@ import com.gradle.enterprise.conventions.customvalueprovider.BuildScanCustomValu
 import com.gradle.enterprise.conventions.customvalueprovider.CITagProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.GitInformationCustomValueProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.LocalBuildCustomValueProvider;
+import com.gradle.enterprise.conventions.customvalueprovider.Utils;
 import com.gradle.enterprise.conventions.customvalueprovider.WatchFilesystemCustomValueProvider;
 import com.gradle.enterprise.gradleplugin.GradleEnterpriseExtension;
 import com.gradle.enterprise.gradleplugin.GradleEnterprisePlugin;
@@ -33,16 +34,17 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
     public static String gradleEnterpriseServerUrl = System.getProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME, PUBLIC_GRADLE_ENTERPRISE_SERVER);
 
     private List<BuildScanCustomValueProvider> createBuildScanCustomValueProviders() {
+        Utils utils = new Utils(getProviderFactory());
         return Arrays.asList(
-            new BuildCacheCustomValueProvider(),
-            new WatchFilesystemCustomValueProvider(),
-            new CITagProvider(),
-            new GitHubActionsCustomValueProvider(),
-            new JenkinsCustomValueProvider(),
-            new TeamCityCustomValueProvider(),
-            new TravisCustomValueProvider(),
-            new LocalBuildCustomValueProvider(),
-            new GitInformationCustomValueProvider()
+            new BuildCacheCustomValueProvider(utils),
+            new WatchFilesystemCustomValueProvider(utils),
+            new CITagProvider(utils),
+            new GitHubActionsCustomValueProvider(utils),
+            new JenkinsCustomValueProvider(utils),
+            new TeamCityCustomValueProvider(utils),
+            new TravisCustomValueProvider(utils),
+            new LocalBuildCustomValueProvider(utils),
+            new GitInformationCustomValueProvider(utils)
         );
     }
 

@@ -3,7 +3,11 @@ package com.gradle.enterprise.conventions.customvalueprovider;
 import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.initialization.Settings;
 
-public class GitInformationCustomValueProvider implements BuildScanCustomValueProvider {
+public class GitInformationCustomValueProvider extends BuildScanCustomValueProvider {
+    public GitInformationCustomValueProvider(Utils utils) {
+        super(utils);
+    }
+
     @Override
     public void accept(Settings settings, BuildScanExtension buildScan) {
         buildScan.background(__ -> {

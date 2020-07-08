@@ -10,10 +10,11 @@ import static com.gradle.enterprise.conventions.customvalueprovider.Utils.mapOf;
 import static com.gradle.enterprise.conventions.customvalueprovider.Utils.setCommitId;
 
 
-public abstract class CIBuildCustomValueProvider implements BuildScanCustomValueProvider {
+public abstract class CIBuildCustomValueProvider extends BuildScanCustomValueProvider {
     private final String markEnvVariableName;
 
-    CIBuildCustomValueProvider(String markEnvVariableName) {
+    CIBuildCustomValueProvider(String markEnvVariableName, Utils utils) {
+        super(utils);
         this.markEnvVariableName = markEnvVariableName;
     }
 
@@ -23,8 +24,8 @@ public abstract class CIBuildCustomValueProvider implements BuildScanCustomValue
     }
 
     public static class GitHubActionsCustomValueProvider extends CIBuildCustomValueProvider {
-        public GitHubActionsCustomValueProvider() {
-            super("GITHUB_ACTIONS");
+        public GitHubActionsCustomValueProvider(Utils utils) {
+            super("GITHUB_ACTIONS", utils);
         }
 
         @Override
@@ -43,8 +44,8 @@ public abstract class CIBuildCustomValueProvider implements BuildScanCustomValue
     }
 
     public static class JenkinsCustomValueProvider extends CIBuildCustomValueProvider {
-        public JenkinsCustomValueProvider() {
-            super("JENKINS_HOME");
+        public JenkinsCustomValueProvider(Utils utils) {
+            super("JENKINS_HOME", utils);
         }
 
         @Override
@@ -56,8 +57,8 @@ public abstract class CIBuildCustomValueProvider implements BuildScanCustomValue
     }
 
     public static class TeamCityCustomValueProvider extends CIBuildCustomValueProvider {
-        public TeamCityCustomValueProvider() {
-            super("TEAMCITY_VERSION");
+        public TeamCityCustomValueProvider(Utils utils) {
+            super("TEAMCITY_VERSION", utils);
         }
 
         @Override
@@ -69,8 +70,8 @@ public abstract class CIBuildCustomValueProvider implements BuildScanCustomValue
     }
 
     public static class TravisCustomValueProvider extends CIBuildCustomValueProvider {
-        public TravisCustomValueProvider() {
-            super("TRAVIS");
+        public TravisCustomValueProvider(Utils utils) {
+            super("TRAVIS", utils);
         }
 
         @Override

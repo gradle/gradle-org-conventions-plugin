@@ -4,7 +4,11 @@ import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.initialization.Settings;
 import org.gradle.api.internal.StartParameterInternal;
 
-public class WatchFilesystemCustomValueProvider implements BuildScanCustomValueProvider {
+public class WatchFilesystemCustomValueProvider extends BuildScanCustomValueProvider {
+    public WatchFilesystemCustomValueProvider(Utils utils) {
+        super(utils);
+    }
+
     @Override
     public void accept(Settings settings, BuildScanExtension buildScan) {
         try {

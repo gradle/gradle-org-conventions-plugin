@@ -8,8 +8,18 @@ import java.util.function.BiConsumer;
 /**
  * Used to provide custom value for Build Scan.
  */
-public interface BuildScanCustomValueProvider extends BiConsumer<Settings, BuildScanExtension> {
-    default boolean isEnabled() {
+public abstract class BuildScanCustomValueProvider implements BiConsumer<Settings, BuildScanExtension> {
+    private final Utils utils;
+
+    public BuildScanCustomValueProvider(Utils utils) {
+        this.utils = utils;
+    }
+
+    public Utils getUtils() {
+        return utils;
+    }
+
+    public boolean isEnabled() {
         return true;
     }
 }

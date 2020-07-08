@@ -5,6 +5,7 @@ import com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin;
 import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
+import org.gradle.api.provider.ProviderFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,11 +23,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-class Utils {
+public class Utils {
     private static final Logger LOGGER = Logging.getLogger(Utils.class);
     static String GIT_COMMIT_NAME = "Git Commit ID";
     private final static Pattern SSH_URL_PATTERN = Pattern.compile("git@github\\.com:([\\w-]+)/([\\w-]+)\\.git");
     private final static Pattern HTTPS_URL_PATTERN = Pattern.compile("https://github\\.com/([\\w-]+)/([\\w-]+)\\.git");
+    private final ProviderFactory providerFactory;
+
+    public Utils(ProviderFactory providerFactory) {
+        this.providerFactory = providerFactory;
+    }
 
     static String customValueSearchUrl(Map<String, String> search) {
         String query = search.entrySet()
@@ -62,7 +68,7 @@ class Utils {
             String stdout = toString(process.getInputStream());
             String stderr = toString(process.getErrorStream());
             if (process.exitValue() != 0) {
-                LOGGER.info("Run " + Arrays.toString(args) + " in " + workingDir.getAbsolutePath()
+                LOGGER.error("Run " + Arrays.toString(args) + " in " + workingDir.getAbsolutePath()
                     + " returns " + process.exitValue() + ", outputs: \n" + stdout + "\n" + stderr);
                 return Optional.empty();
             }
@@ -70,7 +76,7 @@ class Utils {
             LOGGER.info("Run " + Arrays.toString(args) + " in " + workingDir.getAbsolutePath() + " outputs \n" + stdout + "\n" + stderr);
             return Optional.of(stdout.trim());
         } catch (IOException | InterruptedException e) {
-            LOGGER.info("Run " + Arrays.toString(args) + " in " + workingDir.getAbsolutePath() + " failed:", e);
+            LOGGER.error("Run " + Arrays.toString(args) + " in " + workingDir.getAbsolutePath() + " failed:", e);
             return Optional.empty();
         }
     }
