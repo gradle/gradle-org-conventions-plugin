@@ -1,10 +1,10 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
 
-import com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin;
 import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderFactory;
 
 import java.io.BufferedReader;
@@ -27,12 +27,16 @@ import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomVa
 
 public class Utils {
     private static final Logger LOGGER = Logging.getLogger(Utils.class);
+    private static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
+    private static final String GRADLE_ENTERPRISE_URL_PROPERTY_NAME = "gradle.enterprise.url";
     private final static Pattern SSH_URL_PATTERN = Pattern.compile("git@github\\.com:([\\w-]+)/([\\w-]+)\\.git");
     private final static Pattern HTTPS_URL_PATTERN = Pattern.compile("https://github\\.com/([\\w-]+)/([\\w-]+)\\.git");
     private final ProviderFactory providerFactory;
+    private final String gradleEnterpriseServerUrl;
 
     public Utils(ProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
+        this.gradleEnterpriseServerUrl = getSystemProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME, PUBLIC_GRADLE_ENTERPRISE_SERVER);
     }
 
     public String customValueSearchUrl(Map<String, String> search) {
@@ -40,15 +44,33 @@ public class Utils {
             .stream()
             .map(entry -> String.format("search.names=%s&search.values=%s", urlEncode(entry.getKey()), urlEncode(entry.getValue())))
             .collect(Collectors.joining("&"));
-        return String.format("%s/scans?%s", GradleEnterpriseConventionsPlugin.gradleEnterpriseServerUrl, query);
+        return String.format("%s/scans?%s", gradleEnterpriseServerUrl, query);
+    }
+
+    public String getGradleEnterpriseServerUrl() {
+        return gradleEnterpriseServerUrl;
+    }
+
+    public String getSystemProperty(String name, String defaultValue) {
+        return getSystemProperty(name, defaultValue, getProviderFactory());
+    }
+
+    public Provider<String> systemPropertyProvider(String name) {
+        return providerFactory.systemProperty(name).forUseAtConfigurationTime();
+    }
+
+    private static String getSystemProperty(String name, String defaultValue, ProviderFactory providerFactory) {
+        return providerFactory.systemProperty(name).forUseAtConfigurationTime().orElse(defaultValue).get();
+    }
+
+    public ProviderFactory getProviderFactory() {
+        return providerFactory;
     }
 
     public void setCommitId(File projectDir, BuildScanExtension buildScan, String commitId) {
         buildScan.value(GIT_COMMIT_NAME, commitId);
         buildScan.link("Git Commit Scans", customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId)));
-        buildScan.background(__ -> {
-            getRemoteGitHubRepository(projectDir).ifPresent(repoUrl -> buildScan.link("Source", String.format("%s/commit/%s", repoUrl, commitId)));
-        });
+        buildScan.background(__ -> getRemoteGitHubRepository(projectDir).ifPresent(repoUrl -> buildScan.link("Source", String.format("%s/commit/%s", repoUrl, commitId))));
     }
 
     private static String toString(InputStream is) {

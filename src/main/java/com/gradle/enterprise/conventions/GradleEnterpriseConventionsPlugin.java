@@ -28,13 +28,9 @@ import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCusto
 import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.TravisCustomValueProvider;
 
 public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
-    public static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
     public static boolean isCiServer = System.getenv().containsKey("CI") && !System.getenv("CI").isEmpty();
-    private static final String GRADLE_ENTERPRISE_URL_PROPERTY_NAME = "gradle.enterprise.url";
-    public static String gradleEnterpriseServerUrl = System.getProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME, PUBLIC_GRADLE_ENTERPRISE_SERVER);
 
-    private List<BuildScanCustomValueProvider> createBuildScanCustomValueProviders() {
-        Utils utils = new Utils(getProviderFactory());
+    private List<BuildScanCustomValueProvider> createBuildScanCustomValueProviders(Utils utils) {
         return Arrays.asList(
             new BuildCacheCustomValueProvider(utils),
             new WatchFilesystemCustomValueProvider(utils),
@@ -54,19 +50,20 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
     @Override
     public void apply(Settings settings) {
         settings.getPlugins().withType(GradleEnterprisePlugin.class, p -> {
+            Utils utils = new Utils(getProviderFactory());
             if (settings.getGradle().getStartParameter().isBuildCacheEnabled()) {
                 settings.buildCache(new BuildCacheConfigureAction(getProviderFactory()));
             }
             if (!settings.getGradle().getStartParameter().isNoBuildScan()) {
-                configureBuildScan(settings);
+                configureBuildScan(settings, utils);
             }
         });
     }
 
-    private void configureBuildScan(Settings settings) {
+    private void configureBuildScan(Settings settings, Utils utils) {
         BuildScanExtension buildScan = settings.getExtensions().getByType(GradleEnterpriseExtension.class).getBuildScan();
 
-        buildScan.setServer(gradleEnterpriseServerUrl);
+        buildScan.setServer(utils.getGradleEnterpriseServerUrl());
         buildScan.setCaptureTaskInputFiles(true);
         buildScan.publishAlways();
         ((BuildScanExtensionWithHiddenFeatures) buildScan).publishIfAuthenticated();
@@ -76,7 +73,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             // GE Plugin version < 3.3. Continue
         }
 
-        createBuildScanCustomValueProviders().stream()
+        createBuildScanCustomValueProviders(utils).stream()
             .filter(BuildScanCustomValueProvider::isEnabled)
             .forEach(it -> it.accept(settings, buildScan));
     }

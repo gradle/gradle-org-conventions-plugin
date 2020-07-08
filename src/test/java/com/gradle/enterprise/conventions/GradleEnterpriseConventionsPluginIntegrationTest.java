@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin.PUBLIC_GRADLE_ENTERPRISE_SERVER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -15,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGradleEnterprisePluginIntegrationTest {
     private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org/cache/";
     private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org/cache/";
+    private static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
 
     @Test
     void configureBuildCacheOnlyWhenBuildCacheEnabled() throws URISyntaxException {

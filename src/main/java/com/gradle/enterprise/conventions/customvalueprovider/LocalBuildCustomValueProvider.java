@@ -22,16 +22,16 @@ public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider 
     @Override
     public void accept(Settings settings, BuildScanExtension buildScan) {
         buildScan.tag("LOCAL");
-        if (Stream.of("idea.registered", "idea.active", "idea.paths.selector").anyMatch(it -> System.getProperties().containsKey(it))) {
+        if (Stream.of("idea.registered", "idea.active", "idea.paths.selector").anyMatch(it -> getUtils().systemPropertyProvider(it).isPresent())) {
             buildScan.tag("IDEA");
-            String ideaVersion = System.getProperty("idea.paths.selector");
+            String ideaVersion = getUtils().systemPropertyProvider("idea.paths.selector").getOrNull();
             if (ideaVersion != null) {
                 buildScan.value(IDEA_VERSION, ideaVersion);
             }
         }
 
         Utils.execAndGetStdout(settings.getRootDir(), "git", "log", "-1", "--format=%H")
-            .ifPresent(commitId -> Utils.setCommitId(settings.getRootDir(), buildScan, commitId));
+            .ifPresent(commitId -> getUtils().setCommitId(settings.getRootDir(), buildScan, commitId));
     }
 }
 
