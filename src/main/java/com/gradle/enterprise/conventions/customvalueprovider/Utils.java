@@ -29,14 +29,20 @@ public class Utils {
     private static final Logger LOGGER = Logging.getLogger(Utils.class);
     private static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
     private static final String GRADLE_ENTERPRISE_URL_PROPERTY_NAME = "gradle.enterprise.url";
-    private final static Pattern SSH_URL_PATTERN = Pattern.compile("git@github\\.com:([\\w-]+)/([\\w-]+)\\.git");
-    private final static Pattern HTTPS_URL_PATTERN = Pattern.compile("https://github\\.com/([\\w-]+)/([\\w-]+)\\.git");
+    private static final String CI_ENV_NAME = "CI";
+
+    private static final Pattern HTTPS_URL_PATTERN = Pattern.compile("https://github\\.com/([\\w-]+)/([\\w-]+)\\.git");
+    private static final Pattern SSH_URL_PATTERN = Pattern.compile("git@github\\.com:([\\w-]+)/([\\w-]+)\\.git");
+
     private final ProviderFactory providerFactory;
     private final String gradleEnterpriseServerUrl;
+    private final boolean isCiServer;
 
     public Utils(ProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
         this.gradleEnterpriseServerUrl = getSystemProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME, PUBLIC_GRADLE_ENTERPRISE_SERVER);
+        this.isCiServer = !providerFactory.environmentVariable(CI_ENV_NAME).forUseAtConfigurationTime().getOrElse("").isEmpty();
+
     }
 
     public String customValueSearchUrl(Map<String, String> search) {
@@ -49,6 +55,10 @@ public class Utils {
 
     public String getGradleEnterpriseServerUrl() {
         return gradleEnterpriseServerUrl;
+    }
+
+    public boolean isCiServer() {
+        return isCiServer;
     }
 
     public String getSystemProperty(String name, String defaultValue) {

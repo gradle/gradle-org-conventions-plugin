@@ -28,7 +28,6 @@ import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCusto
 import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.TravisCustomValueProvider;
 
 public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
-    public static boolean isCiServer = System.getenv().containsKey("CI") && !System.getenv("CI").isEmpty();
 
     private List<BuildScanCustomValueProvider> createBuildScanCustomValueProviders(Utils utils) {
         return Arrays.asList(
@@ -52,7 +51,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
         settings.getPlugins().withType(GradleEnterprisePlugin.class, p -> {
             Utils utils = new Utils(getProviderFactory());
             if (settings.getGradle().getStartParameter().isBuildCacheEnabled()) {
-                settings.buildCache(new BuildCacheConfigureAction(getProviderFactory()));
+                settings.buildCache(new BuildCacheConfigureAction(utils));
             }
             if (!settings.getGradle().getStartParameter().isNoBuildScan()) {
                 configureBuildScan(settings, utils);
@@ -68,7 +67,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
         buildScan.publishAlways();
         ((BuildScanExtensionWithHiddenFeatures) buildScan).publishIfAuthenticated();
         try {
-            buildScan.setUploadInBackground(!isCiServer);
+            buildScan.setUploadInBackground(!utils.isCiServer());
         } catch (NoSuchMethodError e) {
             // GE Plugin version < 3.3. Continue
         }
@@ -92,10 +91,10 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
         private static final String GRADLE_CACHE_REMOTE_USERNAME_PROPERTY_NAME = "gradle.cache.remote.username";
         private static final String GRADLE_CACHE_REMOTE_PASSWORD_PROPERTY_NAME = "gradle.cache.remote.password";
         private static final String GRADLE_CACHE_NODE_PROPERTY_NAME = "cacheNode";
-        private final ProviderFactory providerFactory;
+        private final Utils utils;
 
-        public BuildCacheConfigureAction(ProviderFactory providerFactory) {
-            this.providerFactory = providerFactory;
+        public BuildCacheConfigureAction(Utils utils) {
+            this.utils = utils;
         }
 
         @Override
@@ -108,7 +107,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             buildCache.remote(HttpBuildCache.class, remoteBuildCache -> {
                 remoteBuildCache.setUrl(remoteCacheUrl);
                 if (!remoteCacheUsername.isEmpty() && !remoteCachePassword.isEmpty()) {
-                    remoteBuildCache.setPush(isCiServer || remotePush);
+                    remoteBuildCache.setPush(utils.isCiServer() || remotePush);
                     remoteBuildCache.credentials(credentials -> {
                         credentials.setUsername(remoteCacheUsername);
                         credentials.setPassword(remoteCachePassword);
@@ -120,8 +119,8 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
         }
 
         private String determineRemoteCacheUrl() {
-            return providerFactory.systemProperty(GRADLE_CACHE_REMOTE_URL_PROPERTY_NAME).forUseAtConfigurationTime()
-                .orElse(providerFactory.systemProperty(GRADLE_CACHE_NODE_PROPERTY_NAME).forUseAtConfigurationTime()
+            return utils.systemPropertyProvider(GRADLE_CACHE_REMOTE_URL_PROPERTY_NAME)
+                .orElse(utils.systemPropertyProvider(GRADLE_CACHE_NODE_PROPERTY_NAME)
                     .map(cacheNode -> {
                         switch (cacheNode) {
                             case "eu":
