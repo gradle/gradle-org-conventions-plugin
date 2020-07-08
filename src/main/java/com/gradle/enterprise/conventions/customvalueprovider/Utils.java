@@ -41,7 +41,7 @@ public class Utils {
 
     public Utils(ProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
-        this.gradleEnterpriseServerUrl = getSystemProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME, PUBLIC_GRADLE_ENTERPRISE_SERVER);
+        this.gradleEnterpriseServerUrl = getSystemProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME, PUBLIC_GRADLE_ENTERPRISE_SERVER, providerFactory);
         this.isCiServer = !providerFactory.environmentVariable(CI_ENV_NAME).forUseAtConfigurationTime().getOrElse("").isEmpty();
 
     }
@@ -66,6 +66,10 @@ public class Utils {
         return getSystemProperty(name, defaultValue, getProviderFactory());
     }
 
+    private static String getSystemProperty(String name, String defaultValue, ProviderFactory providerFactory) {
+        return providerFactory.systemProperty(name).forUseAtConfigurationTime().orElse(defaultValue).get();
+    }
+
     public Provider<String> systemPropertyProvider(String name) {
         return providerFactory.systemProperty(name).forUseAtConfigurationTime();
     }
@@ -77,10 +81,6 @@ public class Utils {
 
     public Provider<String> environmentVariableProvider(String name) {
         return providerFactory.environmentVariable(name).forUseAtConfigurationTime();
-    }
-
-    private static String getSystemProperty(String name, String defaultValue, ProviderFactory providerFactory) {
-        return providerFactory.systemProperty(name).forUseAtConfigurationTime().orElse(defaultValue).get();
     }
 
     public ProviderFactory getProviderFactory() {

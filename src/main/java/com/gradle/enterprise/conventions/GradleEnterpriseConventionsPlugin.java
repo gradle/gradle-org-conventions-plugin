@@ -77,10 +77,6 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             .forEach(it -> it.accept(settings, buildScan));
     }
 
-    private String getSystemProperty(String name, String defaultValue) {
-        return getProviderFactory().systemProperty(name).forUseAtConfigurationTime().orElse(defaultValue).get();
-    }
-
     private class BuildCacheConfigureAction implements Action<BuildCacheConfiguration> {
         private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org/cache/";
         private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org/cache/";
@@ -100,10 +96,10 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
         @Override
         public void execute(BuildCacheConfiguration buildCache) {
             String remoteCacheUrl = determineRemoteCacheUrl();
-            boolean remotePush = Boolean.parseBoolean(getSystemProperty(GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME, "false"));
-            String remoteCacheUsername = getSystemProperty(GRADLE_CACHE_REMOTE_USERNAME_PROPERTY_NAME, "");
-            String remoteCachePassword = getSystemProperty(GRADLE_CACHE_REMOTE_PASSWORD_PROPERTY_NAME, "");
-            boolean disableLocalCache = Boolean.parseBoolean(getSystemProperty("disableLocalCache", "false"));
+            boolean remotePush = Boolean.parseBoolean(utils.getSystemProperty(GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME, "false"));
+            String remoteCacheUsername = utils.getSystemProperty(GRADLE_CACHE_REMOTE_USERNAME_PROPERTY_NAME, "");
+            String remoteCachePassword = utils.getSystemProperty(GRADLE_CACHE_REMOTE_PASSWORD_PROPERTY_NAME, "");
+            boolean disableLocalCache = Boolean.parseBoolean(utils.getSystemProperty("disableLocalCache", "false"));
             buildCache.remote(HttpBuildCache.class, remoteBuildCache -> {
                 remoteBuildCache.setUrl(remoteCacheUrl);
                 if (!remoteCacheUsername.isEmpty() && !remoteCachePassword.isEmpty()) {
