@@ -2,6 +2,8 @@ package com.gradle.enterprise.conventions;
 
 import com.gradle.enterprise.fixtures.AbstractGradleEnterprisePluginIntegrationTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -45,11 +47,12 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
         assertNull(getConfiguredBuildScan().getServer());
     }
 
-    @Test
-    void configureBuildCacheViaSystemProperties() throws URISyntaxException {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void configureBuildCacheViaSystemProperties(boolean configurationCacheEnabled) throws URISyntaxException {
         withEnvironmentVariable("CI", "1");
 
-        succeeds("help", "--build-cache", "-DcacheNode=us", "-Dgradle.cache.remote.username=MyUsername", "-Dgradle.cache.remote.password=MyPassword");
+        succeeds("help", "--build-cache", "-DcacheNode=us", "-Dgradle.cache.remote.username=MyUsername", "-Dgradle.cache.remote.password=MyPassword", configurationCacheEnabled ? "--configuration-cache" : "--no-configuration-cache");
 
         assertEquals(new URI(US_CACHE_NODE), getConfiguredRemoteCache().getUrl());
         assertTrue(getConfiguredRemoteCache().isPush());
