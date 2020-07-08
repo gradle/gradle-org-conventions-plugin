@@ -7,6 +7,7 @@ import org.gradle.api.logging.Logging;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderFactory;
 
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -67,6 +68,15 @@ public class Utils {
 
     public Provider<String> systemPropertyProvider(String name) {
         return providerFactory.systemProperty(name).forUseAtConfigurationTime();
+    }
+
+    @Nullable
+    public String getEnv(String name) {
+        return environmentVariableProvider(name).getOrNull();
+    }
+
+    public Provider<String> environmentVariableProvider(String name) {
+        return providerFactory.environmentVariable(name).forUseAtConfigurationTime();
     }
 
     private static String getSystemProperty(String name, String defaultValue, ProviderFactory providerFactory) {
