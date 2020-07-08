@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.IDEA_VERSION;
 
 public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider {
-    public LocalBuildCustomValueProvider(Utils utils) {
-        super(utils);
+    public LocalBuildCustomValueProvider(GradleEnterpriseConventions gradleEnterpriseConventions) {
+        super(gradleEnterpriseConventions);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider 
             }
         }
 
-        Utils.execAndGetStdout(settings.getRootDir(), "git", "log", "-1", "--format=%H")
+        GradleEnterpriseConventions.execAndGetStdout(settings.getRootDir(), "git", "log", "-1", "--format=%H")
             .ifPresent(commitId -> getUtils().setCommitId(settings.getRootDir(), buildScan, commitId));
     }
 }

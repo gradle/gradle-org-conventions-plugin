@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.GIT_COMMIT_NAME;
 
-public class Utils {
-    private static final Logger LOGGER = Logging.getLogger(Utils.class);
+public class GradleEnterpriseConventions {
+    private static final Logger LOGGER = Logging.getLogger(GradleEnterpriseConventions.class);
     private static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
     private static final String GRADLE_ENTERPRISE_URL_PROPERTY_NAME = "gradle.enterprise.url";
     private static final String CI_ENV_NAME = "CI";
@@ -39,7 +39,7 @@ public class Utils {
     private final String gradleEnterpriseServerUrl;
     private final boolean isCiServer;
 
-    public Utils(ProviderFactory providerFactory) {
+    public GradleEnterpriseConventions(ProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
         this.gradleEnterpriseServerUrl = getSystemProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME, PUBLIC_GRADLE_ENTERPRISE_SERVER, providerFactory);
         this.isCiServer = !providerFactory.environmentVariable(CI_ENV_NAME).forUseAtConfigurationTime().getOrElse("").isEmpty();
@@ -118,7 +118,7 @@ public class Utils {
     }
 
     public static Optional<String> getRemoteGitHubRepository(File projectDir) {
-        return execAndGetStdout(projectDir, "git", "config", "--get", "remote.origin.url").flatMap(Utils::parseGitHubRemoteUrl);
+        return execAndGetStdout(projectDir, "git", "config", "--get", "remote.origin.url").flatMap(GradleEnterpriseConventions::parseGitHubRemoteUrl);
     }
 
     private static String urlEncode(String s) {

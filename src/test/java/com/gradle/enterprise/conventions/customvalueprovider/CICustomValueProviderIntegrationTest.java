@@ -11,13 +11,13 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
     @BeforeEach
     public void setUp() {
         write("fileToCommit.txt", "hello");
-        Utils.execAndGetStdout(projectDir, "git", "init");
-        Utils.execAndGetStdout(projectDir, "git", "checkout", "-b", "new-branch");
-        Utils.execAndGetStdout(projectDir, "git", "add", "fileToCommit.txt");
-        Utils.execAndGetStdout(projectDir, "git", "commit", "-m", "Initial commit");
-        Utils.execAndGetStdout(projectDir, "git", "config", "--add", "remote.origin.url", "https://github.com/gradle/gradle.git");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "init");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "checkout", "-b", "new-branch");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "add", "fileToCommit.txt");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "commit", "-m", "Initial commit");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "config", "--add", "remote.origin.url", "https://github.com/gradle/gradle.git");
 
-        headCommitId = Utils.execAndGetStdout(projectDir, "git", "log", "-1", "--format=%H").get();
+        headCommitId = GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "log", "-1", "--format=%H").get();
     }
 
     @Test

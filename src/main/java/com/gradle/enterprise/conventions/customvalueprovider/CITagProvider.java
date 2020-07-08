@@ -4,8 +4,8 @@ import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.initialization.Settings;
 
 public class CITagProvider extends BuildScanCustomValueProvider {
-    public CITagProvider(Utils utils) {
-        super(utils);
+    public CITagProvider(GradleEnterpriseConventions gradleEnterpriseConventions) {
+        super(gradleEnterpriseConventions);
     }
 
     @Override

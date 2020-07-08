@@ -18,11 +18,11 @@ public class LocalBuildCustomValueProviderIntegrationTest extends AbstractGradle
     @Test
     public void addGitCommitLinkLocally() {
         write("fileToCommit.txt", "hello");
-        Utils.execAndGetStdout(projectDir, "git", "init");
-        Utils.execAndGetStdout(projectDir, "git", "config", "--add", "remote.origin.url", "https://github.com/gradle/gradle.git");
-        Utils.execAndGetStdout(projectDir, "git", "add", "fileToCommit.txt");
-        Utils.execAndGetStdout(projectDir, "git", "commit", "-m", "Initial commit");
-        String headCommit = Utils.execAndGetStdout(projectDir, "git", "log", "-1", "--format=%H").get();
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "init");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "config", "--add", "remote.origin.url", "https://github.com/gradle/gradle.git");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "add", "fileToCommit.txt");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "commit", "-m", "Initial commit");
+        String headCommit = GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "log", "-1", "--format=%H").get();
 
         succeeds("help");
 

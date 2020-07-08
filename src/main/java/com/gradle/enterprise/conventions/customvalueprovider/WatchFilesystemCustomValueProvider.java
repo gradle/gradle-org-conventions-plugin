@@ -7,8 +7,8 @@ import org.gradle.api.internal.StartParameterInternal;
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.WATCH_FILE_SYSTEM;
 
 public class WatchFilesystemCustomValueProvider extends BuildScanCustomValueProvider {
-    public WatchFilesystemCustomValueProvider(Utils utils) {
-        super(utils);
+    public WatchFilesystemCustomValueProvider(GradleEnterpriseConventions gradleEnterpriseConventions) {
+        super(gradleEnterpriseConventions);
     }
 
     @Override

@@ -4,8 +4,8 @@ import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.initialization.Settings;
 
 public class BuildCacheCustomValueProvider extends BuildScanCustomValueProvider {
-    public BuildCacheCustomValueProvider(Utils utils) {
-        super(utils);
+    public BuildCacheCustomValueProvider(GradleEnterpriseConventions gradleEnterpriseConventions) {
+        super(gradleEnterpriseConventions);
     }
 
     @Override

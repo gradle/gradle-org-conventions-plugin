@@ -16,8 +16,8 @@ public class GitInformationCustomValueProviderIntegrationTest extends AbstractGr
 
     @Test
     public void tagDirtyIfGitRepoIsDirty() {
-        Utils.execAndGetStdout(projectDir, "git", "init");
-        Utils.execAndGetStdout(projectDir, "git", "add", ".");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "init");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "add", ".");
 
         succeeds("help");
 
@@ -30,11 +30,11 @@ public class GitInformationCustomValueProviderIntegrationTest extends AbstractGr
     public void addGitBranchNameIfAvailable() {
         write(".gitignore", "*", "!fileToCommit.txt");
         write("fileToCommit.txt", "hello");
-        Utils.execAndGetStdout(projectDir, "git", "init");
-        Utils.execAndGetStdout(projectDir, "git", "config", "--add", "remote.origin.url", "https://github.com/gradle/gradle.git");
-        Utils.execAndGetStdout(projectDir, "git", "checkout", "-b", "new-branch");
-        Utils.execAndGetStdout(projectDir, "git", "add", ".");
-        Utils.execAndGetStdout(projectDir, "git", "commit", "-m", "Initial commit");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "init");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "config", "--add", "remote.origin.url", "https://github.com/gradle/gradle.git");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "checkout", "-b", "new-branch");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "add", ".");
+        GradleEnterpriseConventions.execAndGetStdout(projectDir, "git", "commit", "-m", "Initial commit");
 
         succeeds("help");
 

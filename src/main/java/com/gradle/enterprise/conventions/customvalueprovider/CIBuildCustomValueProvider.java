@@ -7,14 +7,14 @@ import java.util.Collections;
 
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.BUILD_ID;
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.GIT_COMMIT_NAME;
-import static com.gradle.enterprise.conventions.customvalueprovider.Utils.getRemoteGitHubRepository;
+import static com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions.getRemoteGitHubRepository;
 
 
 public abstract class CIBuildCustomValueProvider extends BuildScanCustomValueProvider {
     private final String markEnvVariableName;
 
-    CIBuildCustomValueProvider(String markEnvVariableName, Utils utils) {
-        super(utils);
+    CIBuildCustomValueProvider(String markEnvVariableName, GradleEnterpriseConventions gradleEnterpriseConventions) {
+        super(gradleEnterpriseConventions);
         this.markEnvVariableName = markEnvVariableName;
     }
 
@@ -24,8 +24,8 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
     }
 
     public static class GitHubActionsCustomValueProvider extends CIBuildCustomValueProvider {
-        public GitHubActionsCustomValueProvider(Utils utils) {
-            super("GITHUB_ACTIONS", utils);
+        public GitHubActionsCustomValueProvider(GradleEnterpriseConventions gradleEnterpriseConventions) {
+            super("GITHUB_ACTIONS", gradleEnterpriseConventions);
         }
 
         @Override
@@ -44,8 +44,8 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
     }
 
     public static class JenkinsCustomValueProvider extends CIBuildCustomValueProvider {
-        public JenkinsCustomValueProvider(Utils utils) {
-            super("JENKINS_HOME", utils);
+        public JenkinsCustomValueProvider(GradleEnterpriseConventions gradleEnterpriseConventions) {
+            super("JENKINS_HOME", gradleEnterpriseConventions);
         }
 
         @Override
@@ -57,8 +57,8 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
     }
 
     public static class TeamCityCustomValueProvider extends CIBuildCustomValueProvider {
-        public TeamCityCustomValueProvider(Utils utils) {
-            super("TEAMCITY_VERSION", utils);
+        public TeamCityCustomValueProvider(GradleEnterpriseConventions gradleEnterpriseConventions) {
+            super("TEAMCITY_VERSION", gradleEnterpriseConventions);
         }
 
         @Override
@@ -70,8 +70,8 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
     }
 
     public static class TravisCustomValueProvider extends CIBuildCustomValueProvider {
-        public TravisCustomValueProvider(Utils utils) {
-            super("TRAVIS", utils);
+        public TravisCustomValueProvider(GradleEnterpriseConventions gradleEnterpriseConventions) {
+            super("TRAVIS", gradleEnterpriseConventions);
         }
 
         @Override
