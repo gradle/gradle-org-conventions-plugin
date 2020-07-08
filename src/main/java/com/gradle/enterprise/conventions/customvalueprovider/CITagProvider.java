@@ -4,13 +4,13 @@ import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.initialization.Settings;
 
 public class CITagProvider extends BuildScanCustomValueProvider {
-    public CITagProvider(GradleEnterpriseConventions gradleEnterpriseConventions) {
-        super(gradleEnterpriseConventions);
+    public CITagProvider(GradleEnterpriseConventions conventions) {
+        super(conventions);
     }
 
     @Override
     public boolean isEnabled() {
-        return getUtils().isCiServer();
+        return getConventions().isCiServer();
     }
 
     @Override

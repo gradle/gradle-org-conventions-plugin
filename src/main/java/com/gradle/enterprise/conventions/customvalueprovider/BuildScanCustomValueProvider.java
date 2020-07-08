@@ -9,14 +9,14 @@ import java.util.function.BiConsumer;
  * Used to provide custom value for Build Scan.
  */
 public abstract class BuildScanCustomValueProvider implements BiConsumer<Settings, BuildScanExtension> {
-    private final GradleEnterpriseConventions gradleEnterpriseConventions;
+    private final GradleEnterpriseConventions conventions;
 
-    public BuildScanCustomValueProvider(GradleEnterpriseConventions gradleEnterpriseConventions) {
-        this.gradleEnterpriseConventions = gradleEnterpriseConventions;
+    public BuildScanCustomValueProvider(GradleEnterpriseConventions conventions) {
+        this.conventions = conventions;
     }
 
-    public GradleEnterpriseConventions getUtils() {
-        return gradleEnterpriseConventions;
+    public GradleEnterpriseConventions getConventions() {
+        return conventions;
     }
 
     public boolean isEnabled() {

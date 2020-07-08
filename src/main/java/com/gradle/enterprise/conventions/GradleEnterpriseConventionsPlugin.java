@@ -29,17 +29,17 @@ import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCusto
 
 public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
 
-    private List<BuildScanCustomValueProvider> createBuildScanCustomValueProviders(GradleEnterpriseConventions gradleEnterpriseConventions) {
+    private List<BuildScanCustomValueProvider> createBuildScanCustomValueProviders(GradleEnterpriseConventions conventions) {
         return Arrays.asList(
-            new BuildCacheCustomValueProvider(gradleEnterpriseConventions),
-            new WatchFilesystemCustomValueProvider(gradleEnterpriseConventions),
-            new CITagProvider(gradleEnterpriseConventions),
-            new GitHubActionsCustomValueProvider(gradleEnterpriseConventions),
-            new JenkinsCustomValueProvider(gradleEnterpriseConventions),
-            new TeamCityCustomValueProvider(gradleEnterpriseConventions),
-            new TravisCustomValueProvider(gradleEnterpriseConventions),
-            new LocalBuildCustomValueProvider(gradleEnterpriseConventions),
-            new GitInformationCustomValueProvider(gradleEnterpriseConventions)
+            new BuildCacheCustomValueProvider(conventions),
+            new WatchFilesystemCustomValueProvider(conventions),
+            new CITagProvider(conventions),
+            new GitHubActionsCustomValueProvider(conventions),
+            new JenkinsCustomValueProvider(conventions),
+            new TeamCityCustomValueProvider(conventions),
+            new TravisCustomValueProvider(conventions),
+            new LocalBuildCustomValueProvider(conventions),
+            new GitInformationCustomValueProvider(conventions)
         );
     }
 
@@ -49,30 +49,30 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
     @Override
     public void apply(Settings settings) {
         settings.getPlugins().withType(GradleEnterprisePlugin.class, p -> {
-            GradleEnterpriseConventions gradleEnterpriseConventions = new GradleEnterpriseConventions(getProviderFactory());
+            GradleEnterpriseConventions conventions = new GradleEnterpriseConventions(getProviderFactory());
             if (settings.getGradle().getStartParameter().isBuildCacheEnabled()) {
-                settings.buildCache(new BuildCacheConfigureAction(gradleEnterpriseConventions));
+                settings.buildCache(new BuildCacheConfigureAction(conventions));
             }
             if (!settings.getGradle().getStartParameter().isNoBuildScan()) {
-                configureBuildScan(settings, gradleEnterpriseConventions);
+                configureBuildScan(settings, conventions);
             }
         });
     }
 
-    private void configureBuildScan(Settings settings, GradleEnterpriseConventions gradleEnterpriseConventions) {
+    private void configureBuildScan(Settings settings, GradleEnterpriseConventions conventions) {
         BuildScanExtension buildScan = settings.getExtensions().getByType(GradleEnterpriseExtension.class).getBuildScan();
 
-        buildScan.setServer(gradleEnterpriseConventions.getGradleEnterpriseServerUrl());
+        buildScan.setServer(conventions.getGradleEnterpriseServerUrl());
         buildScan.setCaptureTaskInputFiles(true);
         buildScan.publishAlways();
         ((BuildScanExtensionWithHiddenFeatures) buildScan).publishIfAuthenticated();
         try {
-            buildScan.setUploadInBackground(!gradleEnterpriseConventions.isCiServer());
+            buildScan.setUploadInBackground(!conventions.isCiServer());
         } catch (NoSuchMethodError e) {
             // GE Plugin version < 3.3. Continue
         }
 
-        createBuildScanCustomValueProviders(gradleEnterpriseConventions).stream()
+        createBuildScanCustomValueProviders(conventions).stream()
             .filter(BuildScanCustomValueProvider::isEnabled)
             .forEach(it -> it.accept(settings, buildScan));
     }
@@ -87,23 +87,23 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
         private static final String GRADLE_CACHE_REMOTE_USERNAME_PROPERTY_NAME = "gradle.cache.remote.username";
         private static final String GRADLE_CACHE_REMOTE_PASSWORD_PROPERTY_NAME = "gradle.cache.remote.password";
         private static final String GRADLE_CACHE_NODE_PROPERTY_NAME = "cacheNode";
-        private final GradleEnterpriseConventions gradleEnterpriseConventions;
+        private final GradleEnterpriseConventions conventions;
 
-        public BuildCacheConfigureAction(GradleEnterpriseConventions gradleEnterpriseConventions) {
-            this.gradleEnterpriseConventions = gradleEnterpriseConventions;
+        public BuildCacheConfigureAction(GradleEnterpriseConventions conventions) {
+            this.conventions = conventions;
         }
 
         @Override
         public void execute(BuildCacheConfiguration buildCache) {
             String remoteCacheUrl = determineRemoteCacheUrl();
-            boolean remotePush = Boolean.parseBoolean(gradleEnterpriseConventions.getSystemProperty(GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME, "false"));
-            String remoteCacheUsername = gradleEnterpriseConventions.getSystemProperty(GRADLE_CACHE_REMOTE_USERNAME_PROPERTY_NAME, "");
-            String remoteCachePassword = gradleEnterpriseConventions.getSystemProperty(GRADLE_CACHE_REMOTE_PASSWORD_PROPERTY_NAME, "");
-            boolean disableLocalCache = Boolean.parseBoolean(gradleEnterpriseConventions.getSystemProperty("disableLocalCache", "false"));
+            boolean remotePush = Boolean.parseBoolean(conventions.getSystemProperty(GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME, "false"));
+            String remoteCacheUsername = conventions.getSystemProperty(GRADLE_CACHE_REMOTE_USERNAME_PROPERTY_NAME, "");
+            String remoteCachePassword = conventions.getSystemProperty(GRADLE_CACHE_REMOTE_PASSWORD_PROPERTY_NAME, "");
+            boolean disableLocalCache = Boolean.parseBoolean(conventions.getSystemProperty("disableLocalCache", "false"));
             buildCache.remote(HttpBuildCache.class, remoteBuildCache -> {
                 remoteBuildCache.setUrl(remoteCacheUrl);
                 if (!remoteCacheUsername.isEmpty() && !remoteCachePassword.isEmpty()) {
-                    remoteBuildCache.setPush(gradleEnterpriseConventions.isCiServer() || remotePush);
+                    remoteBuildCache.setPush(conventions.isCiServer() || remotePush);
                     remoteBuildCache.credentials(credentials -> {
                         credentials.setUsername(remoteCacheUsername);
                         credentials.setPassword(remoteCachePassword);
@@ -115,8 +115,8 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
         }
 
         private String determineRemoteCacheUrl() {
-            return gradleEnterpriseConventions.systemPropertyProvider(GRADLE_CACHE_REMOTE_URL_PROPERTY_NAME)
-                .orElse(gradleEnterpriseConventions.systemPropertyProvider(GRADLE_CACHE_NODE_PROPERTY_NAME)
+            return conventions.systemPropertyProvider(GRADLE_CACHE_REMOTE_URL_PROPERTY_NAME)
+                .orElse(conventions.systemPropertyProvider(GRADLE_CACHE_NODE_PROPERTY_NAME)
                     .map(cacheNode -> {
                         switch (cacheNode) {
                             case "eu":

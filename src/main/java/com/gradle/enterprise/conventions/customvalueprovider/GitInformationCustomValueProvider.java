@@ -8,8 +8,8 @@ import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomVa
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.GIT_STATUS;
 
 public class GitInformationCustomValueProvider extends BuildScanCustomValueProvider {
-    public GitInformationCustomValueProvider(GradleEnterpriseConventions gradleEnterpriseConventions) {
-        super(gradleEnterpriseConventions);
+    public GitInformationCustomValueProvider(GradleEnterpriseConventions conventions) {
+        super(conventions);
     }
 
     @Override
