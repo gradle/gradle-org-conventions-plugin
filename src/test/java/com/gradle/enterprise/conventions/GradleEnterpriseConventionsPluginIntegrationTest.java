@@ -15,6 +15,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGradleEnterprisePluginIntegrationTest {
+    private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org/cache/";
+    private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org/cache/";
+
     @Test
     void configureBuildCacheOnlyWhenBuildCacheEnabled() throws URISyntaxException {
         succeeds("help", "--build-cache");

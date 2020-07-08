@@ -13,9 +13,11 @@ import com.gradle.scan.plugin.internal.api.BuildScanExtensionWithHiddenFeatures;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.initialization.Settings;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.caching.configuration.BuildCacheConfiguration;
 import org.gradle.caching.http.HttpBuildCache;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,36 +26,34 @@ import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCusto
 import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.TeamCityCustomValueProvider;
 import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.TravisCustomValueProvider;
 
-public class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
+public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
     public static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
-    public static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org/cache/";
-    public static final String US_CACHE_NODE = "https://us-build-cache.gradle.org/cache/";
-    public static final String AU_CACHE_NODE = "https://au-build-cache.gradle.org/cache/";
     public static boolean isCiServer = System.getenv().containsKey("CI") && !System.getenv("CI").isEmpty();
-    public static String gradleEnterpriseServerUrl = System.getProperty("gradle.enterprise.url", PUBLIC_GRADLE_ENTERPRISE_SERVER);
-    public static String remoteCacheUrl = System.getProperty("gradle.cache.remote.url", determineCacheNode());
-    public static boolean remotePush = Boolean.getBoolean("gradle.cache.remote.push");
-    public static String remoteCacheUsername = System.getProperty("gradle.cache.remote.username", "");
-    public static String remoteCachePassword = System.getProperty("gradle.cache.remote.password", "");
-    public static boolean disableLocalCache = Boolean.getBoolean("disableLocalCache");
+    private static final String GRADLE_ENTERPRISE_URL_PROPERTY_NAME = "gradle.enterprise.url";
+    public static String gradleEnterpriseServerUrl = System.getProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME, PUBLIC_GRADLE_ENTERPRISE_SERVER);
 
-    private List<BuildScanCustomValueProvider> buildScanCustomValueProviders = Arrays.asList(
-        new BuildCacheCustomValueProvider(),
-        new WatchFilesystemCustomValueProvider(),
-        new CITagProvider(),
-        new GitHubActionsCustomValueProvider(),
-        new JenkinsCustomValueProvider(),
-        new TeamCityCustomValueProvider(),
-        new TravisCustomValueProvider(),
-        new LocalBuildCustomValueProvider(),
-        new GitInformationCustomValueProvider()
-    );
+    private List<BuildScanCustomValueProvider> createBuildScanCustomValueProviders() {
+        return Arrays.asList(
+            new BuildCacheCustomValueProvider(),
+            new WatchFilesystemCustomValueProvider(),
+            new CITagProvider(),
+            new GitHubActionsCustomValueProvider(),
+            new JenkinsCustomValueProvider(),
+            new TeamCityCustomValueProvider(),
+            new TravisCustomValueProvider(),
+            new LocalBuildCustomValueProvider(),
+            new GitInformationCustomValueProvider()
+        );
+    }
+
+    @Inject
+    protected abstract ProviderFactory getProviderFactory();
 
     @Override
     public void apply(Settings settings) {
         settings.getPlugins().withType(GradleEnterprisePlugin.class, p -> {
             if (settings.getGradle().getStartParameter().isBuildCacheEnabled()) {
-                settings.buildCache(new BuildCacheConfigureAction());
+                settings.buildCache(new BuildCacheConfigureAction(getProviderFactory()));
             }
             if (!settings.getGradle().getStartParameter().isNoBuildScan()) {
                 configureBuildScan(settings);
@@ -74,29 +74,38 @@ public class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
             // GE Plugin version < 3.3. Continue
         }
 
-        buildScanCustomValueProviders.stream()
+        createBuildScanCustomValueProviders().stream()
             .filter(BuildScanCustomValueProvider::isEnabled)
             .forEach(it -> it.accept(settings, buildScan));
     }
 
-    private static String determineCacheNode() {
-        String cacheNode = System.getProperty("cacheNode", "eu");
-        switch (cacheNode) {
-            case "eu":
-                return EU_CACHE_NODE;
-            case "us":
-                return US_CACHE_NODE;
-            case "au":
-                return AU_CACHE_NODE;
-            default:
-                throw new IllegalArgumentException("Unrecognized cacheNode: " + cacheNode);
-        }
-
+    private String getSystemProperty(String name, String defaultValue) {
+        return getProviderFactory().systemProperty(name).forUseAtConfigurationTime().orElse(defaultValue).get();
     }
 
-    static class BuildCacheConfigureAction implements Action<BuildCacheConfiguration> {
+    private class BuildCacheConfigureAction implements Action<BuildCacheConfiguration> {
+        private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org/cache/";
+        private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org/cache/";
+        private static final String AU_CACHE_NODE = "https://au-build-cache.gradle.org/cache/";
+
+        private static final String GRADLE_CACHE_REMOTE_URL_PROPERTY_NAME = "gradle.cache.remote.url";
+        private static final String GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME = "gradle.cache.remote.push";
+        private static final String GRADLE_CACHE_REMOTE_USERNAME_PROPERTY_NAME = "gradle.cache.remote.username";
+        private static final String GRADLE_CACHE_REMOTE_PASSWORD_PROPERTY_NAME = "gradle.cache.remote.password";
+        private static final String GRADLE_CACHE_NODE_PROPERTY_NAME = "cacheNode";
+        private final ProviderFactory providerFactory;
+
+        public BuildCacheConfigureAction(ProviderFactory providerFactory) {
+            this.providerFactory = providerFactory;
+        }
+
         @Override
         public void execute(BuildCacheConfiguration buildCache) {
+            String remoteCacheUrl = determineRemoteCacheUrl();
+            boolean remotePush = Boolean.parseBoolean(getSystemProperty(GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME, "false"));
+            String remoteCacheUsername = getSystemProperty(GRADLE_CACHE_REMOTE_USERNAME_PROPERTY_NAME, "");
+            String remoteCachePassword = getSystemProperty(GRADLE_CACHE_REMOTE_PASSWORD_PROPERTY_NAME, "");
+            boolean disableLocalCache = Boolean.parseBoolean(getSystemProperty("disableLocalCache", "false"));
             buildCache.remote(HttpBuildCache.class, remoteBuildCache -> {
                 remoteBuildCache.setUrl(remoteCacheUrl);
                 if (!remoteCacheUsername.isEmpty() && !remoteCachePassword.isEmpty()) {
@@ -109,6 +118,23 @@ public class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
             });
 
             buildCache.local(localBuildCache -> localBuildCache.setEnabled(!disableLocalCache));
+        }
+
+        private String determineRemoteCacheUrl() {
+            return providerFactory.systemProperty(GRADLE_CACHE_REMOTE_URL_PROPERTY_NAME).forUseAtConfigurationTime()
+                .orElse(providerFactory.systemProperty(GRADLE_CACHE_NODE_PROPERTY_NAME).forUseAtConfigurationTime()
+                    .map(cacheNode -> {
+                        switch (cacheNode) {
+                            case "eu":
+                                return EU_CACHE_NODE;
+                            case "us":
+                                return US_CACHE_NODE;
+                            case "au":
+                                return AU_CACHE_NODE;
+                            default:
+                                throw new IllegalArgumentException("Unrecognized cacheNode: " + cacheNode);
+                        }
+                    })).orElse(EU_CACHE_NODE).get();
         }
     }
 }
