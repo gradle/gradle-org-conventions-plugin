@@ -1,13 +1,16 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
-import com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin;
 import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.initialization.Settings;
 
-public class CITagProvider implements BuildScanCustomValueProvider {
+public class CITagProvider extends BuildScanCustomValueProvider {
+    public CITagProvider(GradleEnterpriseConventions conventions) {
+        super(conventions);
+    }
+
     @Override
     public boolean isEnabled() {
-        return GradleEnterpriseConventionsPlugin.isCiServer;
+        return getConventions().isCiServer();
     }
 
     @Override

@@ -2,19 +2,22 @@ package com.gradle.enterprise.conventions;
 
 import com.gradle.enterprise.fixtures.AbstractGradleEnterprisePluginIntegrationTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin.EU_CACHE_NODE;
-import static com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin.PUBLIC_GRADLE_ENTERPRISE_SERVER;
-import static com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin.US_CACHE_NODE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGradleEnterprisePluginIntegrationTest {
+    private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org/cache/";
+    private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org/cache/";
+    private static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
+
     @Test
     void configureBuildCacheOnlyWhenBuildCacheEnabled() throws URISyntaxException {
         succeeds("help", "--build-cache");
@@ -44,11 +47,12 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
         assertNull(getConfiguredBuildScan().getServer());
     }
 
-    @Test
-    void configureBuildCacheViaSystemProperties() throws URISyntaxException {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void configureBuildCacheViaSystemProperties(boolean configurationCacheEnabled) throws URISyntaxException {
         withEnvironmentVariable("CI", "1");
 
-        succeeds("help", "--build-cache", "-DcacheNode=us", "-Dgradle.cache.remote.username=MyUsername", "-Dgradle.cache.remote.password=MyPassword");
+        succeeds("help", "--build-cache", "-DcacheNode=us", "-Dgradle.cache.remote.username=MyUsername", "-Dgradle.cache.remote.password=MyPassword", configurationCacheEnabled ? "--configuration-cache" : "--no-configuration-cache");
 
         assertEquals(new URI(US_CACHE_NODE), getConfiguredRemoteCache().getUrl());
         assertTrue(getConfiguredRemoteCache().isPush());

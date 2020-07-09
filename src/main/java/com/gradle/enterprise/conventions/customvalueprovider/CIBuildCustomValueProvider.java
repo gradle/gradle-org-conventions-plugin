@@ -3,39 +3,40 @@ package com.gradle.enterprise.conventions.customvalueprovider;
 import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.initialization.Settings;
 
-import static com.gradle.enterprise.conventions.customvalueprovider.Utils.GIT_COMMIT_NAME;
-import static com.gradle.enterprise.conventions.customvalueprovider.Utils.customValueSearchUrl;
-import static com.gradle.enterprise.conventions.customvalueprovider.Utils.getRemoteGitHubRepository;
-import static com.gradle.enterprise.conventions.customvalueprovider.Utils.mapOf;
-import static com.gradle.enterprise.conventions.customvalueprovider.Utils.setCommitId;
+import java.util.Collections;
+
+import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.BUILD_ID;
+import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.GIT_COMMIT_NAME;
+import static com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions.getRemoteGitHubRepository;
 
 
-public abstract class CIBuildCustomValueProvider implements BuildScanCustomValueProvider {
+public abstract class CIBuildCustomValueProvider extends BuildScanCustomValueProvider {
     private final String markEnvVariableName;
 
-    CIBuildCustomValueProvider(String markEnvVariableName) {
+    CIBuildCustomValueProvider(String markEnvVariableName, GradleEnterpriseConventions conventions) {
+        super(conventions);
         this.markEnvVariableName = markEnvVariableName;
     }
 
     @Override
     public boolean isEnabled() {
-        return System.getenv().containsKey(markEnvVariableName);
+        return getConventions().environmentVariableProvider(markEnvVariableName).isPresent();
     }
 
     public static class GitHubActionsCustomValueProvider extends CIBuildCustomValueProvider {
-        public GitHubActionsCustomValueProvider() {
-            super("GITHUB_ACTIONS");
+        public GitHubActionsCustomValueProvider(GradleEnterpriseConventions conventions) {
+            super("GITHUB_ACTIONS", conventions);
         }
 
         @Override
         public void accept(Settings settings, BuildScanExtension buildScan) {
-            String commitId = System.getenv("GITHUB_SHA");
-            buildScan.value("Build ID", String.format("%s %s", System.getenv("GITHUB_RUN_ID"), System.getenv("GITHUB_RUN_NUMBER")));
+            String commitId = getConventions().getEnv("GITHUB_SHA");
+            buildScan.value(BUILD_ID, String.format("%s %s", getConventions().getEnv("GITHUB_RUN_ID"), getConventions().getEnv("GITHUB_RUN_NUMBER")));
             buildScan.value(GIT_COMMIT_NAME, commitId);
-            buildScan.link("Git Commit Scans", customValueSearchUrl(mapOf(GIT_COMMIT_NAME, commitId)));
+            buildScan.link("Git Commit Scans", getConventions().customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId)));
             buildScan.background(__ ->
                 getRemoteGitHubRepository(settings.getRootDir()).ifPresent(repoUrl -> {
-                    buildScan.link("GitHub Actions Build", String.format("%s/runs/%s", repoUrl, System.getenv("GITHUB_RUN_ID")));
+                    buildScan.link("GitHub Actions Build", String.format("%s/runs/%s", repoUrl, getConventions().getEnv("GITHUB_RUN_ID")));
                     buildScan.link("Source", String.format("%s/commit/%s", repoUrl, commitId));
                 })
             );
@@ -43,41 +44,41 @@ public abstract class CIBuildCustomValueProvider implements BuildScanCustomValue
     }
 
     public static class JenkinsCustomValueProvider extends CIBuildCustomValueProvider {
-        public JenkinsCustomValueProvider() {
-            super("JENKINS_HOME");
+        public JenkinsCustomValueProvider(GradleEnterpriseConventions conventions) {
+            super("JENKINS_HOME", conventions);
         }
 
         @Override
         public void accept(Settings settings, BuildScanExtension buildScan) {
-            buildScan.link("Jenkins Build", System.getenv("BUILD_URL"));
-            buildScan.value("Build ID", System.getenv("BUILD_ID"));
-            setCommitId(settings.getRootDir(), buildScan, System.getenv("GIT_COMMIT"));
+            buildScan.link("Jenkins Build", getConventions().getEnv("BUILD_URL"));
+            buildScan.value(BUILD_ID, getConventions().getEnv("BUILD_ID"));
+            getConventions().setCommitId(settings.getRootDir(), buildScan, getConventions().getEnv("GIT_COMMIT"));
         }
     }
 
     public static class TeamCityCustomValueProvider extends CIBuildCustomValueProvider {
-        public TeamCityCustomValueProvider() {
-            super("TEAMCITY_VERSION");
+        public TeamCityCustomValueProvider(GradleEnterpriseConventions conventions) {
+            super("TEAMCITY_VERSION", conventions);
         }
 
         @Override
         public void accept(Settings settings, BuildScanExtension buildScan) {
-            buildScan.link("TeamCity Build", System.getenv("BUILD_URL"));
-            buildScan.value("Build ID", System.getenv("BUILD_ID"));
-            setCommitId(settings.getRootDir(), buildScan, System.getenv("BUILD_VCS_NUMBER"));
+            buildScan.link("TeamCity Build", getConventions().getEnv("BUILD_URL"));
+            buildScan.value(BUILD_ID, getConventions().getEnv("BUILD_ID"));
+            getConventions().setCommitId(settings.getRootDir(), buildScan, getConventions().getEnv("BUILD_VCS_NUMBER"));
         }
     }
 
     public static class TravisCustomValueProvider extends CIBuildCustomValueProvider {
-        public TravisCustomValueProvider() {
-            super("TRAVIS");
+        public TravisCustomValueProvider(GradleEnterpriseConventions conventions) {
+            super("TRAVIS", conventions);
         }
 
         @Override
         public void accept(Settings settings, BuildScanExtension buildScan) {
-            buildScan.link("Travis Build", System.getenv("TRAVIS_BUILD_WEB_URL"));
-            buildScan.value("Build ID", System.getenv("TRAVIS_BUILD_ID"));
-            setCommitId(settings.getRootDir(), buildScan, System.getenv("TRAVIS_COMMIT"));
+            buildScan.link("Travis Build", getConventions().getEnv("TRAVIS_BUILD_WEB_URL"));
+            buildScan.value(BUILD_ID, getConventions().getEnv("TRAVIS_BUILD_ID"));
+            getConventions().setCommitId(settings.getRootDir(), buildScan, getConventions().getEnv("TRAVIS_COMMIT"));
         }
     }
 }

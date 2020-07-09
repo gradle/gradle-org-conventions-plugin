@@ -1,9 +1,11 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
 import com.gradle.enterprise.fixtures.AbstractGradleEnterprisePluginIntegrationTest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions.execAndGetStdout;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterprisePluginIntegrationTest {
     private String headCommitId;
@@ -11,13 +13,13 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
     @BeforeEach
     public void setUp() {
         write("fileToCommit.txt", "hello");
-        Utils.execAndGetStdout(projectDir, "git", "init");
-        Utils.execAndGetStdout(projectDir, "git", "checkout", "-b", "new-branch");
-        Utils.execAndGetStdout(projectDir, "git", "add", "fileToCommit.txt");
-        Utils.execAndGetStdout(projectDir, "git", "commit", "-m", "Initial commit");
-        Utils.execAndGetStdout(projectDir, "git", "config", "--add", "remote.origin.url", "https://github.com/gradle/gradle.git");
+        execAndGetStdout(projectDir, "git", "init");
+        execAndGetStdout(projectDir, "git", "checkout", "-b", "new-branch");
+        execAndGetStdout(projectDir, "git", "add", "fileToCommit.txt");
+        execAndGetStdout(projectDir, "git", "commit", "-m", "Initial commit");
+        execAndGetStdout(projectDir, "git", "config", "--add", "remote.origin.url", "https://github.com/gradle/gradle.git");
 
-        headCommitId = Utils.execAndGetStdout(projectDir, "git", "log", "-1", "--format=%H").get();
+        headCommitId = execAndGetStdout(projectDir, "git", "log", "-1", "--format=%H").get();
     }
 
     @Test
@@ -30,8 +32,8 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
 
         succeeds("help");
 
-        Assertions.assertTrue(getConfiguredBuildScan().containsLink("Jenkins Build", "https://jenkins"));
-        Assertions.assertTrue(getConfiguredBuildScan().containsValue("Build ID", "jenkins_id"));
+        assertTrue(getConfiguredBuildScan().containsLink("Jenkins Build", "https://jenkins"));
+        assertTrue(getConfiguredBuildScan().containsValue("Build ID", "jenkins_id"));
         verifyGitCommitInformation();
     }
 
@@ -45,8 +47,8 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
 
         succeeds("help");
 
-        Assertions.assertTrue(getConfiguredBuildScan().containsLink("TeamCity Build", "https://teamcity"));
-        Assertions.assertTrue(getConfiguredBuildScan().containsValue("Build ID", "teamcity_id"));
+        assertTrue(getConfiguredBuildScan().containsLink("TeamCity Build", "https://teamcity"));
+        assertTrue(getConfiguredBuildScan().containsValue("Build ID", "teamcity_id"));
         verifyGitCommitInformation();
     }
 
@@ -60,8 +62,8 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
 
         succeeds("help");
 
-        Assertions.assertTrue(getConfiguredBuildScan().containsLink("Travis Build", "https://travis"));
-        Assertions.assertTrue(getConfiguredBuildScan().containsValue("Build ID", "travis_id"));
+        assertTrue(getConfiguredBuildScan().containsLink("Travis Build", "https://travis"));
+        assertTrue(getConfiguredBuildScan().containsValue("Build ID", "travis_id"));
         verifyGitCommitInformation();
     }
 
@@ -75,14 +77,14 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
 
         succeeds("help");
 
-        Assertions.assertTrue(getConfiguredBuildScan().containsValue("Build ID", "123 456"));
-        Assertions.assertTrue(getConfiguredBuildScan().containsBackgroundLink("GitHub Actions Build", "https://github.com/gradle/gradle/runs/123"));
+        assertTrue(getConfiguredBuildScan().containsValue("Build ID", "123 456"));
+        assertTrue(getConfiguredBuildScan().containsBackgroundLink("GitHub Actions Build", "https://github.com/gradle/gradle/runs/123"));
         verifyGitCommitInformation();
     }
 
     private void verifyGitCommitInformation() {
-        Assertions.assertTrue(getConfiguredBuildScan().containsValue("Git Commit ID", headCommitId));
-        Assertions.assertTrue(getConfiguredBuildScan().containsBackgroundLink("Source", String.format("https://github.com/gradle/gradle/commit/%s", headCommitId)));
-        Assertions.assertTrue(getConfiguredBuildScan().containsLink("Git Commit Scans", "https://ge.gradle.org/scans?search.names=Git+Commit+ID&search.values=" + headCommitId));
+        assertTrue(getConfiguredBuildScan().containsValue("Git Commit ID", headCommitId));
+        assertTrue(getConfiguredBuildScan().containsBackgroundLink("Source", String.format("https://github.com/gradle/gradle/commit/%s", headCommitId)));
+        assertTrue(getConfiguredBuildScan().containsLink("Git Commit Scans", "https://ge.gradle.org/scans?search.names=Git+Commit+ID&search.values=" + headCommitId));
     }
 }
