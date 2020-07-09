@@ -21,6 +21,7 @@ dependencies {
     val gradleEnterprisePluginVersion = "3.3.4"
     val junit5Version = "5.6.2"
     val jacksonVersion = "2.10.3"
+    val mockitoExtensionVersion = "3.3.3"
 
     compileOnly("com.gradle:gradle-enterprise-gradle-plugin:${gradleEnterprisePluginVersion}")
     testImplementation("com.gradle:gradle-enterprise-gradle-plugin:${gradleEnterprisePluginVersion}")
@@ -32,6 +33,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junit5Version")
+    testImplementation("org.mockito:mockito-junit-jupiter:${mockitoExtensionVersion}")
 }
 
 gradlePlugin {

@@ -34,6 +34,7 @@ public class GradleEnterpriseConventions {
 
     private static final Pattern HTTPS_URL_PATTERN = Pattern.compile("https://github\\.com/([\\w-]+)/([\\w-]+)\\.git");
     private static final Pattern SSH_URL_PATTERN = Pattern.compile("git@github\\.com:([\\w-]+)/([\\w-]+)\\.git");
+    private static final Pattern SHA_PATTERN = Pattern.compile("[0-9a-fA-F]+");
 
     private final ProviderFactory providerFactory;
     private final String gradleEnterpriseServerUrl;
@@ -88,6 +89,11 @@ public class GradleEnterpriseConventions {
     }
 
     public void setCommitId(File projectDir, BuildScanExtension buildScan, String commitId) {
+        if (!SHA_PATTERN.matcher(commitId).matches()) {
+            LOGGER.warn("Detect illegal commitId: " + commitId + ", skip.");
+            return;
+        }
+
         buildScan.value(GIT_COMMIT_NAME, commitId);
         buildScan.link("Git Commit Scans", customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId)));
         buildScan.background(__ -> getRemoteGitHubRepository(projectDir).ifPresent(repoUrl -> buildScan.link("Source", String.format("%s/commit/%s", repoUrl, commitId))));
