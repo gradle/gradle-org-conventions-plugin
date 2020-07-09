@@ -82,7 +82,7 @@ object ReleasePlugin : BuildType({
     steps {
         gradle {
             useGradleWrapper = true
-            gradleParams = "-Dgradle.publish.skip.namespace.check=true -Pgradle.publish.key=%plugin.portal.publish.key% -Pgradle.publish.secret=%plugin.portal.publish.secret%"
+            gradleParams = "--build-cache  -Dgradle.cache.remote.username=%gradle.cache.remote.username% -Dgradle.cache.remote.password=%gradle.cache.remote.password% -Dgradle.publish.skip.namespace.check=true -Pgradle.publish.key=%plugin.portal.publish.key% -Pgradle.publish.secret=%plugin.portal.publish.secret%"
             tasks = "publishPlugins"
             buildFile = "build.gradle.kts"
         }
