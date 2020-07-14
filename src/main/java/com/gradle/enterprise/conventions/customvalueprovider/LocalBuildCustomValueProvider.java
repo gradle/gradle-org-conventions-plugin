@@ -29,7 +29,7 @@ public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider 
             }
         }
 
-        GradleEnterpriseConventions.execAndGetStdout(settings.getRootDir(), "git", "log", "-1", "--format=%H")
+        GradleEnterpriseConventions.execAndGetStdout(settings.getRootDir(), "git", "rev-parse", "HEAD")
             .ifPresent(commitId -> getConventions().setCommitId(settings.getRootDir(), buildScan, commitId));
     }
 }
