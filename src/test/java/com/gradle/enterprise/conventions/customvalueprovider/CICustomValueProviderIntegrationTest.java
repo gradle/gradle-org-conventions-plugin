@@ -33,7 +33,7 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
         succeeds("help");
 
         assertTrue(getConfiguredBuildScan().containsLink("Jenkins Build", "https://jenkins"));
-        assertTrue(getConfiguredBuildScan().containsValue("Build ID", "jenkins_id"));
+        assertTrue(getConfiguredBuildScan().containsValue("Build_ID", "jenkins_id"));
         verifyGitCommitInformation();
     }
 
@@ -48,7 +48,7 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
         succeeds("help");
 
         assertTrue(getConfiguredBuildScan().containsLink("TeamCity Build", "https://teamcity"));
-        assertTrue(getConfiguredBuildScan().containsValue("Build ID", "teamcity_id"));
+        assertTrue(getConfiguredBuildScan().containsValue("Build_ID", "teamcity_id"));
         verifyGitCommitInformation();
     }
 
@@ -63,7 +63,7 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
         succeeds("help");
 
         assertTrue(getConfiguredBuildScan().containsLink("Travis Build", "https://travis"));
-        assertTrue(getConfiguredBuildScan().containsValue("Build ID", "travis_id"));
+        assertTrue(getConfiguredBuildScan().containsValue("Build_ID", "travis_id"));
         verifyGitCommitInformation();
     }
 
@@ -77,14 +77,14 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
 
         succeeds("help");
 
-        assertTrue(getConfiguredBuildScan().containsValue("Build ID", "123 456"));
+        assertTrue(getConfiguredBuildScan().containsValue("Build_ID", "123 456"));
         assertTrue(getConfiguredBuildScan().containsBackgroundLink("GitHub Actions Build", "https://github.com/gradle/gradle/runs/123"));
         verifyGitCommitInformation();
     }
 
     private void verifyGitCommitInformation() {
-        assertTrue(getConfiguredBuildScan().containsValue("Git Commit ID", headCommitId));
+        assertTrue(getConfiguredBuildScan().containsValue("Git_Commit_ID", headCommitId));
         assertTrue(getConfiguredBuildScan().containsBackgroundLink("Source", String.format("https://github.com/gradle/gradle/commit/%s", headCommitId)));
-        assertTrue(getConfiguredBuildScan().containsLink("Git Commit Scans", "https://ge.gradle.org/scans?search.names=Git+Commit+ID&search.values=" + headCommitId));
+        assertTrue(getConfiguredBuildScan().containsLink("Git Commit Scans", "https://ge.gradle.org/scans?search.names=Git_Commit_ID&search.values=" + headCommitId));
     }
 }

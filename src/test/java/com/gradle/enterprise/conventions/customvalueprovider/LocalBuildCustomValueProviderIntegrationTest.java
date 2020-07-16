@@ -13,7 +13,7 @@ public class LocalBuildCustomValueProviderIntegrationTest extends AbstractGradle
 
         assertTrue(getConfiguredBuildScan().containsTag("LOCAL"));
         assertTrue(getConfiguredBuildScan().containsTag("IDEA"));
-        assertTrue(getConfiguredBuildScan().containsValue("IDEA version", "2020.1"));
+        assertTrue(getConfiguredBuildScan().containsValue("IDEA_Version", "2020.1"));
     }
 
 
