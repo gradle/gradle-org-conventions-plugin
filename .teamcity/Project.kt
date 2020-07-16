@@ -35,7 +35,7 @@ object Verify : BuildType({
     triggers {
         vcs {
             branchFilter = """
-    +:*
+    +:refs/heads/*
 """.trimIndent()
         }
     }
