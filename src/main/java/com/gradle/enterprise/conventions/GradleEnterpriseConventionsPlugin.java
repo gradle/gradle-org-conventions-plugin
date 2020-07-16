@@ -64,7 +64,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
 
         buildScan.setServer(conventions.getGradleEnterpriseServerUrl());
         buildScan.setCaptureTaskInputFiles(true);
-        configurePublishStrategy(buildScan);
+        configurePublishStrategy(conventions, buildScan);
         try {
             buildScan.setUploadInBackground(!conventions.isCiServer());
         } catch (NoSuchMethodError e) {
@@ -76,8 +76,8 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             .forEach(it -> it.accept(settings, buildScan));
     }
 
-    private void configurePublishStrategy(BuildScanExtension buildScan) {
-        String strategy = System.getProperty("publishStrategy", "publishAlways");
+    private void configurePublishStrategy(GradleEnterpriseConventions conventions, BuildScanExtension buildScan) {
+        String strategy = conventions.systemPropertyProvider("publishStrategy").orElse("publishAlways").get();
         switch (strategy) {
             case "publishAlways":
                 buildScan.publishAlways();
