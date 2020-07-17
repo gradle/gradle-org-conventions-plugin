@@ -33,6 +33,19 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
 
         assertNull(getConfiguredRemoteCache().getUrl());
         assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredBuildScan().getServer());
+        assertTrue(getConfiguredBuildScan().isPublishAlways());
+        assertTrue(getConfiguredBuildScan().isCaptureTaskInputFiles());
+        assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
+        assertTrue(getConfiguredBuildScan().isUploadInBackground());
+    }
+
+    @Test
+    void configurePublishOnFailure() {
+        succeeds("help", "-DpublishStrategy=publishOnFailure");
+
+        assertNull(getConfiguredRemoteCache().getUrl());
+        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredBuildScan().getServer());
+        assertTrue(getConfiguredBuildScan().isPublishOnFailure());
         assertTrue(getConfiguredBuildScan().isCaptureTaskInputFiles());
         assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
         assertTrue(getConfiguredBuildScan().isUploadInBackground());

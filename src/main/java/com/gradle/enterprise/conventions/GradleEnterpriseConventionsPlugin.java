@@ -4,8 +4,8 @@ import com.gradle.enterprise.conventions.customvalueprovider.BuildCacheCustomVal
 import com.gradle.enterprise.conventions.customvalueprovider.BuildScanCustomValueProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.CITagProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.GitInformationCustomValueProvider;
-import com.gradle.enterprise.conventions.customvalueprovider.LocalBuildCustomValueProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions;
+import com.gradle.enterprise.conventions.customvalueprovider.LocalBuildCustomValueProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.WatchFilesystemCustomValueProvider;
 import com.gradle.enterprise.gradleplugin.GradleEnterpriseExtension;
 import com.gradle.enterprise.gradleplugin.GradleEnterprisePlugin;
@@ -64,8 +64,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
 
         buildScan.setServer(conventions.getGradleEnterpriseServerUrl());
         buildScan.setCaptureTaskInputFiles(true);
-        buildScan.publishAlways();
-        ((BuildScanExtensionWithHiddenFeatures) buildScan).publishIfAuthenticated();
+        configurePublishStrategy(conventions, buildScan);
         try {
             buildScan.setUploadInBackground(!conventions.isCiServer());
         } catch (NoSuchMethodError e) {
@@ -77,7 +76,23 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             .forEach(it -> it.accept(settings, buildScan));
     }
 
-    private class BuildCacheConfigureAction implements Action<BuildCacheConfiguration> {
+    private void configurePublishStrategy(GradleEnterpriseConventions conventions, BuildScanExtension buildScan) {
+        String strategy = conventions.systemPropertyProvider("publishStrategy").orElse("publishAlways").get();
+        switch (strategy) {
+            case "publishAlways":
+                buildScan.publishAlways();
+                break;
+            case "publishOnFailure":
+                buildScan.publishOnFailure();
+                break;
+            default:
+                throw new IllegalStateException("Unknown strategy: " + strategy);
+        }
+
+        ((BuildScanExtensionWithHiddenFeatures) buildScan).publishIfAuthenticated();
+    }
+
+    private static class BuildCacheConfigureAction implements Action<BuildCacheConfiguration> {
         private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org/cache/";
         private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org/cache/";
         private static final String AU_CACHE_NODE = "https://au-build-cache.gradle.org/cache/";

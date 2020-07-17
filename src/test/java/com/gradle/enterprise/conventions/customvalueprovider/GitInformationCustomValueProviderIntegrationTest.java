@@ -13,8 +13,8 @@ public class GitInformationCustomValueProviderIntegrationTest extends AbstractGr
         succeeds("help");
 
         assertFalse(getConfiguredBuildScan().containsBackgroundTag("dirty"));
-        assertFalse(getConfiguredBuildScan().containsBackgroundValue("Git Status"));
-        assertFalse(getConfiguredBuildScan().containsBackgroundValue("Git Branch Name"));
+        assertFalse(getConfiguredBuildScan().containsBackgroundValue("gitStatus"));
+        assertFalse(getConfiguredBuildScan().containsBackgroundValue("gitBranchName"));
     }
 
     @Test
@@ -25,8 +25,8 @@ public class GitInformationCustomValueProviderIntegrationTest extends AbstractGr
         succeeds("help");
 
         assertTrue(getConfiguredBuildScan().containsBackgroundTag("dirty"));
-        assertTrue(getConfiguredBuildScan().containsBackgroundValue("Git Status"));
-        assertFalse(getConfiguredBuildScan().containsBackgroundValue("Git Branch Name"));
+        assertTrue(getConfiguredBuildScan().containsBackgroundValue("gitStatus"));
+        assertFalse(getConfiguredBuildScan().containsBackgroundValue("gitBranchName"));
     }
 
     @Test
@@ -42,7 +42,7 @@ public class GitInformationCustomValueProviderIntegrationTest extends AbstractGr
         succeeds("help");
 
         assertFalse(getConfiguredBuildScan().containsBackgroundTag("dirty"));
-        assertFalse(getConfiguredBuildScan().containsBackgroundValue("Git Status"));
-        assertTrue(getConfiguredBuildScan().containsBackgroundValue("Git Branch Name", "new-branch"));
+        assertFalse(getConfiguredBuildScan().containsBackgroundValue("gitStatus"));
+        assertTrue(getConfiguredBuildScan().containsBackgroundValue("gitBranchName", "new-branch"));
     }
 }

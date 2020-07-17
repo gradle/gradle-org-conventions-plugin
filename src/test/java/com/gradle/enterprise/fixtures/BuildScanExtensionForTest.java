@@ -23,6 +23,7 @@ public class BuildScanExtensionForTest implements BuildScanExtensionWithHiddenFe
     private String server;
     private boolean allowUntrustedServer;
     private boolean publishAlways;
+    private boolean publishOnFailure;
     private boolean uploadInBackground;
     private boolean captureTaskInputFiles;
     private boolean publishIfAuthenticated;
@@ -203,7 +204,7 @@ public class BuildScanExtensionForTest implements BuildScanExtensionWithHiddenFe
 
     @Override
     public void publishAlways() {
-        this.publishAlways = publishAlways;
+        this.publishAlways = true;
     }
 
     @Override
@@ -213,7 +214,11 @@ public class BuildScanExtensionForTest implements BuildScanExtensionWithHiddenFe
 
     @Override
     public void publishOnFailure() {
-        throw new UnsupportedOperationException();
+        this.publishOnFailure = true;
+    }
+
+    public boolean isPublishOnFailure() {
+        return publishOnFailure;
     }
 
     @Override
