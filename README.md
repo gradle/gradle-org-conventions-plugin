@@ -17,7 +17,7 @@ When applied as a settings plugin alongside the [Gradle Enterprise Plugin](https
 - Enable build scan publishing if required credentials are provided.
   - For CI build (`CI` environment variable exists):
     - Add `CI` build scan tag.
-    - Add build scan link and build scan custom value `Git_Commit_ID` to the build (by auto detecting environment variables):
+    - Add build scan link and build scan custom value `gitCommitId` to the build (by auto detecting environment variables):
       - Travis: `TRAVIS_BUILD_ID`/`TRAVIS_BUILD_WEB_URL`
       - Jenkins: `BUILD_ID`/`BUILD_URL`
       - GitHub Actions: `${System.getenv("GITHUB_RUN_ID")} ${System.getenv("GITHUB_RUN_NUMBER")}`/`https://github.com/gradle/gradle/runs/${System.getenv("GITHUB_RUN_ID")}`
@@ -25,16 +25,16 @@ When applied as a settings plugin alongside the [Gradle Enterprise Plugin](https
     - Upload build scans in the foreground.
   - For local build:
     - Add `LOCAL` build scan tag.
-    - Add build scan custom value `Git_Commit_ID` by running `git rev-parse --verify HEAD`.
+    - Add build scan custom value `gitCommitId` by running `git rev-parse --verify HEAD`.
     - If running in IDEA:
       - Add `IDEA` build scan tag.
-      - Add build scan custom value `IDEA_Version` to IDEA version.
+      - Add build scan custom value `ideaVersion` to IDEA version.
     - Upload build scans in the background.
   - For CI and local builds:
-    - Add build scan custom value `Git_Branch_Name` by running `git rev-parse --abbrev-ref HEAD`.
+    - Add build scan custom value `gitBranchName` by running `git rev-parse --abbrev-ref HEAD`.
     - If the build directory is dirty:
       - Add build scan tag `dirty`
-      - Add build scan custom value `Git_Status` with the output of `git status --porcelain`
+      - Add build scan custom value `gitStatus` with the output of `git status --porcelain`
 
 ## Use the plugin
 
