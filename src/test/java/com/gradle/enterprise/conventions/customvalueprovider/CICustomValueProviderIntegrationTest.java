@@ -33,7 +33,7 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
         succeeds("help");
 
         assertTrue(getConfiguredBuildScan().containsLink("Jenkins Build", "https://jenkins"));
-        assertTrue(getConfiguredBuildScan().containsValue("Build_ID", "jenkins_id"));
+        assertTrue(getConfiguredBuildScan().containsValue("buildId", "jenkins_id"));
         verifyGitCommitInformation();
     }
 
