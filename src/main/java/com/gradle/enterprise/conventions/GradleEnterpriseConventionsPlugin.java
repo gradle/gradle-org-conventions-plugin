@@ -1,6 +1,12 @@
 package com.gradle.enterprise.conventions;
 
-import com.gradle.enterprise.conventions.customvalueprovider.*;
+import com.gradle.enterprise.conventions.customvalueprovider.BuildCacheCustomValueProvider;
+import com.gradle.enterprise.conventions.customvalueprovider.BuildScanCustomValueProvider;
+import com.gradle.enterprise.conventions.customvalueprovider.CITagProvider;
+import com.gradle.enterprise.conventions.customvalueprovider.GitInformationCustomValueProvider;
+import com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions;
+import com.gradle.enterprise.conventions.customvalueprovider.LocalBuildCustomValueProvider;
+import com.gradle.enterprise.conventions.customvalueprovider.WatchFilesystemCustomValueProvider;
 import com.gradle.enterprise.gradleplugin.GradleEnterpriseExtension;
 import com.gradle.enterprise.gradleplugin.GradleEnterprisePlugin;
 import com.gradle.scan.plugin.BuildScanExtension;
@@ -16,7 +22,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.*;
+import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.GitHubActionsCustomValueProvider;
+import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.JenkinsCustomValueProvider;
+import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.TeamCityCustomValueProvider;
+import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.TravisCustomValueProvider;
 
 public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
 
