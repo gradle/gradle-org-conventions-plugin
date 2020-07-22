@@ -5,7 +5,7 @@ plugins {
 }
 
 rootProject.group = "com.gradle.enterprise"
-rootProject.version = "0.5"
+rootProject.version = "0.6"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
