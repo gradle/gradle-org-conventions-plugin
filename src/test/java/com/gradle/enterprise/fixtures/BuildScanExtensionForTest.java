@@ -4,14 +4,13 @@ import com.gradle.scan.plugin.BuildResult;
 import com.gradle.scan.plugin.BuildScanDataObfuscation;
 import com.gradle.scan.plugin.BuildScanExtension;
 import com.gradle.scan.plugin.PublishedBuildScan;
-import com.gradle.scan.plugin.internal.api.BuildScanExtensionWithHiddenFeatures;
 import org.gradle.api.Action;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BuildScanExtensionForTest implements BuildScanExtensionWithHiddenFeatures {
+public class BuildScanExtensionForTest implements BuildScanExtension {
     private List<String> tags = new ArrayList<>();
     private List<List<String>> values = new ArrayList<>();
     private List<List<String>> links = new ArrayList<>();
@@ -256,12 +255,7 @@ public class BuildScanExtensionForTest implements BuildScanExtensionWithHiddenFe
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void onError(Action<String> action) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
+    // On internal interface
     public void publishIfAuthenticated() {
         publishIfAuthenticated = true;
     }

@@ -1,16 +1,9 @@
 package com.gradle.enterprise.conventions;
 
-import com.gradle.enterprise.conventions.customvalueprovider.BuildCacheCustomValueProvider;
-import com.gradle.enterprise.conventions.customvalueprovider.BuildScanCustomValueProvider;
-import com.gradle.enterprise.conventions.customvalueprovider.CITagProvider;
-import com.gradle.enterprise.conventions.customvalueprovider.GitInformationCustomValueProvider;
-import com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions;
-import com.gradle.enterprise.conventions.customvalueprovider.LocalBuildCustomValueProvider;
-import com.gradle.enterprise.conventions.customvalueprovider.WatchFilesystemCustomValueProvider;
+import com.gradle.enterprise.conventions.customvalueprovider.*;
 import com.gradle.enterprise.gradleplugin.GradleEnterpriseExtension;
 import com.gradle.enterprise.gradleplugin.GradleEnterprisePlugin;
 import com.gradle.scan.plugin.BuildScanExtension;
-import com.gradle.scan.plugin.internal.api.BuildScanExtensionWithHiddenFeatures;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.initialization.Settings;
@@ -19,13 +12,11 @@ import org.gradle.caching.configuration.BuildCacheConfiguration;
 import org.gradle.caching.http.HttpBuildCache;
 
 import javax.inject.Inject;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.GitHubActionsCustomValueProvider;
-import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.JenkinsCustomValueProvider;
-import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.TeamCityCustomValueProvider;
-import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.TravisCustomValueProvider;
+import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.*;
 
 public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
 
@@ -89,7 +80,11 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
                 throw new IllegalStateException("Unknown strategy: " + strategy);
         }
 
-        ((BuildScanExtensionWithHiddenFeatures) buildScan).publishIfAuthenticated();
+        try {
+            buildScan.getClass().getMethod("publishIfAuthenticated").invoke(buildScan);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new IllegalStateException("Could not call publishIfAuthenticated()", e);
+        }
     }
 
     private static class BuildCacheConfigureAction implements Action<BuildCacheConfiguration> {
