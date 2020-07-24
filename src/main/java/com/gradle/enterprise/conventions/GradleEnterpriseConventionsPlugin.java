@@ -53,10 +53,17 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             if (settings.getGradle().getStartParameter().isBuildCacheEnabled()) {
                 settings.buildCache(new BuildCacheConfigureAction(conventions));
             }
-            if (!settings.getGradle().getStartParameter().isNoBuildScan()) {
+            if (!settings.getGradle().getStartParameter().isNoBuildScan() && !containsPropertiesTask(settings)) {
                 configureBuildScan(settings, conventions);
             }
         });
+    }
+
+    // Disable build scan for security reason
+    // https://github.com/gradle/gradle-enterprise-conventions-plugin/issues/9
+    private boolean containsPropertiesTask(Settings settings) {
+        return settings.getGradle().getStartParameter().getTaskNames().contains("properties")
+            || settings.getGradle().getStartParameter().getTaskNames().stream().anyMatch(it -> it.endsWith(":properties"));
     }
 
     private void configureBuildScan(Settings settings, GradleEnterpriseConventions conventions) {

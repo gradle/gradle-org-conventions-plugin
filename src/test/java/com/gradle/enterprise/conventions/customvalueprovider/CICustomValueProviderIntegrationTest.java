@@ -12,6 +12,7 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
 
     @BeforeEach
     public void setUp() {
+        super.setUp();
         write("fileToCommit.txt", "hello");
         execAndGetStdout(projectDir, "git", "init");
         execAndGetStdout(projectDir, "git", "checkout", "-b", "new-branch");

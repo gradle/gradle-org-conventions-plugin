@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.gradle.caching.http.HttpBuildCache;
 import org.gradle.caching.local.DirectoryBuildCache;
 import org.gradle.testkit.runner.GradleRunner;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.BufferedReader;
@@ -81,6 +82,11 @@ public class AbstractGradleEnterprisePluginIntegrationTest {
     private GradleEnterpriseExtensionForTest configuredGradleEnterprise;
     private File gradleHomeDir;
 
+    @BeforeEach
+    public void setUp() {
+        write("settings.gradle", toString(getClass().getResourceAsStream("/testdata/settings.gradle")));
+    }
+
     /**
      * Write content to a file, relative to project directory.
      */
@@ -94,7 +100,11 @@ public class AbstractGradleEnterprisePluginIntegrationTest {
             File targetFile = new File(projectDir, relativePath);
             targetFile.getParentFile().mkdirs();
             targetFile.createNewFile();
-            Files.write(targetFile.toPath(), lines);
+
+            List<String> originalLines = new ArrayList<>(Files.readAllLines(targetFile.toPath()));
+            originalLines.addAll(lines);
+
+            Files.write(targetFile.toPath(), originalLines);
             return targetFile;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -110,7 +120,6 @@ public class AbstractGradleEnterprisePluginIntegrationTest {
     }
 
     protected void succeeds(String... args) {
-        write("settings.gradle", toString(getClass().getResourceAsStream("/testdata/settings.gradle")));
         gradleHomeDir = new File(projectDir, "gradleHome");
         assertTrue(gradleHomeDir.mkdirs());
 

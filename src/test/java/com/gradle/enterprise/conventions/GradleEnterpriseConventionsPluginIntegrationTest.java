@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -19,7 +20,7 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
     private static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
 
     @Test
-    void configureBuildCacheOnlyWhenBuildCacheEnabled() throws URISyntaxException {
+    public void configureBuildCacheOnlyWhenBuildCacheEnabled() throws URISyntaxException {
         succeeds("help", "--build-cache");
 
         assertEquals(new URI(EU_CACHE_NODE), getConfiguredRemoteCache().getUrl());
@@ -28,7 +29,7 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
     }
 
     @Test
-    void configureBuildScanButNotBuildCacheByDefault() {
+    public void configureBuildScanButNotBuildCacheByDefault() {
         succeeds("help");
 
         assertNull(getConfiguredRemoteCache().getUrl());
@@ -40,7 +41,7 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
     }
 
     @Test
-    void configurePublishOnFailure() {
+    public void configurePublishOnFailure() {
         succeeds("help", "-DpublishStrategy=publishOnFailure");
 
         assertNull(getConfiguredRemoteCache().getUrl());
@@ -52,10 +53,30 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
     }
 
     @Test
-    void disableBuildScanWithNoBuildScan() {
+    public void disableBuildScanWithNoBuildScan() {
         withEnvironmentVariable("CI", "1");
 
         succeeds("help", "--no-scan");
+
+        assertNull(getConfiguredBuildScan().getServer());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"CI", "LOCAL"})
+    public void disableBuildScanUponPropertiesTask(String env) {
+        withEnvironmentVariable(env, "1");
+
+        succeeds("properties");
+
+        assertNull(getConfiguredBuildScan().getServer());
+    }
+
+    @Test
+    public void disableBuildScanUpSubprojectPropertiesTask() {
+        write("settings.gradle", "include(\"subprojectA\")");
+        new File(projectDir, "subprojectA").mkdir();
+
+        succeeds(":subprojectA:properties");
 
         assertNull(getConfiguredBuildScan().getServer());
     }
