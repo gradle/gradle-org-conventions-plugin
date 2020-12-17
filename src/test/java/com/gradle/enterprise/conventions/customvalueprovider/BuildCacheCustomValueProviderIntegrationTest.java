@@ -12,6 +12,7 @@ public class BuildCacheCustomValueProviderIntegrationTest extends AbstractGradle
         "true", "false"
     })
     public void tagCachedIfBuildCacheEnabled(boolean buildCacheEnabled) {
+        withPublicGradleEnterpriseUrl();
         succeeds("help", buildCacheEnabled ? "--build-cache" : "--no-build-cache");
 
         assertEquals(buildCacheEnabled, getConfiguredBuildScan().containsTag("CACHED"));

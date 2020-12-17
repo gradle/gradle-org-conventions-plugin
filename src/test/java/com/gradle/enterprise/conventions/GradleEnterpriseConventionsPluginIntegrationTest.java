@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGradleEnterprisePluginIntegrationTest {
     private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org/cache/";
     private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org/cache/";
-    private static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
 
     @Test
     public void configureBuildCacheOnlyWhenBuildCacheEnabled() throws URISyntaxException {
@@ -30,6 +29,7 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
 
     @Test
     public void configureBuildScanButNotBuildCacheByDefault() {
+        withPublicGradleEnterpriseUrl();
         succeeds("help");
 
         assertNull(getConfiguredRemoteCache().getUrl());
@@ -42,6 +42,7 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
 
     @Test
     public void configurePublishOnFailure() {
+        withPublicGradleEnterpriseUrl();
         succeeds("help", "-DpublishStrategy=publishOnFailure");
 
         assertNull(getConfiguredRemoteCache().getUrl());
@@ -53,7 +54,17 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
     }
 
     @Test
+    public void disableBuildScanWithoutGEUrl() {
+        withEnvironmentVariable("CI", "1");
+
+        succeeds("help", "--no-scan");
+
+        assertNull(getConfiguredBuildScan().getServer());
+    }
+
+    @Test
     public void disableBuildScanWithNoBuildScan() {
+        withPublicGradleEnterpriseUrl();
         withEnvironmentVariable("CI", "1");
 
         succeeds("help", "--no-scan");
@@ -64,6 +75,7 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
     @ParameterizedTest
     @ValueSource(strings = {"CI", "LOCAL"})
     public void disableBuildScanUponPropertiesTask(String env) {
+        withPublicGradleEnterpriseUrl();
         withEnvironmentVariable(env, "1");
 
         succeeds("properties");
@@ -73,6 +85,7 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
 
     @Test
     public void disableBuildScanUpSubprojectPropertiesTask() {
+        withPublicGradleEnterpriseUrl();
         write("settings.gradle", "include(\"subprojectA\")");
         new File(projectDir, "subprojectA").mkdir();
 
@@ -84,6 +97,7 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void configureBuildCacheViaSystemProperties(boolean configurationCacheEnabled) throws URISyntaxException {
+        withPublicGradleEnterpriseUrl();
         withEnvironmentVariable("CI", "1");
 
         succeeds("help", "--build-cache", "-DcacheNode=us", "-Dgradle.cache.remote.username=MyUsername", "-Dgradle.cache.remote.password=MyPassword", configurationCacheEnabled ? "--configuration-cache" : "--no-configuration-cache");

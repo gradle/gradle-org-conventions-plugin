@@ -28,7 +28,6 @@ import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomVa
 
 public class GradleEnterpriseConventions {
     private static final Logger LOGGER = Logging.getLogger(GradleEnterpriseConventions.class);
-    private static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
     private static final String GRADLE_ENTERPRISE_URL_PROPERTY_NAME = "gradle.enterprise.url";
     private static final String CI_ENV_NAME = "CI";
 
@@ -42,7 +41,7 @@ public class GradleEnterpriseConventions {
 
     public GradleEnterpriseConventions(ProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
-        this.gradleEnterpriseServerUrl = getSystemProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME, PUBLIC_GRADLE_ENTERPRISE_SERVER, providerFactory);
+        this.gradleEnterpriseServerUrl = getSystemProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME, "", providerFactory);
         this.isCiServer = !providerFactory.environmentVariable(CI_ENV_NAME).forUseAtConfigurationTime().getOrElse("").isEmpty();
 
     }

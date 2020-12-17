@@ -53,7 +53,9 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             if (settings.getGradle().getStartParameter().isBuildCacheEnabled()) {
                 settings.buildCache(new BuildCacheConfigureAction(conventions));
             }
-            if (!settings.getGradle().getStartParameter().isNoBuildScan() && !containsPropertiesTask(settings)) {
+            if (!settings.getGradle().getStartParameter().isNoBuildScan()
+                && !containsPropertiesTask(settings)
+                && !conventions.getGradleEnterpriseServerUrl().isEmpty()) {
                 configureBuildScan(settings, conventions);
             }
         });

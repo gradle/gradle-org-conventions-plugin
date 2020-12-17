@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AbstractGradleEnterprisePluginIntegrationTest {
+    public static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     static {
@@ -76,6 +77,7 @@ public class AbstractGradleEnterprisePluginIntegrationTest {
     protected File projectDir;
 
     private final LinkedHashMap<String, String> environmentVariables = new LinkedHashMap<>();
+    private final List<String> extraArgs = new ArrayList<>();
 
     private HttpBuildCache configuredRemoteCache;
     private DirectoryBuildCache configuredLocalCache;
@@ -111,6 +113,10 @@ public class AbstractGradleEnterprisePluginIntegrationTest {
         }
     }
 
+    protected void withPublicGradleEnterpriseUrl() {
+        extraArgs.add("-Dgradle.enterprise.url=" + PUBLIC_GRADLE_ENTERPRISE_SERVER);
+    }
+
     protected void withEnvironmentVariable(String key, String value) {
         environmentVariables.put(key, value);
     }
@@ -120,16 +126,18 @@ public class AbstractGradleEnterprisePluginIntegrationTest {
     }
 
     protected void succeeds(String... args) {
+        List<String> allArgs = new ArrayList<>(Arrays.asList(args));
+        allArgs.addAll(extraArgs);
         gradleHomeDir = new File(projectDir, "gradleHome");
         assertTrue(gradleHomeDir.mkdirs());
 
         // Separate tasks and system properties as withJvmArguments is not public API
         // https://github.com/gradle/gradle/issues/1043
         List<String> tasksAndArguments = new ArrayList<>();
-        Stream.of(args).filter(s -> !s.startsWith("-D")).forEach(tasksAndArguments::add);
+        allArgs.stream().filter(s -> !s.startsWith("-D")).forEach(tasksAndArguments::add);
         tasksAndArguments.add("--stacktrace");
         tasksAndArguments.add("--info");
-        writeSystemProperties(Stream.of(args).filter(s -> s.startsWith("-D")).collect(Collectors.toList()));
+        writeSystemProperties(allArgs.stream().filter(s -> s.startsWith("-D")).collect(Collectors.toList()));
 
         GradleRunner.create()
             .withProjectDir(projectDir)

@@ -12,6 +12,7 @@ public class WatchFilesystemCustomValueProviderIntegrationTest extends AbstractG
         "true", "false"
     })
     public void addWatchFsCustomValue(Boolean watchFsEnabled) {
+        withPublicGradleEnterpriseUrl();
         succeeds("help", watchFsEnabled ? "--watch-fs" : "--no-watch-fs");
 
         assertTrue(getConfiguredBuildScan().containsValue("watchFileSystem", watchFsEnabled.toString()));

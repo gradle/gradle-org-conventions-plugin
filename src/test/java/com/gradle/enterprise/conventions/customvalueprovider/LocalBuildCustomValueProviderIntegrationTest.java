@@ -1,12 +1,19 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
 import com.gradle.enterprise.fixtures.AbstractGradleEnterprisePluginIntegrationTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions.execAndGetStdout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LocalBuildCustomValueProviderIntegrationTest extends AbstractGradleEnterprisePluginIntegrationTest {
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        withPublicGradleEnterpriseUrl();
+    }
+
     @Test
     public void tagIDEAVersionIfAvailable() {
         succeeds("help", "-Didea.active", "-Didea.paths.selector=2020.1");
