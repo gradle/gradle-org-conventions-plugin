@@ -2,7 +2,9 @@ package com.gradle.enterprise.conventions;
 
 import com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions;
 import com.gradle.scan.plugin.BuildScanExtension;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,10 +15,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.File;
 
 import static org.mockito.Answers.RETURNS_MOCKS;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GradleEnterpriseConventionsTest {
-    @Mock(answer = RETURNS_MOCKS)
+    @Mock //(answer = RETURNS_MOCKS)
     ProviderFactory providerFactory;
 
     @Mock
@@ -25,13 +28,26 @@ public class GradleEnterpriseConventionsTest {
     @Mock
     File projectDir;
 
-    @InjectMocks
+    @Mock
+    Provider<String> provider;
+
     GradleEnterpriseConventions gradleEnterpriseConventions;
+
+    @BeforeEach
+    public void setUp() {
+        when(provider.get()).thenReturn("");
+        when(providerFactory.environmentVariable(anyString())).thenReturn(provider);
+        when(providerFactory.systemProperty(anyString())).thenReturn(provider);
+        when(provider.forUseAtConfigurationTime()).thenReturn(provider);
+        when(provider.orElse(anyString())).thenReturn(provider);
+
+        gradleEnterpriseConventions = new GradleEnterpriseConventions(providerFactory);
+    }
 
     @Test
     public void dontSetCommitIdWhenInvalid() {
-        gradleEnterpriseConventions.setCommitId(projectDir, buildScanExtension, "Invalid commid id");
+        gradleEnterpriseConventions.setCommitId(projectDir, buildScanExtension, "Invalid commit id");
 
-        Mockito.verifyNoInteractions(buildScanExtension);
+        verifyNoInteractions(buildScanExtension);
     }
 }

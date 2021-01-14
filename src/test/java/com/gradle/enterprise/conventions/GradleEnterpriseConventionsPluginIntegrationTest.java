@@ -85,8 +85,9 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
     @ValueSource(booleans = {true, false})
     void configureBuildCacheViaSystemProperties(boolean configurationCacheEnabled) throws URISyntaxException {
         withEnvironmentVariable("CI", "1");
+        withEnvironmentVariable("GRADLE_CACHE_REMOTE_PASSWORD", "MyPassword");
 
-        succeeds("help", "--build-cache", "-DcacheNode=us", "-Dgradle.cache.remote.username=MyUsername", "-Dgradle.cache.remote.password=MyPassword", configurationCacheEnabled ? "--configuration-cache" : "--no-configuration-cache");
+        succeeds("help", "--build-cache", "-DcacheNode=us", "-Dgradle.cache.remote.username=MyUsername", configurationCacheEnabled ? "--configuration-cache" : "--no-configuration-cache");
 
         assertEquals(new URI(US_CACHE_NODE), getConfiguredRemoteCache().getUrl());
         assertTrue(getConfiguredRemoteCache().isPush());

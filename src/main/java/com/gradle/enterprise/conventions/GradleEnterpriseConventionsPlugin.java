@@ -112,6 +112,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
         private static final String GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME = "gradle.cache.remote.push";
         private static final String GRADLE_CACHE_REMOTE_USERNAME_PROPERTY_NAME = "gradle.cache.remote.username";
         private static final String GRADLE_CACHE_REMOTE_PASSWORD_PROPERTY_NAME = "gradle.cache.remote.password";
+        private static final String GRADLE_CACHE_REMOTE_PASSWORD_ENV_NAME = "GRADLE_CACHE_REMOTE_PASSWORD";
         private static final String GRADLE_CACHE_NODE_PROPERTY_NAME = "cacheNode";
         private final GradleEnterpriseConventions conventions;
 
@@ -124,7 +125,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             String remoteCacheUrl = determineRemoteCacheUrl();
             boolean remotePush = Boolean.parseBoolean(conventions.getSystemProperty(GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME, "false"));
             String remoteCacheUsername = conventions.getSystemProperty(GRADLE_CACHE_REMOTE_USERNAME_PROPERTY_NAME, "");
-            String remoteCachePassword = conventions.getSystemProperty(GRADLE_CACHE_REMOTE_PASSWORD_PROPERTY_NAME, "");
+            String remoteCachePassword = conventions.getEnvVariable(GRADLE_CACHE_REMOTE_PASSWORD_ENV_NAME, "");
             boolean disableLocalCache = Boolean.parseBoolean(conventions.getSystemProperty("disableLocalCache", "false"));
             buildCache.remote(HttpBuildCache.class, remoteBuildCache -> {
                 remoteBuildCache.setUrl(remoteCacheUrl);
