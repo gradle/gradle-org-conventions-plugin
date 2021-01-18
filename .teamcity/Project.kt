@@ -82,13 +82,17 @@ object ReleasePlugin : BuildType({
     steps {
         gradle {
             useGradleWrapper = true
-            gradleParams = "--build-cache  -Dgradle.cache.remote.username=%gradle.cache.remote.username% -Dgradle.cache.remote.password=%gradle.cache.remote.password% -Dgradle.publish.skip.namespace.check=true -Pgradle.publish.key=%plugin.portal.publish.key% -Pgradle.publish.secret=%plugin.portal.publish.secret%"
+            gradleParams = "--build-cache -Dgradle.publish.skip.namespace.check=true"
             tasks = "publishPlugins"
             buildFile = "build.gradle.kts"
         }
     }
     params {
         param("env.JAVA_HOME", "%linux.java8.oracle.64bit%")
+        param("env.GRADLE_CACHE_REMOTE_USERNAME", "%gradle.cache.remote.username%")
+        param("env.GRADLE_CACHE_REMOTE_PASSWORD", "%gradle.cache.remote.password%")
+        param("env.ORG_GRADLE_PROJECT_gradlePublishKey", "%plugin.portal.publish.key%")
+        param("env.ORG_GRADLE_PROJECT_gradlePublishSecret", "%plugin.portal.publish.secret%")
     }
 })
 
