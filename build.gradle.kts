@@ -36,6 +36,11 @@ dependencies {
     testImplementation("org.mockito:mockito-junit-jupiter:${mockitoExtensionVersion}")
 }
 
+// Workaround for https://github.com/gradle/dev-infrastructure/issues/505#issuecomment-762060878
+extensions.configure<ExtraPropertiesExtension>("ext") {
+    set("gradle.publish.key", project.findProperty("gradlePublishKey"))
+    set("gradle.publish.secret", project.findProperty("gradlePublishSecret"))
+}
 gradlePlugin {
     plugins.create("conventionsPlugin") {
         id = "com.gradle.enterprise.gradle-enterprise-conventions-plugin"
