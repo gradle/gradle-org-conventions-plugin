@@ -62,6 +62,12 @@ public class GradleEnterpriseConventions {
         return isCiServer;
     }
 
+    public String getEnvVariableThenSystemProperty(String envName, String systemPropertyName, String defaultValue) {
+        return getProviderFactory().environmentVariable(envName).forUseAtConfigurationTime()
+            .orElse(getProviderFactory().systemProperty(systemPropertyName).forUseAtConfigurationTime())
+            .orElse(defaultValue).get();
+    }
+
     public String getSystemProperty(String name, String defaultValue) {
         return getSystemProperty(name, defaultValue, getProviderFactory());
     }

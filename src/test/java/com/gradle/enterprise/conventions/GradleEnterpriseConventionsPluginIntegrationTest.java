@@ -96,6 +96,26 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
     }
 
     @Test
+    void preferUrlUsernamePasswordInEnvVariable() throws URISyntaxException {
+        withEnvironmentVariable("CI", "1");
+
+        withEnvironmentVariable("GRADLE_CACHE_REMOTE_PASSWORD", "envPassword");
+        withEnvironmentVariable("GRADLE_CACHE_REMOTE_URL", "http://envUrl/");
+        withEnvironmentVariable("GRADLE_CACHE_REMOTE_USERNAME", "envUsername");
+
+        succeeds("help", "--build-cache",
+            "-Dgradle.cache.remote.url=http://systemPropertyUrl/",
+            "-Dgradle.cache.remote.username=systemPropertyUsername",
+            "-Dgradle.cache.remote.password=systemPropertyPassword"
+        );
+
+        assertEquals(new URI("http://envUrl/"), getConfiguredRemoteCache().getUrl());
+        assertTrue(getConfiguredRemoteCache().isPush());
+        assertEquals("envUsername", getConfiguredRemoteCache().getCredentials().getUsername());
+        assertEquals("envPassword", getConfiguredRemoteCache().getCredentials().getPassword());
+    }
+
+    @Test
     void configureBuildScanViaSystemProperties() {
         succeeds("help", "-DcacheNode=us", "-Dgradle.enterprise.url=https://ge.mycompany.com");
 
