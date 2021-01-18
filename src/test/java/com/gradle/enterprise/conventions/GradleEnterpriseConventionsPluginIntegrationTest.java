@@ -85,13 +85,34 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
     @ValueSource(booleans = {true, false})
     void configureBuildCacheViaSystemProperties(boolean configurationCacheEnabled) throws URISyntaxException {
         withEnvironmentVariable("CI", "1");
+        withEnvironmentVariable("GRADLE_CACHE_REMOTE_PASSWORD", "MyPassword");
 
-        succeeds("help", "--build-cache", "-DcacheNode=us", "-Dgradle.cache.remote.username=MyUsername", "-Dgradle.cache.remote.password=MyPassword", configurationCacheEnabled ? "--configuration-cache" : "--no-configuration-cache");
+        succeeds("help", "--build-cache", "-DcacheNode=us", "-Dgradle.cache.remote.username=MyUsername", configurationCacheEnabled ? "--configuration-cache" : "--no-configuration-cache");
 
         assertEquals(new URI(US_CACHE_NODE), getConfiguredRemoteCache().getUrl());
         assertTrue(getConfiguredRemoteCache().isPush());
         assertEquals("MyUsername", getConfiguredRemoteCache().getCredentials().getUsername());
         assertEquals("MyPassword", getConfiguredRemoteCache().getCredentials().getPassword());
+    }
+
+    @Test
+    void preferUrlUsernamePasswordInEnvVariable() throws URISyntaxException {
+        withEnvironmentVariable("CI", "1");
+
+        withEnvironmentVariable("GRADLE_CACHE_REMOTE_PASSWORD", "envPassword");
+        withEnvironmentVariable("GRADLE_CACHE_REMOTE_URL", "http://envUrl/");
+        withEnvironmentVariable("GRADLE_CACHE_REMOTE_USERNAME", "envUsername");
+
+        succeeds("help", "--build-cache",
+            "-Dgradle.cache.remote.url=http://systemPropertyUrl/",
+            "-Dgradle.cache.remote.username=systemPropertyUsername",
+            "-Dgradle.cache.remote.password=systemPropertyPassword"
+        );
+
+        assertEquals(new URI("http://envUrl/"), getConfiguredRemoteCache().getUrl());
+        assertTrue(getConfiguredRemoteCache().isPush());
+        assertEquals("envUsername", getConfiguredRemoteCache().getCredentials().getUsername());
+        assertEquals("envPassword", getConfiguredRemoteCache().getCredentials().getPassword());
     }
 
     @Test

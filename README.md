@@ -54,13 +54,20 @@ plugins {
 
 ## Credentials
 
-To enable build cache pushing, you need to pass system properties:
+To enable build cache pushing, you need to pass environment variables or system properties:
 
 ```
-./gradlew myBuildTask -Dgradle.cache.remote.url=ge.mycompany.com -Dgradle.cache.remote.username=myUsername -Dgradle.cache.remote.password=myPassword
+export GRADLE_CACHE_REMOTE_URL=https://ge.mycompany.com/
+export GRADLE_CACHE_REMOTE_USERNAME=myUsername
+export GRADLE_CACHE_REMOTE_PASSWORD=myPassword
+./gradlew myBuildTask 
 ```
 
-To enable build scan publishing, you need to correctly authenticate as documeneted [here](https://docs.gradle.com/enterprise/gradle-plugin/#authenticating_with_gradle_enterprise).
+```
+./gradlew myBuildTask -Dgradle.cache.remote.url=https://ge.mycompany.com/ -Dgradle.cache.remote.username=myUsername -Dgradle.cache.remote.password=myPassword
+```
+
+To enable build scan publishing, you need to correctly authenticate as documented [here](https://docs.gradle.com/enterprise/gradle-plugin/#authenticating_with_gradle_enterprise).
 
 ## Development
 
