@@ -54,6 +54,12 @@ plugins {
 
 ## Credentials
 
+To enable build scan publishing, authenticate with [Gradle Enterprise doc](https://docs.gradle.com/enterprise/gradle-plugin/#authenticating_with_gradle_enterprise), then add a `gradle.enterprise.url` system property to your build.
+
+```
+./gradlew myBuildTask -Dgradle.enterprise.url=https://ge.mycompany.com/
+```
+
 To enable build cache pushing, you need to pass environment variables or system properties:
 
 ```
