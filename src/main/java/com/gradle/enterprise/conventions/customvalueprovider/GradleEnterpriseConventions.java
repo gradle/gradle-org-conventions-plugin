@@ -28,7 +28,8 @@ import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomVa
 
 public class GradleEnterpriseConventions {
     private static final Logger LOGGER = Logging.getLogger(GradleEnterpriseConventions.class);
-    private static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
+    private static final String DEFAULT_GRADLE_ENTERPRISE_SERVER = "ge.gradle.org";
+    private static final String GRADLE_ENTERPRISE_ACCESS_KEY = "GRADLE_ENTERPRISE_ACCESS_KEY";
     private static final String GRADLE_ENTERPRISE_URL_PROPERTY_NAME = "gradle.enterprise.url";
     private static final String CI_ENV_NAME = "CI";
 
@@ -42,16 +43,38 @@ public class GradleEnterpriseConventions {
 
     public GradleEnterpriseConventions(ProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
-        this.gradleEnterpriseServerUrl = getSystemProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME, PUBLIC_GRADLE_ENTERPRISE_SERVER, providerFactory);
+        this.gradleEnterpriseServerUrl = determineGradleEnterpriseUrl();
         this.isCiServer = !getEnvVariable(CI_ENV_NAME, "").isEmpty();
     }
 
-    public String customValueSearchUrl(Map<String, String> search) {
+    private String determineGradleEnterpriseUrl() {
+        Provider<String> geServerUrl = providerFactory.systemProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME).forUseAtConfigurationTime();
+        if (geServerUrl.isPresent()) {
+            return geServerUrl.get();
+        } else if (isAuthenticatedForDefaultGEServer()) {
+            return "https://" + DEFAULT_GRADLE_ENTERPRISE_SERVER;
+        } else {
+            // So that we can publish to default GE instance (https://gradle.com)
+            return null;
+        }
+    }
+
+    private boolean isAuthenticatedForDefaultGEServer() {
+        Provider<String> geAccessKey = providerFactory.environmentVariable(GRADLE_ENTERPRISE_ACCESS_KEY).forUseAtConfigurationTime();
+        return geAccessKey.isPresent() &&
+            (geAccessKey.get().startsWith(DEFAULT_GRADLE_ENTERPRISE_SERVER + "=") || geAccessKey.get().contains(";" + GRADLE_ENTERPRISE_ACCESS_KEY + "="));
+    }
+
+    public Optional<String> customValueSearchUrl(Map<String, String> search) {
+        // public GE instance
+        if (gradleEnterpriseServerUrl == null) {
+            return Optional.empty();
+        }
         String query = search.entrySet()
             .stream()
             .map(entry -> String.format("search.names=%s&search.values=%s", urlEncode(entry.getKey()), urlEncode(entry.getValue())))
             .collect(Collectors.joining("&"));
-        return String.format("%s/scans?%s", gradleEnterpriseServerUrl, query);
+        return Optional.of(String.format("%s/scans?%s", gradleEnterpriseServerUrl, query));
     }
 
     public String getGradleEnterpriseServerUrl() {
@@ -108,7 +131,7 @@ public class GradleEnterpriseConventions {
         }
 
         buildScan.value(GIT_COMMIT_NAME, commitId);
-        buildScan.link("Git Commit Scans", customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId)));
+        customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId)).ifPresent(url -> buildScan.link("Git Commit Scans", url));
         buildScan.background(__ -> getRemoteGitHubRepository(projectDir).ifPresent(repoUrl -> buildScan.link("Source", String.format("%s/commit/%s", repoUrl, commitId))));
     }
 

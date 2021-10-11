@@ -18,7 +18,6 @@ import org.gradle.caching.configuration.BuildCacheConfiguration;
 import org.gradle.caching.http.HttpBuildCache;
 
 import javax.inject.Inject;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -69,7 +68,12 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
     private void configureBuildScan(Settings settings, GradleEnterpriseConventions conventions) {
         BuildScanExtension buildScan = settings.getExtensions().getByType(GradleEnterpriseExtension.class).getBuildScan();
 
-        buildScan.setServer(conventions.getGradleEnterpriseServerUrl());
+        if (conventions.getGradleEnterpriseServerUrl() == null) {
+            buildScan.setTermsOfServiceUrl("https://gradle.com/terms-of-service");
+            buildScan.setTermsOfServiceAgree("yes");
+        } else {
+            buildScan.setServer(conventions.getGradleEnterpriseServerUrl());
+        }
         buildScan.setCaptureTaskInputFiles(true);
         configurePublishStrategy(conventions, buildScan);
         try {
@@ -94,12 +98,6 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
                 break;
             default:
                 throw new IllegalStateException("Unknown strategy: " + strategy);
-        }
-
-        try {
-            buildScan.getClass().getMethod("publishIfAuthenticated").invoke(buildScan);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new IllegalStateException("Could not call publishIfAuthenticated()", e);
         }
     }
 
