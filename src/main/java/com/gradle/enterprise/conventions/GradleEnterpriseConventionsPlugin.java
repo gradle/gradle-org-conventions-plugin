@@ -18,6 +18,7 @@ import org.gradle.caching.configuration.BuildCacheConfiguration;
 import org.gradle.caching.http.HttpBuildCache;
 
 import javax.inject.Inject;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -73,6 +74,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             buildScan.setTermsOfServiceAgree("yes");
         } else {
             buildScan.setServer(conventions.getGradleEnterpriseServerUrl());
+            publishIfAuthenticated(buildScan);
         }
         buildScan.setCaptureTaskInputFiles(true);
         configurePublishStrategy(conventions, buildScan);
@@ -85,6 +87,14 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
         createBuildScanCustomValueProviders(conventions).stream()
             .filter(BuildScanCustomValueProvider::isEnabled)
             .forEach(it -> it.accept(settings, buildScan));
+    }
+
+    private void publishIfAuthenticated(BuildScanExtension buildScan) {
+        try {
+            buildScan.getClass().getMethod("publishIfAuthenticated").invoke(buildScan);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new IllegalStateException("Could not call publishIfAuthenticated()", e);
+        }
     }
 
     private void configurePublishStrategy(GradleEnterpriseConventions conventions, BuildScanExtension buildScan) {

@@ -62,7 +62,7 @@ public class GradleEnterpriseConventions {
     private boolean isAuthenticatedForDefaultGEServer() {
         Provider<String> geAccessKey = providerFactory.environmentVariable(GRADLE_ENTERPRISE_ACCESS_KEY).forUseAtConfigurationTime();
         return geAccessKey.isPresent() &&
-            (geAccessKey.get().startsWith(DEFAULT_GRADLE_ENTERPRISE_SERVER + "=") || geAccessKey.get().contains(";" + GRADLE_ENTERPRISE_ACCESS_KEY + "="));
+            (geAccessKey.get().startsWith(DEFAULT_GRADLE_ENTERPRISE_SERVER + "=") || geAccessKey.get().contains(";" + DEFAULT_GRADLE_ENTERPRISE_SERVER + "="));
     }
 
     public Optional<String> customValueSearchUrl(Map<String, String> search) {
