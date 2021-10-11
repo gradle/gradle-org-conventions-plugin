@@ -14,7 +14,7 @@ When applied as a settings plugin alongside the [Gradle Enterprise Plugin](https
   - Enable [ge.gradle.org](https://ge.gradle.org) as remote cache and anonymous read access, enjoy faster build!
     - There're three build cache node available on the earth: `eu`(the default)/`us`/`au`, you can use `-DcacheNode=us`/`-DcacheNode=au` to use other ones.
   - Enable pushing to remote cache on CI if required credentials are provided.
-- Build scans are published to private GE server if credentials are provided, or public instance (`gradle.com`) if not authenticated.
+- Build scans are published to private GE server if credentials are provided, or public instance (`scan.gradle.com`) if not authenticated.
   - For CI build (`CI` environment variable exists):
     - Add `CI` build scan tag.
     - Add build scan link and build scan custom value `gitCommitId` to the build (by auto detecting environment variables):
@@ -41,7 +41,6 @@ When applied as a settings plugin alongside the [Gradle Enterprise Plugin](https
 The plugin is published to gradle plugin portal.
 
 This is done by configuring a plugin management repository in `settings.gradle`, as shown in the following example:
-
 
 ```
 plugins {
