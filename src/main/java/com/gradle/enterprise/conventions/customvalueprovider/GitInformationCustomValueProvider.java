@@ -25,8 +25,15 @@ public class GitInformationCustomValueProvider extends BuildScanCustomValueProvi
                         buildScan.value(GIT_STATUS, output);
                     }
                 });
-            execAndGetStdout(rootDir, "git", "rev-parse", "--abbrev-ref", "HEAD")
-                .ifPresent(output -> buildScan.value(GIT_BRANCH_NAME, output));
+
+            // https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
+            String gitHubBranch = System.getenv("GITHUB_HEAD_REF");
+            if (gitHubBranch != null) {
+                buildScan.value(GIT_BRANCH_NAME, gitHubBranch);
+            } else {
+                execAndGetStdout(rootDir, "git", "rev-parse", "--abbrev-ref", "HEAD")
+                    .ifPresent(output -> buildScan.value(GIT_BRANCH_NAME, output));
+            }
         });
     }
 }
