@@ -29,35 +29,19 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
     }
 
     @Test
-    public void configureBuildScanForPublicServer() {
-        succeeds("help");
+    public void configurePublicBuildScanServerIfAgreePublicBuildScanTermOfService() {
+        succeeds("help", "-DagreePublicBuildScanTermOfService=yes");
 
         assertNull(getConfiguredRemoteCache().getUrl());
+        assertNull(getConfiguredBuildScan().getServer());
         assertTrue(getConfiguredBuildScan().isCaptureTaskInputFiles());
         assertFalse(getConfiguredBuildScan().isPublishIfAuthenticated());
         assertTrue(getConfiguredBuildScan().isUploadInBackground());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {
-        "ge.gradle.org=ABC",
-        "ge.gradle.org=ABC;ge-experimental.grdev.net=DEF",
-        "ge-experimental.grdev.net=ABC;ge.gradle.org=DEF"}
-    )
-    public void configureDefaultGEServerIfAuthenticated(String env) {
-        withEnvironmentVariable("GRADLE_ENTERPRISE_ACCESS_KEY", env);
-        succeeds("help");
-
-        assertNull(getConfiguredRemoteCache().getUrl());
-        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredBuildScan().getServer());
-        assertTrue(getConfiguredBuildScan().isCaptureTaskInputFiles());
-        assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
-        assertTrue(getConfiguredBuildScan().isUploadInBackground());
-    }
-
     @Test
     public void configureBuildScanButNotBuildCacheByDefault() {
-        succeeds("help", "-Dgradle.enterprise.url=https://ge.gradle.org");
+        succeeds("help");
 
         assertNull(getConfiguredRemoteCache().getUrl());
         assertTrue(getConfiguredBuildScan().isPublishAlways());

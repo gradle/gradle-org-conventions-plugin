@@ -28,8 +28,8 @@ import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomVa
 
 public class GradleEnterpriseConventions {
     private static final Logger LOGGER = Logging.getLogger(GradleEnterpriseConventions.class);
-    private static final String DEFAULT_GRADLE_ENTERPRISE_SERVER = "ge.gradle.org";
-    private static final String GRADLE_ENTERPRISE_ACCESS_KEY = "GRADLE_ENTERPRISE_ACCESS_KEY";
+    private static final String DEFAULT_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
+    private static final String AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE = "agreePublicBuildScanTermOfService";
     private static final String GRADLE_ENTERPRISE_URL_PROPERTY_NAME = "gradle.enterprise.url";
     private static final String CI_ENV_NAME = "CI";
 
@@ -49,20 +49,15 @@ public class GradleEnterpriseConventions {
 
     private String determineGradleEnterpriseUrl() {
         Provider<String> geServerUrl = providerFactory.systemProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME).forUseAtConfigurationTime();
+        Provider<String> agreePublicBuildScanTermOfService = providerFactory.systemProperty(AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE).forUseAtConfigurationTime();
         if (geServerUrl.isPresent()) {
             return geServerUrl.get();
-        } else if (isAuthenticatedForDefaultGEServer()) {
-            return "https://" + DEFAULT_GRADLE_ENTERPRISE_SERVER;
-        } else {
+        } else if ("yes".equals(agreePublicBuildScanTermOfService.getOrElse("no"))) {
             // So that we can publish to default GE instance (https://gradle.com)
             return null;
+        } else {
+            return DEFAULT_GRADLE_ENTERPRISE_SERVER;
         }
-    }
-
-    private boolean isAuthenticatedForDefaultGEServer() {
-        Provider<String> geAccessKey = providerFactory.environmentVariable(GRADLE_ENTERPRISE_ACCESS_KEY).forUseAtConfigurationTime();
-        return geAccessKey.isPresent() &&
-            (geAccessKey.get().startsWith(DEFAULT_GRADLE_ENTERPRISE_SERVER + "=") || geAccessKey.get().contains(";" + DEFAULT_GRADLE_ENTERPRISE_SERVER + "="));
     }
 
     public Optional<String> customValueSearchUrl(Map<String, String> search) {

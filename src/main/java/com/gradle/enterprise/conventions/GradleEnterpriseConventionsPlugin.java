@@ -28,7 +28,6 @@ import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCusto
 import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.TravisCustomValueProvider;
 
 public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
-
     private List<BuildScanCustomValueProvider> createBuildScanCustomValueProviders(GradleEnterpriseConventions conventions) {
         return Arrays.asList(
             new BuildCacheCustomValueProvider(conventions),
@@ -69,6 +68,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
     private void configureBuildScan(Settings settings, GradleEnterpriseConventions conventions) {
         BuildScanExtension buildScan = settings.getExtensions().getByType(GradleEnterpriseExtension.class).getBuildScan();
 
+        // This means `-DagreePublicBuildScanTermOfService=yes` is present
         if (conventions.getGradleEnterpriseServerUrl() == null) {
             buildScan.setTermsOfServiceUrl("https://gradle.com/terms-of-service");
             buildScan.setTermsOfServiceAgree("yes");
