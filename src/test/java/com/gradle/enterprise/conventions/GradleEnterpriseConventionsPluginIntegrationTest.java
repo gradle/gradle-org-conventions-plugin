@@ -30,12 +30,23 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
     }
 
     @Test
+    public void configurePublicBuildScanServerIfAgreePublicBuildScanTermOfService() {
+        succeeds("help", "-DagreePublicBuildScanTermOfService=yes");
+
+        assertNull(getConfiguredRemoteCache().getUrl());
+        assertNull(getConfiguredBuildScan().getServer());
+        assertTrue(getConfiguredBuildScan().isCaptureTaskInputFiles());
+        assertFalse(getConfiguredBuildScan().isPublishIfAuthenticated());
+        assertTrue(getConfiguredBuildScan().isUploadInBackground());
+    }
+
+    @Test
     public void configureBuildScanButNotBuildCacheByDefault() {
         succeeds("help");
 
         assertNull(getConfiguredRemoteCache().getUrl());
-        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredBuildScan().getServer());
         assertTrue(getConfiguredBuildScan().isPublishAlways());
+        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredBuildScan().getServer());
         assertTrue(getConfiguredBuildScan().isCaptureTaskInputFiles());
         assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
         assertTrue(getConfiguredBuildScan().isUploadInBackground());
@@ -43,11 +54,11 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
 
     @Test
     public void configurePublishOnFailure() {
-        succeeds("help", "-DpublishStrategy=publishOnFailure");
+        succeeds("help", "-DpublishStrategy=publishOnFailure", "-Dgradle.enterprise.url=https://ge.gradle.org");
 
         assertNull(getConfiguredRemoteCache().getUrl());
-        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredBuildScan().getServer());
         assertTrue(getConfiguredBuildScan().isPublishOnFailure());
+        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredBuildScan().getServer());
         assertTrue(getConfiguredBuildScan().isCaptureTaskInputFiles());
         assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
         assertTrue(getConfiguredBuildScan().isUploadInBackground());

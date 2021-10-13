@@ -28,7 +28,8 @@ import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomVa
 
 public class GradleEnterpriseConventions {
     private static final Logger LOGGER = Logging.getLogger(GradleEnterpriseConventions.class);
-    private static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
+    private static final String DEFAULT_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
+    private static final String AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE = "agreePublicBuildScanTermOfService";
     private static final String GRADLE_ENTERPRISE_URL_PROPERTY_NAME = "gradle.enterprise.url";
     private static final String CI_ENV_NAME = "CI";
 
@@ -42,16 +43,33 @@ public class GradleEnterpriseConventions {
 
     public GradleEnterpriseConventions(ProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
-        this.gradleEnterpriseServerUrl = getSystemProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME, PUBLIC_GRADLE_ENTERPRISE_SERVER, providerFactory);
+        this.gradleEnterpriseServerUrl = determineGradleEnterpriseUrl();
         this.isCiServer = !getEnvVariable(CI_ENV_NAME, "").isEmpty();
     }
 
-    public String customValueSearchUrl(Map<String, String> search) {
+    private String determineGradleEnterpriseUrl() {
+        Provider<String> geServerUrl = providerFactory.systemProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME).forUseAtConfigurationTime();
+        Provider<String> agreePublicBuildScanTermOfService = providerFactory.systemProperty(AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE).forUseAtConfigurationTime();
+        if (geServerUrl.isPresent()) {
+            return geServerUrl.get();
+        } else if ("yes".equals(agreePublicBuildScanTermOfService.getOrElse("no"))) {
+            // So that we can publish to default GE instance (https://gradle.com)
+            return null;
+        } else {
+            return DEFAULT_GRADLE_ENTERPRISE_SERVER;
+        }
+    }
+
+    public Optional<String> customValueSearchUrl(Map<String, String> search) {
+        // public GE instance
+        if (gradleEnterpriseServerUrl == null) {
+            return Optional.empty();
+        }
         String query = search.entrySet()
             .stream()
             .map(entry -> String.format("search.names=%s&search.values=%s", urlEncode(entry.getKey()), urlEncode(entry.getValue())))
             .collect(Collectors.joining("&"));
-        return String.format("%s/scans?%s", gradleEnterpriseServerUrl, query);
+        return Optional.of(String.format("%s/scans?%s", gradleEnterpriseServerUrl, query));
     }
 
     public String getGradleEnterpriseServerUrl() {
@@ -108,7 +126,7 @@ public class GradleEnterpriseConventions {
         }
 
         buildScan.value(GIT_COMMIT_NAME, commitId);
-        buildScan.link("Git Commit Scans", customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId)));
+        customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId)).ifPresent(url -> buildScan.link("Git Commit Scans", url));
         buildScan.background(__ -> getRemoteGitHubRepository(projectDir).ifPresent(repoUrl -> buildScan.link("Source", String.format("%s/commit/%s", repoUrl, commitId))));
     }
 

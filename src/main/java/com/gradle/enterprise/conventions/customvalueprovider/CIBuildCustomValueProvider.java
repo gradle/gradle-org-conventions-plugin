@@ -33,7 +33,7 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
             String commitId = getConventions().getEnv("GITHUB_SHA");
             buildScan.value(BUILD_ID, String.format("%s %s", getConventions().getEnv("GITHUB_RUN_ID"), getConventions().getEnv("GITHUB_RUN_NUMBER")));
             buildScan.value(GIT_COMMIT_NAME, commitId);
-            buildScan.link("Git Commit Scans", getConventions().customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId)));
+            getConventions().customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId)).ifPresent(url -> buildScan.link("Git Commit Scans", url));
             buildScan.background(__ ->
                 getRemoteGitHubRepository(settings.getRootDir()).ifPresent(repoUrl -> {
                     buildScan.link("GitHub Actions Build", String.format("%s/runs/%s", repoUrl, getConventions().getEnv("GITHUB_RUN_ID")));

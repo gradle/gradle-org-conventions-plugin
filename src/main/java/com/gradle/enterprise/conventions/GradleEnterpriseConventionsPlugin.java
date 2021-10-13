@@ -28,7 +28,6 @@ import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCusto
 import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.TravisCustomValueProvider;
 
 public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
-
     private List<BuildScanCustomValueProvider> createBuildScanCustomValueProviders(GradleEnterpriseConventions conventions) {
         return Arrays.asList(
             new BuildCacheCustomValueProvider(conventions),
@@ -69,7 +68,14 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
     private void configureBuildScan(Settings settings, GradleEnterpriseConventions conventions) {
         BuildScanExtension buildScan = settings.getExtensions().getByType(GradleEnterpriseExtension.class).getBuildScan();
 
-        buildScan.setServer(conventions.getGradleEnterpriseServerUrl());
+        // This means `-DagreePublicBuildScanTermOfService=yes` is present
+        if (conventions.getGradleEnterpriseServerUrl() == null) {
+            buildScan.setTermsOfServiceUrl("https://gradle.com/terms-of-service");
+            buildScan.setTermsOfServiceAgree("yes");
+        } else {
+            buildScan.setServer(conventions.getGradleEnterpriseServerUrl());
+            publishIfAuthenticated(buildScan);
+        }
         buildScan.setCaptureTaskInputFiles(true);
         configurePublishStrategy(conventions, buildScan);
         try {
@@ -83,6 +89,14 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             .forEach(it -> it.accept(settings, buildScan));
     }
 
+    private void publishIfAuthenticated(BuildScanExtension buildScan) {
+        try {
+            buildScan.getClass().getMethod("publishIfAuthenticated").invoke(buildScan);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new IllegalStateException("Could not call publishIfAuthenticated()", e);
+        }
+    }
+
     private void configurePublishStrategy(GradleEnterpriseConventions conventions, BuildScanExtension buildScan) {
         String strategy = conventions.systemPropertyProvider("publishStrategy").orElse("publishAlways").get();
         switch (strategy) {
@@ -94,12 +108,6 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
                 break;
             default:
                 throw new IllegalStateException("Unknown strategy: " + strategy);
-        }
-
-        try {
-            buildScan.getClass().getMethod("publishIfAuthenticated").invoke(buildScan);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new IllegalStateException("Could not call publishIfAuthenticated()", e);
         }
     }
 

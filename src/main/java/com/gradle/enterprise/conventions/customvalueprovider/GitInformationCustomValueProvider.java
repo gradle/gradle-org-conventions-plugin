@@ -27,9 +27,12 @@ public class GitInformationCustomValueProvider extends BuildScanCustomValueProvi
                 });
 
             // https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
-            String gitHubBranch = System.getenv("GITHUB_HEAD_REF");
-            if (gitHubBranch != null) {
-                buildScan.value(GIT_BRANCH_NAME, gitHubBranch);
+            String githubRef = System.getenv("GITHUB_REF");
+            String githubHeadRef = System.getenv("GITHUB_HEAD_REF");
+            if (githubRef != null) {
+                buildScan.value(GIT_BRANCH_NAME, githubRef);
+            } else if (githubHeadRef != null) {
+                buildScan.value(GIT_BRANCH_NAME, githubHeadRef);
             } else {
                 execAndGetStdout(rootDir, "git", "rev-parse", "--abbrev-ref", "HEAD")
                     .ifPresent(output -> buildScan.value(GIT_BRANCH_NAME, output));

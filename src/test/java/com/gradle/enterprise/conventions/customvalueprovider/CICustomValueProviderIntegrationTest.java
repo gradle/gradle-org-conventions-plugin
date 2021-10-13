@@ -31,7 +31,7 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
         withEnvironmentVariable("BUILD_ID", "jenkins_id");
         withEnvironmentVariable("GIT_COMMIT", headCommitId);
 
-        succeeds("help");
+        succeeds("help", "-Dgradle.enterprise.url=https://ge.gradle.org");
 
         assertTrue(getConfiguredBuildScan().containsLink("Jenkins Build", "https://jenkins"));
         assertTrue(getConfiguredBuildScan().containsValue("buildId", "jenkins_id"));
@@ -46,7 +46,7 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
         withEnvironmentVariable("BUILD_ID", "teamcity_id");
         withEnvironmentVariable("BUILD_VCS_NUMBER", headCommitId);
 
-        succeeds("help");
+        succeeds("help", "-Dgradle.enterprise.url=https://ge.gradle.org");
 
         assertTrue(getConfiguredBuildScan().containsLink("TeamCity Build", "https://teamcity"));
         assertTrue(getConfiguredBuildScan().containsValue("buildId", "teamcity_id"));
@@ -61,7 +61,7 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
         withEnvironmentVariable("TRAVIS_BUILD_ID", "travis_id");
         withEnvironmentVariable("TRAVIS_COMMIT", headCommitId);
 
-        succeeds("help");
+        succeeds("help", "-Dgradle.enterprise.url=https://ge.gradle.org");
 
         assertTrue(getConfiguredBuildScan().containsLink("Travis Build", "https://travis"));
         assertTrue(getConfiguredBuildScan().containsValue("buildId", "travis_id"));
@@ -74,11 +74,13 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
         withEnvironmentVariable("GITHUB_ACTIONS", "1");
         withEnvironmentVariable("GITHUB_RUN_ID", "123");
         withEnvironmentVariable("GITHUB_RUN_NUMBER", "456");
+        withEnvironmentVariable("GITHUB_HEAD_REF", "myBranch");
         withEnvironmentVariable("GITHUB_SHA", headCommitId);
 
-        succeeds("help");
+        succeeds("help", "-Dgradle.enterprise.url=https://ge.gradle.org");
 
         assertTrue(getConfiguredBuildScan().containsValue("buildId", "123 456"));
+        assertTrue(getConfiguredBuildScan().containsBackgroundValue("gitBranchName", "myBranch"));
         assertTrue(getConfiguredBuildScan().containsBackgroundLink("GitHub Actions Build", "https://github.com/gradle/gradle/runs/123"));
         verifyGitCommitInformation();
     }
