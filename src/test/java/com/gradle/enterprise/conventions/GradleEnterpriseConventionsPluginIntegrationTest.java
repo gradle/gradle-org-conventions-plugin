@@ -1,6 +1,7 @@
 package com.gradle.enterprise.conventions;
 
 import com.gradle.enterprise.fixtures.AbstractGradleEnterprisePluginIntegrationTest;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -84,6 +85,8 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void configureBuildCacheViaSystemProperties(boolean configurationCacheEnabled) throws URISyntaxException {
+        // On TeamCity we configured build cache, only run this test on GitHub actions.
+        Assumptions.assumeTrue(System.getenv("TEAMCITY_VERSION") == null);
         withEnvironmentVariable("CI", "1");
         withEnvironmentVariable("GRADLE_CACHE_REMOTE_PASSWORD", "MyPassword");
 
