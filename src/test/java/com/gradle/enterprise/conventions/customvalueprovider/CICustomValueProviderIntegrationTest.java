@@ -75,19 +75,20 @@ public class CICustomValueProviderIntegrationTest extends AbstractGradleEnterpri
         withEnvironmentVariable("GITHUB_RUN_ID", "123");
         withEnvironmentVariable("GITHUB_RUN_NUMBER", "456");
         withEnvironmentVariable("GITHUB_HEAD_REF", "myBranch");
+        withEnvironmentVariable("GITHUB_REPOSITORY", "gradle/gradle");
         withEnvironmentVariable("GITHUB_SHA", headCommitId);
 
         succeeds("help", "-Dgradle.enterprise.url=https://ge.gradle.org");
 
         assertTrue(getConfiguredBuildScan().containsValue("buildId", "123 456"));
         assertTrue(getConfiguredBuildScan().containsBackgroundValue("gitBranchName", "myBranch"));
-        assertTrue(getConfiguredBuildScan().containsBackgroundLink("GitHub Actions Build", "https://github.com/gradle/gradle/runs/123"));
+        assertTrue(getConfiguredBuildScan().containsLink("GitHub Actions Build", "https://github.com/gradle/gradle/actions/runs/123"));
         verifyGitCommitInformation();
     }
 
     private void verifyGitCommitInformation() {
         assertTrue(getConfiguredBuildScan().containsValue("gitCommitId", headCommitId));
-        assertTrue(getConfiguredBuildScan().containsBackgroundLink("Source", String.format("https://github.com/gradle/gradle/commit/%s", headCommitId)));
+        assertTrue(getConfiguredBuildScan().containsLink("Source", String.format("https://github.com/gradle/gradle/commit/%s", headCommitId)));
         assertTrue(getConfiguredBuildScan().containsLink("Git Commit Scans", "https://ge.gradle.org/scans?search.names=gitCommitId&search.values=" + headCommitId));
     }
 }

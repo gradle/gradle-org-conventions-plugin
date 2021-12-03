@@ -7,7 +7,6 @@ import java.util.Collections;
 
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.BUILD_ID;
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.GIT_COMMIT_NAME;
-import static com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions.getRemoteGitHubRepository;
 
 
 public abstract class CIBuildCustomValueProvider extends BuildScanCustomValueProvider {
@@ -31,15 +30,16 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
         @Override
         public void accept(Settings settings, BuildScanExtension buildScan) {
             String commitId = getConventions().getEnv("GITHUB_SHA");
+            String repo = getConventions().getEnv("GITHUB_REPOSITORY");
+            String runId = getConventions().getEnv("GITHUB_RUN_ID");
+            String buildUrl = String.format("https://github.com/%s/actions/runs/%s", repo, runId);
+            String commitUrl = String.format("https://github.com/%s/commit/%s", repo, commitId);
+
+            buildScan.link("GitHub Actions Build", buildUrl);
+            buildScan.link("Source", commitUrl);
             buildScan.value(BUILD_ID, String.format("%s %s", getConventions().getEnv("GITHUB_RUN_ID"), getConventions().getEnv("GITHUB_RUN_NUMBER")));
             buildScan.value(GIT_COMMIT_NAME, commitId);
             getConventions().customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId)).ifPresent(url -> buildScan.link("Git Commit Scans", url));
-            buildScan.background(__ ->
-                getRemoteGitHubRepository(settings.getRootDir()).ifPresent(repoUrl -> {
-                    buildScan.link("GitHub Actions Build", String.format("%s/runs/%s", repoUrl, getConventions().getEnv("GITHUB_RUN_ID")));
-                    buildScan.link("Source", String.format("%s/commit/%s", repoUrl, commitId));
-                })
-            );
         }
     }
 
