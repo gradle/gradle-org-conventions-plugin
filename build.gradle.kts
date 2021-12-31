@@ -4,7 +4,7 @@ plugins {
     id("maven-publish")
 }
 
-rootProject.group = "com.gradle.enterprise"
+rootProject.group = "com.github.gradle"
 rootProject.version = "0.7.5"
 
 java {
@@ -43,7 +43,7 @@ extensions.configure<ExtraPropertiesExtension>("ext") {
 }
 gradlePlugin {
     plugins.create("conventionsPlugin") {
-        id = "com.gradle.enterprise.gradle-enterprise-conventions-plugin"
+        id = "com.github.gradle.gradle-enterprise-conventions-plugin"
         implementationClass = "com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin"
         displayName = "Gradle Enterprise Conventions Plugin"
         description = "Gradle Enterprise Conventions Plugin"
