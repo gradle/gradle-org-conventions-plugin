@@ -2,7 +2,7 @@ import groovy.json.JsonOutput
 
 plugins {
     id "com.gradle.enterprise"
-    id "com.github.gradle.gradle-enterprise-conventions-plugin"
+    id "io.github.gradle.gradle-enterprise-conventions-plugin"
 }
 
 gradle.afterProject { project ->
