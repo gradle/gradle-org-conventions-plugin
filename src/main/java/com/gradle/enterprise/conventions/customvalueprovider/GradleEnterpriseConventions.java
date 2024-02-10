@@ -2,10 +2,13 @@ package com.gradle.enterprise.conventions.customvalueprovider;
 
 
 import com.gradle.scan.plugin.BuildScanExtension;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderFactory;
+import org.gradle.api.provider.ValueSource;
+import org.gradle.api.provider.ValueSourceParameters;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
@@ -113,6 +116,13 @@ public class GradleEnterpriseConventions {
         return providerFactory.environmentVariable(name);
     }
 
+    /**
+     * Add commit ID to tags.
+     *
+     * @param projectDir the project directory
+     * @param buildScan the build scan extension
+     * @param commitId the commit id
+     */
     public void setCommitId(File projectDir, BuildScanExtension buildScan, String commitId) {
         if (!SHA_PATTERN.matcher(commitId).matches()) {
             LOGGER.warn("Detect illegal commitId: " + commitId + ", skip.");
@@ -120,18 +130,45 @@ public class GradleEnterpriseConventions {
         }
 
         buildScan.value(GIT_COMMIT_NAME, commitId);
-        customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId)).ifPresent(url -> buildScan.link("Git Commit Scans", url));
-        if (isCiServer) {
-            getRemoteGitHubRepository(projectDir).ifPresent(repoUrl -> buildScan.link("Source", String.format("%s/commit/%s", repoUrl, commitId)));
-        } else {
-            buildScan.background(__ -> getRemoteGitHubRepository(projectDir).ifPresent(repoUrl -> buildScan.link("Source", String.format("%s/commit/%s", repoUrl, commitId))));
-        }
+        customValueSearchUrl(Collections.singletonMap(GIT_COMMIT_NAME, commitId))
+            .ifPresent(url -> buildScan.link("Git Commit Scans", url));
+        // This is a configuration-safe way of invoking external process at the configuration time since Gradle 7.5.
+        // As of Gradle 8.7, it still may add the remote url to the configuration cache inputs when used in the
+        // buildScan.background callback, but this value doesn't change very often.
+        // CI value providers call this method outside the background callback, so the ValueSource is mandatory to avoid
+        // failing the build because of CC errors there.
+        @SuppressWarnings("UnstableApiUsage")
+        Provider<String> remoteGitHubRepositoryProvider = providerFactory.of(
+            RemoteGitHubRepositoryValueSource.class,
+            it -> it.parameters(
+                parameters -> parameters.getProjectDir().set(projectDir)
+            )
+        );
+
+        toOptional(remoteGitHubRepositoryProvider)
+            .ifPresent(repoUrl -> buildScan.link("Source", String.format("%s/commit/%s", repoUrl, commitId)));
+    }
+
+    private static Optional<String> toOptional(Provider<String> remoteGitHubRepositoryProvider) {
+        return remoteGitHubRepositoryProvider.map(Optional::of).getOrElse(Optional.empty());
     }
 
     private static String toString(InputStream is) {
         return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
     }
 
+    /**
+     * Executes the external process and returns its standard output. An empty optional is returned when the process
+     * fails to start or returns an error code.
+     * <p>
+     * Avoid using this method at configuration time to keep configuration cache compatibility. It is an error with
+     * Gradle 7.5+. Since Gradle 7.6 it is safe to use this method in {@code buildScan.background} callback.
+     * Consider implementing {@link ValueSource} if you need to obtain external process output at configuration time.
+     *
+     * @param workingDir the working directory
+     * @param args the process to run and its command-line arguments
+     * @return the contents of the stdout as a string
+     */
     public static Optional<String> execAndGetStdout(File workingDir, String... args) {
         try {
             Process process = new ProcessBuilder(args).directory(workingDir).start();
@@ -152,8 +189,21 @@ public class GradleEnterpriseConventions {
         }
     }
 
-    public static Optional<String> getRemoteGitHubRepository(File projectDir) {
+    static Optional<String> getRemoteGitHubRepository(File projectDir) {
         return execAndGetStdout(projectDir, "git", "config", "--get", "remote.origin.url").flatMap(GradleEnterpriseConventions::parseGitHubRemoteUrl);
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public abstract static class RemoteGitHubRepositoryValueSource implements ValueSource<String, RemoteGitHubRepositoryValueSource.Params> {
+        interface Params extends ValueSourceParameters {
+            DirectoryProperty getProjectDir();
+        }
+
+        @Nullable
+        @Override
+        public String obtain() {
+            return getRemoteGitHubRepository(getParameters().getProjectDir().getAsFile().get()).orElse(null);
+        }
     }
 
     private static String urlEncode(String s) {
