@@ -60,17 +60,15 @@ To enable build scan publishing, authenticate with [Gradle Enterprise doc](https
 ./gradlew myBuildTask -Dgradle.enterprise.url=https://ge.mycompany.com/
 ```
 
-To enable build cache pushing, you need to pass environment variables or system properties:
+To enable build cache pushing, the access key associated with the build needs to have build cache write permission.
 
 ```
 export GRADLE_CACHE_REMOTE_URL=https://ge.mycompany.com/
-export GRADLE_CACHE_REMOTE_USERNAME=myUsername
-export GRADLE_CACHE_REMOTE_PASSWORD=myPassword
 ./gradlew myBuildTask 
 ```
 
 ```
-./gradlew myBuildTask -Dgradle.cache.remote.url=https://ge.mycompany.com/ -Dgradle.cache.remote.username=myUsername -Dgradle.cache.remote.password=myPassword
+./gradlew myBuildTask -Dgradle.cache.remote.url=https://ge.mycompany.com/
 ```
 
 To enable build scan publishing, you need to correctly authenticate as documented [here](https://docs.gradle.com/enterprise/gradle-plugin/#authenticating_with_gradle_enterprise).
@@ -98,7 +96,7 @@ buildscript {
 }
 
 plugins {
-    id("com.gradle.enterprise").version("3.3.4")
+    id("com.gradle.enterprise").version("3.16.2")
 }
 
 apply(plugin= "io.github.gradle.gradle-enterprise-conventions-plugin")
