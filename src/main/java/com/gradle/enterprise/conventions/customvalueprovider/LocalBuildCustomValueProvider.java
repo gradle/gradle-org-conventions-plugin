@@ -21,9 +21,9 @@ public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider 
     @Override
     public void accept(Settings settings, BuildScanExtension buildScan) {
         buildScan.tag("LOCAL");
-        if (Stream.of("idea.registered", "idea.active", "idea.paths.selector").anyMatch(it -> getConventions().systemPropertyProvider(it).isPresent())) {
+        if (Stream.of("idea.registered", "idea.active", "idea.paths.selector").anyMatch(it -> getConventions().getSystemProperty(it) != null)) {
             buildScan.tag("IDEA");
-            String ideaVersion = getConventions().systemPropertyProvider("idea.paths.selector").getOrNull();
+            String ideaVersion = getConventions().getSystemProperty("idea.paths.selector");
             if (ideaVersion != null) {
                 buildScan.value(IDEA_VERSION, ideaVersion);
             }

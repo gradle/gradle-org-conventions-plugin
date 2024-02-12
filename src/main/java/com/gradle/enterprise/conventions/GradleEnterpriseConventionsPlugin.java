@@ -98,7 +98,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
     }
 
     private void configurePublishStrategy(GradleEnterpriseConventions conventions, BuildScanExtension buildScan) {
-        String strategy = conventions.systemPropertyProvider("publishStrategy").orElse("publishAlways").get();
+        String strategy = conventions.getSystemProperty("publishStrategy", "publishAlways");
         switch (strategy) {
             case "publishAlways":
                 buildScan.publishAlways();
