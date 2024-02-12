@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    val gradleEnterprisePluginVersion = "3.3.4"
+    val gradleEnterprisePluginVersion = "3.16.2"
     val junit5Version = "5.6.2"
     val jacksonVersion = "2.10.3"
     val mockitoExtensionVersion = "3.3.3"
