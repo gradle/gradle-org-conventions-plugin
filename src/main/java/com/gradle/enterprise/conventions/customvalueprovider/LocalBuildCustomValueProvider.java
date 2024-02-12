@@ -2,6 +2,7 @@ package com.gradle.enterprise.conventions.customvalueprovider;
 
 
 import com.gradle.scan.plugin.BuildScanExtension;
+import org.gradle.api.Action;
 import org.gradle.api.initialization.Settings;
 
 import java.io.File;
@@ -29,7 +30,7 @@ public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider 
                 buildScan.value(IDEA_VERSION, ideaVersion);
             }
         }
-        captureRevisionInBackground(getConventions(), settings, buildScan);
+        buildScan.background(logRevisionInBackground(getConventions(), settings.getRootDir()));
     }
 
     private boolean isRunningInIdea() {
@@ -37,14 +38,12 @@ public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider 
             .anyMatch(it -> getConventions().getSystemProperty(it) != null);
     }
 
-    private static void captureRevisionInBackground(
-        GradleEnterpriseConventions conventions, Settings settings, BuildScanExtension buildScan
+    private static Action<BuildScanExtension> logRevisionInBackground(
+        GradleEnterpriseConventions conventions, File rootDir
     ) {
-        File rootDir = settings.getRootDir(); // Do not capture the whole settings instance or configuration caching may
-        // fail.
-        buildScan.background(__ ->
+        return buildScan ->
             GradleEnterpriseConventions.execAndGetStdout(rootDir, "git", "rev-parse", "HEAD")
-                .ifPresent(commitId -> conventions.setCommitId(rootDir, buildScan, commitId)));
+                .ifPresent(commitId -> conventions.setCommitId(rootDir, buildScan, commitId));
     }
 }
 
