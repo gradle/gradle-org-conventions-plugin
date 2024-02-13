@@ -12,8 +12,8 @@ public class LocalBuildCustomValueProviderIntegrationTest extends AbstractGradle
         succeeds("help", "-Didea.active", "-Didea.paths.selector=2020.1");
 
         assertTrue(getConfiguredBuildScan().containsTag("LOCAL"));
-        assertTrue(getConfiguredBuildScan().containsTag("IDEA"));
-        assertTrue(getConfiguredBuildScan().containsValue("ideaVersion", "2020.1"));
+        assertTrue(getConfiguredBuildScan().containsBackgroundTag("IDEA"));
+        assertTrue(getConfiguredBuildScan().containsBackgroundValue("ideaVersion", "2020.1"));
     }
 
 

@@ -1,6 +1,5 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
-
 import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.Action;
 import org.gradle.api.initialization.Settings;
@@ -23,27 +22,38 @@ public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider 
     @Override
     public void accept(Settings settings, BuildScanExtension buildScan) {
         buildScan.tag("LOCAL");
-        if (isRunningInIdea()) {
+        buildScan.background(addTagsInBackground(getConventions(), settings.getRootDir()));
+    }
+
+    private static Action<BuildScanExtension> addTagsInBackground(
+        GradleEnterpriseConventions conventions, File rootDir
+    ) {
+        return buildScan -> {
+            addIdeaTags(buildScan, conventions);
+            addCommitId(buildScan, conventions, rootDir);
+        };
+    }
+
+    private static void addIdeaTags(BuildScanExtension buildScan, GradleEnterpriseConventions conventions) {
+        if (isRunningInIdea(conventions)) {
             buildScan.tag("IDEA");
-            String ideaVersion = getConventions().getSystemProperty("idea.paths.selector");
+            String ideaVersion = conventions.getSystemProperty("idea.paths.selector");
             if (ideaVersion != null) {
                 buildScan.value(IDEA_VERSION, ideaVersion);
             }
         }
-        buildScan.background(logRevisionInBackground(getConventions(), settings.getRootDir()));
     }
 
-    private boolean isRunningInIdea() {
+    private static boolean isRunningInIdea(GradleEnterpriseConventions conventions) {
         return Stream.of("idea.registered", "idea.active", "idea.paths.selector")
-            .anyMatch(it -> getConventions().getSystemProperty(it) != null);
+            .anyMatch(it -> conventions.getSystemProperty(it) != null);
     }
 
-    private static Action<BuildScanExtension> logRevisionInBackground(
-        GradleEnterpriseConventions conventions, File rootDir
+    private static void addCommitId(
+        BuildScanExtension buildScan, GradleEnterpriseConventions conventions, File rootDir
     ) {
-        return buildScan ->
-            GradleEnterpriseConventions.execAndGetStdout(rootDir, "git", "rev-parse", "HEAD")
-                .ifPresent(commitId -> conventions.setCommitId(rootDir, buildScan, commitId));
+        GradleEnterpriseConventions.execAndGetStdout(rootDir, "git", "rev-parse", "HEAD")
+            .ifPresent(commitId -> conventions.setCommitId(rootDir, buildScan, commitId));
     }
 }
 
