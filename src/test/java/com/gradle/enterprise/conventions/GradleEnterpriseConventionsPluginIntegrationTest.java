@@ -114,16 +114,16 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
         withEnvironmentVariable("CI", "1");
 
         withEnvironmentVariable("GRADLE_CACHE_REMOTE_PASSWORD", "envPassword");
-        withEnvironmentVariable("GRADLE_CACHE_REMOTE_URL", "http://envUrl/");
+        withEnvironmentVariable("GRADLE_CACHE_REMOTE_URL", "https://envUrl/");
         withEnvironmentVariable("GRADLE_CACHE_REMOTE_USERNAME", "envUsername");
 
         succeeds("help", "--build-cache",
-            "-Dgradle.cache.remote.url=http://systemPropertyUrl/",
+            "-Dgradle.cache.remote.url=https://systemPropertyUrl/",
             "-Dgradle.cache.remote.username=systemPropertyUsername",
             "-Dgradle.cache.remote.password=systemPropertyPassword"
         );
 
-        assertEquals(new URI("http://envUrl/"), getConfiguredRemoteCache().getUrl());
+        assertEquals(new URI("https://envUrl/"), getConfiguredRemoteCache().getUrl());
         assertTrue(getConfiguredRemoteCache().isPush());
         assertEquals("envUsername", getConfiguredRemoteCache().getCredentials().getUsername());
         assertEquals("envPassword", getConfiguredRemoteCache().getCredentials().getPassword());

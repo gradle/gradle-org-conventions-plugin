@@ -48,11 +48,13 @@ public class GradleEnterpriseConventions {
     }
 
     private String determineGradleEnterpriseUrl() {
-        Provider<String> geServerUrl = providerFactory.systemProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME).forUseAtConfigurationTime();
-        Provider<String> agreePublicBuildScanTermOfService = providerFactory.systemProperty(AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE).forUseAtConfigurationTime();
-        if (geServerUrl.isPresent()) {
-            return geServerUrl.get();
-        } else if ("yes".equals(agreePublicBuildScanTermOfService.getOrElse("no"))) {
+        String geServerUrl = System.getProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME);
+        if (geServerUrl != null) {
+            return geServerUrl;
+        }
+
+        String agreePublicBuildScanTermOfService = System.getProperty(AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE, "no");
+        if ("yes".equals(agreePublicBuildScanTermOfService)) {
             // So that we can publish to default GE instance (https://gradle.com)
             return null;
         } else {
@@ -81,25 +83,21 @@ public class GradleEnterpriseConventions {
     }
 
     public String getEnvVariableThenSystemProperty(String envName, String systemPropertyName, String defaultValue) {
-        return getProviderFactory().environmentVariable(envName).forUseAtConfigurationTime()
-            .orElse(getProviderFactory().systemProperty(systemPropertyName).forUseAtConfigurationTime())
-            .orElse(defaultValue).get();
+        String value = getEnv(envName);
+        return value != null ? value : getSystemProperty(systemPropertyName, defaultValue);
     }
 
     public String getSystemProperty(String name, String defaultValue) {
-        return getSystemProperty(name, defaultValue, getProviderFactory());
+        return System.getProperty(name, defaultValue);
+    }
+
+    @Nullable
+    public String getSystemProperty(String name) {
+        return getSystemProperty(name, null);
     }
 
     public String getEnvVariable(String name, String defaultValue) {
-        return getEnvVariable(name, defaultValue, getProviderFactory());
-    }
-
-    private static String getEnvVariable(String name, String defaultValue, ProviderFactory providerFactory) {
-        return providerFactory.environmentVariable(name).forUseAtConfigurationTime().orElse(defaultValue).get();
-    }
-
-    private static String getSystemProperty(String name, String defaultValue, ProviderFactory providerFactory) {
-        return providerFactory.systemProperty(name).forUseAtConfigurationTime().orElse(defaultValue).get();
+        return System.getenv().getOrDefault(name, defaultValue);
     }
 
     @Nullable
@@ -108,15 +106,11 @@ public class GradleEnterpriseConventions {
     }
 
     public Provider<String> systemPropertyProvider(String name) {
-        return providerFactory.systemProperty(name).forUseAtConfigurationTime();
+        return providerFactory.systemProperty(name);
     }
 
     public Provider<String> environmentVariableProvider(String name) {
-        return providerFactory.environmentVariable(name).forUseAtConfigurationTime();
-    }
-
-    public ProviderFactory getProviderFactory() {
-        return providerFactory;
+        return providerFactory.environmentVariable(name);
     }
 
     public void setCommitId(File projectDir, BuildScanExtension buildScan, String commitId) {
