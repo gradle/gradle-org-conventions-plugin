@@ -10,6 +10,7 @@ import com.gradle.enterprise.conventions.customvalueprovider.WatchFilesystemCust
 import com.gradle.enterprise.gradleplugin.GradleEnterpriseExtension;
 import com.gradle.enterprise.gradleplugin.GradleEnterprisePlugin;
 import com.gradle.enterprise.gradleplugin.internal.extension.BuildScanExtensionInternal;
+import com.gradle.scan.plugin.BuildScanCaptureSettings;
 import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
@@ -76,7 +77,12 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             buildScan.setServer(conventions.getGradleEnterpriseServerUrl());
             publishIfAuthenticated(buildScan);
         }
-        buildScan.setCaptureTaskInputFiles(true);
+        buildScan.capture(new Action<BuildScanCaptureSettings>() {
+            @Override
+            public void execute(BuildScanCaptureSettings buildScanCaptureSettings) {
+                buildScanCaptureSettings.setTaskInputFiles(true);
+            }
+        });
         configurePublishStrategy(conventions, buildScan);
         try {
             buildScan.setUploadInBackground(!conventions.isCiServer());
