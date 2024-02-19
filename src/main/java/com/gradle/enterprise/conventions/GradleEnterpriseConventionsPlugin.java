@@ -147,7 +147,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
                 remoteBuildCache.setEnabled(true);
                 remoteBuildCache.setServer(remoteCacheUrl);
                 boolean accessKeySet = notNullOrEmpty(develocityAccessKey) || notNullOrEmpty(geAccessKey);
-                boolean push = conventions.isCiServer() || remotePush && accessKeySet;
+                boolean push = (conventions.isCiServer() || remotePush) && accessKeySet;
                 remoteBuildCache.setPush(push);
             });
 
