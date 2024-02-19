@@ -1,6 +1,7 @@
 package com.gradle.enterprise.fixtures;
 
 import com.gradle.scan.plugin.BuildResult;
+import com.gradle.scan.plugin.BuildScanCaptureSettings;
 import com.gradle.scan.plugin.BuildScanDataObfuscation;
 import com.gradle.scan.plugin.BuildScanExtension;
 import com.gradle.scan.plugin.PublishedBuildScan;
@@ -253,6 +254,16 @@ public class BuildScanExtensionForTest implements BuildScanExtension {
     @Override
     public void obfuscation(Action<? super BuildScanDataObfuscation> action) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public BuildScanCaptureSettings getCapture() {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public void capture(Action<? super BuildScanCaptureSettings> action) {
+        throw new RuntimeException("Not implemented");
     }
 
     // On internal interface
