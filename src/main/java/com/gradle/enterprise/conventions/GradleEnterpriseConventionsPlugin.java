@@ -51,7 +51,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             GradleEnterpriseConventions conventions = new GradleEnterpriseConventions(getProviderFactory());
             if (settings.getGradle().getStartParameter().isBuildCacheEnabled()) {
                 GradleEnterpriseExtension ge = settings.getExtensions().getByType(GradleEnterpriseExtension.class);
-                settings.buildCache(new BuildCacheConfigureAction(conventions, ge, getProviderFactory()));
+                settings.buildCache(new BuildCacheConfigureAction(conventions, ge));
             }
             if (!settings.getGradle().getStartParameter().isNoBuildScan() && !containsPropertiesTask(settings)) {
                 configureBuildScan(settings, conventions);
@@ -124,29 +124,30 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
 
         private static final String GRADLE_CACHE_REMOTE_URL_PROPERTY_NAME = "gradle.cache.remote.url";
         private static final String GRADLE_CACHE_REMOTE_URL_ENV_NAME = "GRADLE_CACHE_REMOTE_URL";
+        private static final String DEVELOCITY_ACCESS_KEY = "DEVELOCITY_ACCESS_KEY";
+        private static final String GRADLE_ENTERPRISE_ACCESS_KEY = "GRADLE_ENTERPRISE_ACCESS_KEY";
         private static final String GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME = "gradle.cache.remote.push";
         private static final String GRADLE_CACHE_NODE_PROPERTY_NAME = "cacheNode";
         private final GradleEnterpriseConventions conventions;
         private final GradleEnterpriseExtension ge;
-        private final ProviderFactory providers;
 
-        public BuildCacheConfigureAction(GradleEnterpriseConventions conventions, GradleEnterpriseExtension ge, ProviderFactory providers) {
+        public BuildCacheConfigureAction(GradleEnterpriseConventions conventions, GradleEnterpriseExtension ge) {
             this.conventions = conventions;
             this.ge = ge;
-            this.providers = providers;
         }
 
         @Override
         public void execute(BuildCacheConfiguration buildCache) {
             String remoteCacheUrl = determineRemoteCacheUrl();
             boolean remotePush = Boolean.parseBoolean(conventions.getSystemProperty(GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME, "false"));
-            String develocityAccessKey = providers.systemProperty("DEVELOCITY_ACCESS_KEY").getOrNull();
-            String geAccessKey = providers.systemProperty("GRADLE_ENTERPRISE_ACCESS_KEY").getOrNull();
+            String develocityAccessKey = conventions.getEnvVariableThenSystemProperty(DEVELOCITY_ACCESS_KEY, DEVELOCITY_ACCESS_KEY, "");
+            String geAccessKey = conventions.getEnvVariableThenSystemProperty(GRADLE_ENTERPRISE_ACCESS_KEY, GRADLE_ENTERPRISE_ACCESS_KEY, "");
             boolean disableLocalCache = Boolean.parseBoolean(conventions.getSystemProperty("disableLocalCache", "false"));
             buildCache.remote(ge.getBuildCache(), remoteBuildCache -> {
                 remoteBuildCache.setEnabled(true);
                 remoteBuildCache.setServer(remoteCacheUrl);
-                boolean push = conventions.isCiServer() || remotePush && (notNullOrEmpty(develocityAccessKey) || notNullOrEmpty(geAccessKey));
+                boolean accessKeySet = notNullOrEmpty(develocityAccessKey) || notNullOrEmpty(geAccessKey);
+                boolean push = conventions.isCiServer() || remotePush && accessKeySet;
                 remoteBuildCache.setPush(push);
             });
 
