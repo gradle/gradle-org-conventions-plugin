@@ -1,6 +1,9 @@
 package com.gradle.enterprise.fixtures;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gradle.enterprise.gradleplugin.internal.extension.BuildScanExtensionInternal;
 import com.gradle.scan.plugin.BuildResult;
+import com.gradle.scan.plugin.BuildScanCaptureSettings;
 import com.gradle.scan.plugin.BuildScanDataObfuscation;
 import com.gradle.scan.plugin.BuildScanExtension;
 import com.gradle.scan.plugin.PublishedBuildScan;
@@ -10,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BuildScanExtensionForTest implements BuildScanExtension {
+public class BuildScanExtensionForTest implements BuildScanExtensionInternal {
     private List<String> tags = new ArrayList<>();
     private List<List<String>> values = new ArrayList<>();
     private List<List<String>> links = new ArrayList<>();
@@ -246,6 +249,7 @@ public class BuildScanExtensionForTest implements BuildScanExtension {
     }
 
     @Override
+    @JsonIgnore
     public BuildScanDataObfuscation getObfuscation() {
         throw new UnsupportedOperationException();
     }
@@ -255,9 +259,73 @@ public class BuildScanExtensionForTest implements BuildScanExtension {
         throw new UnsupportedOperationException();
     }
 
+    private class CaptureAdapter implements BuildScanCaptureSettings {
+
+        @Override
+        public void setTaskInputFiles(boolean capture) {
+            setCaptureTaskInputFiles(capture);
+        }
+
+        @Override
+        public boolean isTaskInputFiles() {
+            return isCaptureTaskInputFiles();
+        }
+
+        @Override
+        public void setBuildLogging(boolean capture) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isBuildLogging() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setTestLogging(boolean capture) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isTestLogging() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    @JsonIgnore
+    public BuildScanCaptureSettings getCapture() {
+        throw new RuntimeException("Not implemented");
+    }
+
+    private final CaptureAdapter captureAdapter = new CaptureAdapter();
+
+    @Override
+    public void capture(Action<? super BuildScanCaptureSettings> action) {
+        action.execute(captureAdapter);
+    }
+
+    @Override
+    public void onError(Action<String> action) {
+    }
+
     // On internal interface
     public void publishIfAuthenticated() {
         publishIfAuthenticated = true;
+    }
+
+    @Override
+    public void warnIfMissingAuthenticationRequired() {
+    }
+
+    @Override
+    @JsonIgnore
+    public DualPublish getDualPublish() {
+        return null;
+    }
+
+    @Override
+    public void dualPublish(Action<? super DualPublish> action) {
     }
 
     public boolean isPublishIfAuthenticated() {
@@ -266,5 +334,9 @@ public class BuildScanExtensionForTest implements BuildScanExtension {
 
     public boolean isPublishAlways() {
         return publishAlways;
+    }
+
+    @Override
+    public void onErrorInternal(Action<BuildScanError> action) {
     }
 }

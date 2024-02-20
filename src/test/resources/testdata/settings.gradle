@@ -6,34 +6,23 @@ plugins {
 }
 
 gradle.afterProject { project ->
-    try {
-        project.file('remoteCacheConfiguration.json') << toJson(settings.buildCache?.remote ?: new HttpBuildCache())
-        project.file('localCacheConfiguration.json') << toJson(settings.buildCache?.local ?: new DirectoryBuildCache())
-    } catch (Throwable e) {
-        e.printStackTrace()
-    }
-}
-
-// Avoid StackOverflow caused by HttpBuildCache_Decorated: getMetaClass getAsDynamicObject etc.
-def toJson(HttpBuildCache httpBuildCache) {
-    return JsonOutput.toJson([
-        url: httpBuildCache.getUrl()?.toString(),
-        allowUntrustedServer: httpBuildCache.allowUntrustedServer,
-        allowInsecureProtocol: httpBuildCache.allowInsecureProtocol,
-        enabled: httpBuildCache.enabled,
-        push: httpBuildCache.push,
-        credentials: [
-            username: httpBuildCache.credentials?.username,
-            password: httpBuildCache.credentials?.password
+    def remoteCache = settings.buildCache?.remote ?: new HttpBuildCache()
+    def localCache = settings.buildCache?.local ?: new DirectoryBuildCache()
+    project.file('remoteCacheConfiguration.json') << JsonOutput.toJson([
+        url                  : (remoteCache instanceof HttpBuildCache) ? remoteCache.url?.toString() : remoteCache.server,
+        allowUntrustedServer : remoteCache.allowUntrustedServer,
+        allowInsecureProtocol: remoteCache.allowInsecureProtocol,
+        enabled              : remoteCache.enabled,
+        push                 : remoteCache.push,
+        credentials          : [
+            username: (remoteCache instanceof HttpBuildCache) ? remoteCache.credentials?.username : null,
+            password: (remoteCache instanceof HttpBuildCache) ? remoteCache.credentials?.password : null
         ]
     ])
-}
-
-def toJson(DirectoryBuildCache localCache) {
-    return JsonOutput.toJson([
-        directory: localCache.directory,
+    project.file('localCacheConfiguration.json') << JsonOutput.toJson([
+        directory                   : localCache.directory,
         removeUnusedEntriesAfterDays: localCache.removeUnusedEntriesAfterDays,
-        enabled: localCache.enabled,
-        push: localCache.push
+        enabled                     : localCache.enabled,
+        push                        : localCache.push
     ])
 }

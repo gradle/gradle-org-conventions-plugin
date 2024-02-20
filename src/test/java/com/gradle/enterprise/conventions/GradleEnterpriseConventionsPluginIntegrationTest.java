@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGradleEnterprisePluginIntegrationTest {
-    private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org/cache/";
-    private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org/cache/";
+    private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org";
+    private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org";
     private static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
 
     @Test
@@ -93,43 +93,7 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
         assertNull(getConfiguredBuildScan().getServer());
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void configureBuildCacheViaSystemProperties(boolean configurationCacheEnabled) throws URISyntaxException {
-        // On TeamCity we configured build cache, only run this test on GitHub actions.
-        Assumptions.assumeTrue(System.getenv("TEAMCITY_VERSION") == null);
-        withEnvironmentVariable("CI", "1");
-        withEnvironmentVariable("GRADLE_CACHE_REMOTE_PASSWORD", "MyPassword");
-
-        succeeds("help", "--build-cache", "-DcacheNode=us", "-Dgradle.cache.remote.username=MyUsername", configurationCacheEnabled ? "--configuration-cache" : "--no-configuration-cache");
-
-        assertEquals(new URI(US_CACHE_NODE), getConfiguredRemoteCache().getUrl());
-        assertTrue(getConfiguredRemoteCache().isPush());
-        assertEquals("MyUsername", getConfiguredRemoteCache().getCredentials().getUsername());
-        assertEquals("MyPassword", getConfiguredRemoteCache().getCredentials().getPassword());
-    }
-
-    @Test
-    void preferUrlUsernamePasswordInEnvVariable() throws URISyntaxException {
-        withEnvironmentVariable("CI", "1");
-
-        withEnvironmentVariable("GRADLE_CACHE_REMOTE_PASSWORD", "envPassword");
-        withEnvironmentVariable("GRADLE_CACHE_REMOTE_URL", "https://envUrl/");
-        withEnvironmentVariable("GRADLE_CACHE_REMOTE_USERNAME", "envUsername");
-
-        succeeds("help", "--build-cache",
-            "-Dgradle.cache.remote.url=https://systemPropertyUrl/",
-            "-Dgradle.cache.remote.username=systemPropertyUsername",
-            "-Dgradle.cache.remote.password=systemPropertyPassword"
-        );
-
-        assertEquals(new URI("https://envUrl/"), getConfiguredRemoteCache().getUrl());
-        assertTrue(getConfiguredRemoteCache().isPush());
-        assertEquals("envUsername", getConfiguredRemoteCache().getCredentials().getUsername());
-        assertEquals("envPassword", getConfiguredRemoteCache().getCredentials().getPassword());
-    }
-
-    @Test
+     @Test
     void configureBuildScanViaSystemProperties() {
         succeeds("help", "-DcacheNode=us", "-Dgradle.enterprise.url=https://ge.mycompany.com");
 
