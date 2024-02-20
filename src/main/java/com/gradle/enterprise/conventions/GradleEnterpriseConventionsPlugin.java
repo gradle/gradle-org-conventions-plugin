@@ -118,9 +118,9 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
     }
 
     private static class BuildCacheConfigureAction implements Action<BuildCacheConfiguration> {
-        private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org/cache/";
-        private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org/cache/";
-        private static final String AU_CACHE_NODE = "https://au-build-cache.gradle.org/cache/";
+        private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org";
+        private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org";
+        private static final String AU_CACHE_NODE = "https://au-build-cache.gradle.org";
 
         private static final String GRADLE_CACHE_REMOTE_URL_PROPERTY_NAME = "gradle.cache.remote.url";
         private static final String GRADLE_CACHE_REMOTE_URL_ENV_NAME = "GRADLE_CACHE_REMOTE_URL";

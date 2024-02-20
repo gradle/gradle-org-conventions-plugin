@@ -1,5 +1,6 @@
 package com.gradle.enterprise.fixtures;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gradle.enterprise.gradleplugin.GradleEnterpriseBuildCache;
 import com.gradle.enterprise.gradleplugin.GradleEnterpriseExtension;
 import com.gradle.scan.plugin.BuildScanExtension;
@@ -11,6 +12,8 @@ public class GradleEnterpriseExtensionForTest implements GradleEnterpriseExtensi
     private BuildScanExtensionForTest buildScanExtension = new BuildScanExtensionForTest();
     private String server;
     private boolean allowUntrustedServer;
+    private String projectId;
+    private String accessKey;
 
     @Override
     public BuildScanExtensionForTest getBuildScan() {
@@ -29,13 +32,13 @@ public class GradleEnterpriseExtensionForTest implements GradleEnterpriseExtensi
 
     @Override
     public void setProjectId(String projectId) {
-        throw new RuntimeException("Not implemented");
+        this.projectId = projectId;
     }
 
     @Nullable
     @Override
     public String getProjectId() {
-        throw new RuntimeException("Not implemented");
+        return this.projectId;
     }
 
     @Override
@@ -50,18 +53,19 @@ public class GradleEnterpriseExtensionForTest implements GradleEnterpriseExtensi
 
     @Override
     public void setAccessKey(String accessKey) {
-        throw new RuntimeException("Not implemented");
+        this.accessKey = accessKey;
     }
 
     @Nullable
     @Override
     public String getAccessKey() {
-        throw new RuntimeException("Not implemented");
+        return this.accessKey;
     }
 
     @Override
+    @JsonIgnore
     public Class<? extends GradleEnterpriseBuildCache> getBuildCache() {
-        throw new RuntimeException("Not implemented");
+        return GradleEnterpriseBuildCache.class;
     }
 
     @Override
