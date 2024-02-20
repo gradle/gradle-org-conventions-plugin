@@ -71,11 +71,11 @@ export GRADLE_CACHE_REMOTE_URL=https://ge.mycompany.com/
 ./gradlew myBuildTask -Dgradle.cache.remote.url=https://ge.mycompany.com/
 ```
 
-To enable build scan publishing, you need to correctly authenticate as documented [here](https://docs.gradle.com/enterprise/gradle-plugin/#authenticating_with_gradle_enterprise).
+To enable build scan publishing, you need to correctly authenticate as documented [here](https://docs.gradle.com/enterprise/gradle-plugin/#authenticating).
 
 ## Development
 
-Feel free to fork this repository, customize the plugin, and make contribution!
+Feel free to fork this repository, customize the plugin, and make a contribution!
 
 You can install the plugin to local maven repository via:
 
