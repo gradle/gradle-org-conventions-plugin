@@ -22,38 +22,45 @@ public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider 
     @Override
     public void accept(Settings settings, BuildScanExtension buildScan) {
         buildScan.tag("LOCAL");
-        buildScan.background(addTagsInBackground(getConventions(), settings.getRootDir()));
+        GradleEnterpriseConventions conventions = getConventions();
+        File rootDir = settings.getRootDir();
+        buildScan.background(new BackgroundTagsAction(conventions, rootDir));
     }
 
-    private static Action<BuildScanExtension> addTagsInBackground(
-        GradleEnterpriseConventions conventions, File rootDir
-    ) {
-        return buildScan -> {
-            addIdeaTags(buildScan, conventions);
-            addCommitId(buildScan, conventions, rootDir);
-        };
-    }
+    private static class BackgroundTagsAction implements Action<BuildScanExtension> {
+        private final GradleEnterpriseConventions conventions;
+        private final File rootDir;
 
-    private static void addIdeaTags(BuildScanExtension buildScan, GradleEnterpriseConventions conventions) {
-        if (isRunningInIdea(conventions)) {
-            buildScan.tag("IDEA");
-            String ideaVersion = conventions.getSystemProperty("idea.paths.selector");
-            if (ideaVersion != null) {
-                buildScan.value(IDEA_VERSION, ideaVersion);
+        BackgroundTagsAction(GradleEnterpriseConventions conventions, File rootDir) {
+            this.conventions = conventions;
+            this.rootDir = rootDir;
+        }
+
+        @Override
+        public void execute(BuildScanExtension buildScan) {
+            addIdeaTags(buildScan);
+            addCommitId(buildScan);
+        }
+
+        private void addIdeaTags(BuildScanExtension buildScan) {
+            if (isRunningInIdea()) {
+                buildScan.tag("IDEA");
+                String ideaVersion = conventions.getSystemProperty("idea.paths.selector");
+                if (ideaVersion != null) {
+                    buildScan.value(IDEA_VERSION, ideaVersion);
+                }
             }
         }
-    }
 
-    private static boolean isRunningInIdea(GradleEnterpriseConventions conventions) {
-        return Stream.of("idea.registered", "idea.active", "idea.paths.selector")
-            .anyMatch(it -> conventions.getSystemProperty(it) != null);
-    }
+        private boolean isRunningInIdea() {
+            return Stream.of("idea.registered", "idea.active", "idea.paths.selector")
+                .anyMatch(it -> conventions.getSystemProperty(it) != null);
+        }
 
-    private static void addCommitId(
-        BuildScanExtension buildScan, GradleEnterpriseConventions conventions, File rootDir
-    ) {
-        GradleEnterpriseConventions.execAndGetStdout(rootDir, "git", "rev-parse", "HEAD")
-            .ifPresent(commitId -> conventions.setCommitId(rootDir, buildScan, commitId));
+        private void addCommitId(BuildScanExtension buildScan) {
+            GradleEnterpriseConventions.execAndGetStdout(rootDir, "git", "rev-parse", "HEAD")
+                .ifPresent(commitId -> conventions.setCommitId(rootDir, buildScan, commitId));
+        }
     }
 }
 

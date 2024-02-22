@@ -150,7 +150,7 @@ public class GradleEnterpriseConventions {
     }
 
     private static Optional<String> toOptional(Provider<String> remoteGitHubRepositoryProvider) {
-        return remoteGitHubRepositoryProvider.map(Optional::of).getOrElse(Optional.empty());
+        return Optional.ofNullable(remoteGitHubRepositoryProvider.getOrNull());
     }
 
     private static String toString(InputStream is) {
