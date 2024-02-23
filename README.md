@@ -3,7 +3,7 @@
 Inspired by https://github.com/spring-gradle-plugins/gradle-enterprise-conventions-plugin, this plugin configures public [Gradle projects](https://github.com/gradle)
 to use the public Gradle Enterprise instance at [ge.gradle.org](https://ge.gradle.org).
 
-Requires Gradle 7.6+.
+Requires Gradle 7.6+. The plugin is configuration-cache compatible when used the Gradle Enterprise plugin 3.11.3+.
 
 ## What it does
 
