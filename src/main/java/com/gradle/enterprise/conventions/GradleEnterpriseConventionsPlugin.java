@@ -122,8 +122,8 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
         private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org";
         private static final String AU_CACHE_NODE = "https://au-build-cache.gradle.org";
 
-        private static final String GRADLE_CACHE_REMOTE_URL_PROPERTY_NAME = "gradle.cache.remote.url";
-        private static final String GRADLE_CACHE_REMOTE_URL_ENV_NAME = "GRADLE_CACHE_REMOTE_URL";
+        private static final String GRADLE_CACHE_REMOTE_SERVER_PROPERTY_NAME = "gradle.cache.remote.server";
+        private static final String GRADLE_CACHE_REMOTE_SERVER_ENV_NAME = "GRADLE_CACHE_REMOTE_SERVER";
         private static final String DEVELOCITY_ACCESS_KEY = "DEVELOCITY_ACCESS_KEY";
         private static final String GRADLE_ENTERPRISE_ACCESS_KEY = "GRADLE_ENTERPRISE_ACCESS_KEY";
         private static final String GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME = "gradle.cache.remote.push";
@@ -155,8 +155,8 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
         }
 
         private String determineRemoteCacheUrl() {
-            return conventions.environmentVariableProvider(GRADLE_CACHE_REMOTE_URL_ENV_NAME)
-                .orElse(conventions.systemPropertyProvider(GRADLE_CACHE_REMOTE_URL_PROPERTY_NAME))
+            return conventions.environmentVariableProvider(GRADLE_CACHE_REMOTE_SERVER_ENV_NAME)
+                .orElse(conventions.systemPropertyProvider(GRADLE_CACHE_REMOTE_SERVER_PROPERTY_NAME))
                 .orElse(conventions.systemPropertyProvider(GRADLE_CACHE_NODE_PROPERTY_NAME)
                     .map(cacheNode -> {
                         switch (cacheNode) {

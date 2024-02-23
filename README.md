@@ -68,7 +68,7 @@ export GRADLE_CACHE_REMOTE_URL=https://ge.mycompany.com/
 ```
 
 ```
-./gradlew myBuildTask -Dgradle.cache.remote.url=https://ge.mycompany.com/
+./gradlew myBuildTask -Dgradle.cache.remote.server=https://ge.mycompany.com/
 ```
 
 To enable build scan publishing, you need to correctly authenticate as documented [here](https://docs.gradle.com/enterprise/gradle-plugin/#authenticating).
