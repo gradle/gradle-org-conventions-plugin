@@ -1,7 +1,6 @@
 package com.gradle.enterprise.conventions;
 
-import com.gradle.enterprise.fixtures.AbstractGradleEnterprisePluginIntegrationTest;
-import org.junit.jupiter.api.Assumptions;
+import com.gradle.enterprise.fixtures.AbstractDevelocityPluginIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -15,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGradleEnterprisePluginIntegrationTest {
+public class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
     private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org";
     private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org";
     private static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
@@ -34,8 +33,8 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
         succeeds("help", "-DagreePublicBuildScanTermOfService=yes");
 
         assertNull(getConfiguredRemoteCache().getUrl());
-        assertNull(getConfiguredBuildScan().getServer());
-        assertTrue(getConfiguredBuildScan().isCaptureTaskInputFiles());
+        assertNull(getConfiguredDevelocity().getServer().getOrNull());
+        assertTrue(getConfiguredBuildScan().isCaptureFileFingerprints());
         assertFalse(getConfiguredBuildScan().isPublishIfAuthenticated());
         assertTrue(getConfiguredBuildScan().isUploadInBackground());
     }
@@ -46,8 +45,8 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
 
         assertNull(getConfiguredRemoteCache().getUrl());
         assertTrue(getConfiguredBuildScan().isPublishAlways());
-        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredBuildScan().getServer());
-        assertTrue(getConfiguredBuildScan().isCaptureTaskInputFiles());
+        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredDevelocity().getServer().getOrNull());
+        assertTrue(getConfiguredBuildScan().isCaptureFileFingerprints());
         assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
         assertTrue(getConfiguredBuildScan().isUploadInBackground());
     }
@@ -58,8 +57,8 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
 
         assertNull(getConfiguredRemoteCache().getUrl());
         assertTrue(getConfiguredBuildScan().isPublishOnFailure());
-        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredBuildScan().getServer());
-        assertTrue(getConfiguredBuildScan().isCaptureTaskInputFiles());
+        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredDevelocity().getServer().getOrNull());
+        assertTrue(getConfiguredBuildScan().isCaptureFileFingerprints());
         assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
         assertTrue(getConfiguredBuildScan().isUploadInBackground());
     }
@@ -70,7 +69,7 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
 
         succeeds("help", "--no-scan");
 
-        assertNull(getConfiguredBuildScan().getServer());
+        assertNull(getConfiguredDevelocity().getServer().getOrNull());
     }
 
     @ParameterizedTest
@@ -80,7 +79,7 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
 
         succeeds("properties");
 
-        assertNull(getConfiguredBuildScan().getServer());
+        assertNull(getConfiguredDevelocity().getServer().getOrNull());
     }
 
     @Test
@@ -90,13 +89,13 @@ public class GradleEnterpriseConventionsPluginIntegrationTest extends AbstractGr
 
         succeeds(":subprojectA:properties");
 
-        assertNull(getConfiguredBuildScan().getServer());
+        assertNull(getConfiguredDevelocity().getServer().getOrNull());
     }
 
-     @Test
+    @Test
     void configureBuildScanViaSystemProperties() {
         succeeds("help", "-DcacheNode=us", "-Dgradle.enterprise.url=https://ge.mycompany.com");
 
-        assertEquals("https://ge.mycompany.com", getConfiguredBuildScan().getServer());
+        assertEquals("https://ge.mycompany.com", getConfiguredDevelocity().getServer().getOrNull());
     }
 }

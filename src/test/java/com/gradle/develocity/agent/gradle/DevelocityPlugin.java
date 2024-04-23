@@ -1,12 +1,16 @@
-package com.gradle.enterprise.gradleplugin;
+package com.gradle.develocity.agent.gradle;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gradle.enterprise.fixtures.GradleEnterpriseExtensionForTest;
-import groovy.json.JsonOutput;
+import com.gradle.develocity.agent.gradle.buildcache.DevelocityBuildCache;
+import com.gradle.enterprise.fixtures.DevelocityConfigurationForTest;
 import org.gradle.api.Plugin;
 import org.gradle.api.initialization.Settings;
-import org.gradle.caching.*;
-import org.gradle.caching.configuration.BuildCache;
+import org.gradle.caching.BuildCacheEntryReader;
+import org.gradle.caching.BuildCacheEntryWriter;
+import org.gradle.caching.BuildCacheException;
+import org.gradle.caching.BuildCacheKey;
+import org.gradle.caching.BuildCacheService;
+import org.gradle.caching.BuildCacheServiceFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -16,28 +20,28 @@ import java.nio.file.Files;
  * This is a dummy gradle enterprise plugin for testing. It writes the configuration to json to
  * be verified in integration tests.
  */
-public class GradleEnterprisePlugin implements Plugin<Settings> {
+public class DevelocityPlugin implements Plugin<Settings> {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override
     public void apply(Settings settings) {
-        GradleEnterpriseExtensionForTest extension = new GradleEnterpriseExtensionForTest();
+        DevelocityConfigurationForTest extension = new DevelocityConfigurationForTest();
         settings.buildCache(cache -> {
-            cache.registerBuildCacheService(GradleEnterpriseBuildCache.class, GradleEnterpriseBuildCacheServiceFactoryForTest.class);
+            cache.registerBuildCacheService(DevelocityBuildCache.class, DevelocityBuildCacheServiceFactoryForTest.class);
         });
-        settings.getExtensions().add("gradleEnterpriseForTest", extension);
+        settings.getExtensions().add("develocityForTest", extension);
         settings.getGradle().afterProject(project -> {
             try {
-                Files.write(project.file("gradleEnterpriseConfiguration.json").toPath(), OBJECT_MAPPER.writeValueAsBytes(extension));
+                Files.write(project.file("develocityConfiguration.json").toPath(), OBJECT_MAPPER.writeValueAsBytes(extension));
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
         });
     }
 
-    public static class GradleEnterpriseBuildCacheServiceFactoryForTest implements BuildCacheServiceFactory<GradleEnterpriseBuildCache> {
+    public static class DevelocityBuildCacheServiceFactoryForTest implements BuildCacheServiceFactory<DevelocityBuildCache> {
         @Override
-        public BuildCacheService createBuildCacheService(GradleEnterpriseBuildCache buildCache, Describer describer) {
+        public BuildCacheService createBuildCacheService(DevelocityBuildCache buildCache, Describer describer) {
             return new BuildCacheServiceForTest();
         }
     }
