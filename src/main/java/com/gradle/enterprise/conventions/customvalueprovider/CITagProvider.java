@@ -1,10 +1,10 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
-import com.gradle.scan.plugin.BuildScanExtension;
+import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import org.gradle.api.initialization.Settings;
 
 public class CITagProvider extends BuildScanCustomValueProvider {
-    public CITagProvider(GradleEnterpriseConventions conventions) {
+    public CITagProvider(DevelocityConventions conventions) {
         super(conventions);
     }
 
@@ -14,7 +14,7 @@ public class CITagProvider extends BuildScanCustomValueProvider {
     }
 
     @Override
-    public void accept(Settings settings, BuildScanExtension buildScan) {
+    public void accept(Settings settings, BuildScanConfiguration buildScan) {
         buildScan.tag("CI");
     }
 }

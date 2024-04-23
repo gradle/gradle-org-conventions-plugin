@@ -1,13 +1,13 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
-import com.gradle.enterprise.fixtures.AbstractGradleEnterprisePluginIntegrationTest;
+import com.gradle.enterprise.fixtures.AbstractDevelocityPluginIntegrationTest;
 import org.junit.jupiter.api.Test;
 
-import static com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions.execAndGetStdout;
+import static com.gradle.enterprise.conventions.customvalueprovider.DevelocityConventions.execAndGetStdout;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GitInformationCustomValueProviderIntegrationTest extends AbstractGradleEnterprisePluginIntegrationTest {
+public class GitInformationCustomValueProviderIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
     @Test
     public void doNothingIfNotAGitRepo() {
         succeeds("help");

@@ -6,7 +6,7 @@ plugins {
 
 rootProject.group = "com.github.gradle"
 rootProject.group = "io.github.gradle"
-rootProject.version = "0.9.1"
+rootProject.version = "0.10.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -19,13 +19,13 @@ repositories {
 }
 
 dependencies {
-    val gradleEnterprisePluginVersion = "3.16.2"
-    val junit5Version = "5.6.2"
-    val jacksonVersion = "2.10.3"
-    val mockitoExtensionVersion = "3.3.3"
+    val develocityPluginVersion = "3.17.2"
+    val junit5Version = "5.10.2"
+    val jacksonVersion = "2.17.0"
+    val mockitoExtensionVersion = "5.11.0"
 
-    compileOnly("com.gradle:gradle-enterprise-gradle-plugin:${gradleEnterprisePluginVersion}")
-    testImplementation("com.gradle:gradle-enterprise-gradle-plugin:${gradleEnterprisePluginVersion}")
+    compileOnly("com.gradle:develocity-gradle-plugin:${develocityPluginVersion}")
+    testImplementation("com.gradle:gradle-enterprise-gradle-plugin:${develocityPluginVersion}")
     implementation(gradleApi())
 
     testImplementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
@@ -45,9 +45,9 @@ extensions.configure<ExtraPropertiesExtension>("ext") {
 gradlePlugin {
     plugins.create("conventionsPlugin") {
         id = "io.github.gradle.gradle-enterprise-conventions-plugin"
-        implementationClass = "com.gradle.enterprise.conventions.GradleEnterpriseConventionsPlugin"
-        displayName = "Gradle Enterprise Conventions Plugin"
-        description = "Gradle Enterprise Conventions Plugin"
+        implementationClass = "com.gradle.enterprise.conventions.DevelocityConventionsPlugin"
+        displayName = "Develocity Conventions Plugin"
+        description = "Develocity Conventions Plugin"
     }
 }
 

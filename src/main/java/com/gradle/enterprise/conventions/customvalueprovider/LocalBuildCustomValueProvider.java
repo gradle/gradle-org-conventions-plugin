@@ -1,6 +1,6 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
-import com.gradle.scan.plugin.BuildScanExtension;
+import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import org.gradle.api.Action;
 import org.gradle.api.initialization.Settings;
 
@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.IDEA_VERSION;
 
 public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider {
-    public LocalBuildCustomValueProvider(GradleEnterpriseConventions conventions) {
+    public LocalBuildCustomValueProvider(DevelocityConventions conventions) {
         super(conventions);
     }
 
@@ -20,29 +20,29 @@ public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider 
     }
 
     @Override
-    public void accept(Settings settings, BuildScanExtension buildScan) {
+    public void accept(Settings settings, BuildScanConfiguration buildScan) {
         buildScan.tag("LOCAL");
-        GradleEnterpriseConventions conventions = getConventions();
+        DevelocityConventions conventions = getConventions();
         File rootDir = settings.getRootDir();
         buildScan.background(new BackgroundTagsAction(conventions, rootDir));
     }
 
-    private static class BackgroundTagsAction implements Action<BuildScanExtension> {
-        private final GradleEnterpriseConventions conventions;
+    private static class BackgroundTagsAction implements Action<BuildScanConfiguration> {
+        private final DevelocityConventions conventions;
         private final File rootDir;
 
-        BackgroundTagsAction(GradleEnterpriseConventions conventions, File rootDir) {
+        BackgroundTagsAction(DevelocityConventions conventions, File rootDir) {
             this.conventions = conventions;
             this.rootDir = rootDir;
         }
 
         @Override
-        public void execute(BuildScanExtension buildScan) {
+        public void execute(BuildScanConfiguration buildScan) {
             addIdeaTags(buildScan);
             addCommitId(buildScan);
         }
 
-        private void addIdeaTags(BuildScanExtension buildScan) {
+        private void addIdeaTags(BuildScanConfiguration buildScan) {
             if (isRunningInIdea()) {
                 buildScan.tag("IDEA");
                 String ideaVersion = conventions.getSystemProperty("idea.paths.selector");
@@ -57,8 +57,8 @@ public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider 
                 .anyMatch(it -> conventions.getSystemProperty(it) != null);
         }
 
-        private void addCommitId(BuildScanExtension buildScan) {
-            GradleEnterpriseConventions.execAndGetStdout(rootDir, "git", "rev-parse", "HEAD")
+        private void addCommitId(BuildScanConfiguration buildScan) {
+            DevelocityConventions.execAndGetStdout(rootDir, "git", "rev-parse", "HEAD")
                 .ifPresent(commitId -> conventions.setCommitId(rootDir, buildScan, commitId));
         }
     }

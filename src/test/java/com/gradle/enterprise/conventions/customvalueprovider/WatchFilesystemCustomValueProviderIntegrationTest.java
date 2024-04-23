@@ -1,12 +1,12 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
-import com.gradle.enterprise.fixtures.AbstractGradleEnterprisePluginIntegrationTest;
+import com.gradle.enterprise.fixtures.AbstractDevelocityPluginIntegrationTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class WatchFilesystemCustomValueProviderIntegrationTest extends AbstractGradleEnterprisePluginIntegrationTest {
+public class WatchFilesystemCustomValueProviderIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
     @ParameterizedTest
     @CsvSource({
         "true, ENABLED",

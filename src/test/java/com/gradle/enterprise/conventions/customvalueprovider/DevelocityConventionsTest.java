@@ -7,12 +7,12 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.io.File;
 import java.io.IOException;
 
-import static com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions.execAndGetStdout;
-import static com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions.getRemoteGitHubRepository;
+import static com.gradle.enterprise.conventions.customvalueprovider.DevelocityConventions.execAndGetStdout;
+import static com.gradle.enterprise.conventions.customvalueprovider.DevelocityConventions.getRemoteGitHubRepository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class GradleEnterpriseConventionsTest {
+class DevelocityConventionsTest {
     @TempDir
     File projectDir;
 
