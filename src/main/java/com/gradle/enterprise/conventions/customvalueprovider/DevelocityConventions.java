@@ -31,9 +31,12 @@ import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomVa
 
 public class DevelocityConventions {
     private static final Logger LOGGER = Logging.getLogger(DevelocityConventions.class);
-    private static final String DEFAULT_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
+    private static final String DEFAULT_DEVELOCITY_SERVER = "https://ge.gradle.org";
     private static final String AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE = "agreePublicBuildScanTermOfService";
+
+    @Deprecated
     private static final String GRADLE_ENTERPRISE_URL_PROPERTY_NAME = "gradle.enterprise.url";
+    private static final String DEVELOCITY_SERVER_URL = "develocity.server.url";
     private static final String CI_ENV_NAME = "CI";
 
     private static final Pattern HTTPS_URL_PATTERN = Pattern.compile("https://github\\.com/([\\w-]+)/([\\w-]+)\\.git");
@@ -51,7 +54,11 @@ public class DevelocityConventions {
     }
 
     private String determineDevelocityServerUrl() {
+<<<<<<< HEAD
         String dvServerUrl = System.getProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME);
+=======
+        String dvServerUrl = System.getProperty(DEVELOCITY_SERVER_URL, System.getProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME));
+>>>>>>> blindpirate/fix-deprecated-api
         if (dvServerUrl != null) {
             return dvServerUrl;
         }
@@ -61,7 +68,7 @@ public class DevelocityConventions {
             // So that we can publish to default GE instance (https://gradle.com)
             return null;
         } else {
-            return DEFAULT_GRADLE_ENTERPRISE_SERVER;
+            return DEFAULT_DEVELOCITY_SERVER;
         }
     }
 

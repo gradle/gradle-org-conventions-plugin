@@ -4,7 +4,6 @@ plugins {
     id("maven-publish")
 }
 
-rootProject.group = "com.github.gradle"
 rootProject.group = "io.github.gradle"
 rootProject.version = "0.10.0"
 
@@ -22,10 +21,10 @@ dependencies {
     val develocityPluginVersion = "3.17.2"
     val junit5Version = "5.10.2"
     val jacksonVersion = "2.17.0"
-    val mockitoExtensionVersion = "5.11.0"
+    val mockitoExtensionVersion = "3.12.4"
 
     compileOnly("com.gradle:develocity-gradle-plugin:${develocityPluginVersion}")
-    testImplementation("com.gradle:gradle-enterprise-gradle-plugin:${develocityPluginVersion}")
+    testImplementation("com.gradle:develocity-gradle-plugin:${develocityPluginVersion}")
     implementation(gradleApi())
 
     testImplementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")

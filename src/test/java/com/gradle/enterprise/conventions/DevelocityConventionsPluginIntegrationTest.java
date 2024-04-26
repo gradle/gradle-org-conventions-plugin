@@ -92,9 +92,10 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
         assertNull(getConfiguredDevelocity().getServer().getOrNull());
     }
 
-    @Test
-    void configureBuildScanViaSystemProperties() {
-        succeeds("help", "-DcacheNode=us", "-Dgradle.enterprise.url=https://ge.mycompany.com");
+    @ParameterizedTest
+    @ValueSource(strings = {"gradle.enterprise.url", "develocity.server.url"})
+    void configureBuildScanViaSystemProperties(String paramName) {
+        succeeds("help", "-DcacheNode=us", "-D" + paramName + "=https://ge.mycompany.com");
 
         assertEquals("https://ge.mycompany.com", getConfiguredDevelocity().getServer().getOrNull());
     }
