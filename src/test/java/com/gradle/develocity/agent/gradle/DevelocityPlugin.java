@@ -5,6 +5,8 @@ import com.gradle.develocity.agent.gradle.buildcache.DevelocityBuildCache;
 import com.gradle.enterprise.fixtures.DevelocityConfigurationForTest;
 import org.gradle.api.Plugin;
 import org.gradle.api.initialization.Settings;
+import org.gradle.api.internal.GradleInternal;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.caching.BuildCacheEntryReader;
 import org.gradle.caching.BuildCacheEntryWriter;
 import org.gradle.caching.BuildCacheException;
@@ -25,7 +27,8 @@ public class DevelocityPlugin implements Plugin<Settings> {
 
     @Override
     public void apply(Settings settings) {
-        DevelocityConfigurationForTest extension = new DevelocityConfigurationForTest();
+        ObjectFactory objectFactory = ((GradleInternal) settings.getGradle()).getServices().get(ObjectFactory.class);
+        DevelocityConfigurationForTest extension = new DevelocityConfigurationForTest(objectFactory);
         settings.buildCache(cache -> {
             cache.registerBuildCacheService(DevelocityBuildCache.class, DevelocityBuildCacheServiceFactoryForTest.class);
         });

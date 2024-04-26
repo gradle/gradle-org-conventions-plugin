@@ -1,21 +1,32 @@
 package com.gradle.enterprise.fixtures;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gradle.develocity.agent.gradle.DevelocityConfiguration;
 import com.gradle.develocity.agent.gradle.buildcache.DevelocityBuildCache;
 import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import org.gradle.api.Action;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 
 public class DevelocityConfigurationForTest implements DevelocityConfiguration {
+    public DevelocityConfigurationForTest() {
+        this(null);
+    }
+
+    public DevelocityConfigurationForTest(ObjectFactory objectFactory) {
+        this.server = objectFactory == null ? null : objectFactory.property(String.class);
+    }
+
     private BuildScanConfigurationForTest buildScanConfiguration = new BuildScanConfigurationForTest();
-    private String server;
-    private boolean allowUntrustedServer;
-    private String projectId;
-    private String accessKey;
+    private Property<String> server;
+    private String serverProperty;
 
     @Override
     public BuildScanConfigurationForTest getBuildScan() {
@@ -31,41 +42,42 @@ public class DevelocityConfigurationForTest implements DevelocityConfiguration {
         action.execute(buildScanConfiguration);
     }
 
-    @Override
-    @JsonSerialize(using = ProxyProperty.ProxyPropertySerializer.class)
-    public Property<String> getServer() {
-        return new ProxyProperty<String>() {
-            @Override
-            public void set(@Nullable String value) {
-                server = value;
+    static class PropertySerializer extends JsonSerializer<Property<?>> {
+        @Override
+        public void serialize(Property property, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            Object value = property.getOrNull();
+            if (value == null) {
+                gen.writeNull();
+            } else if (value instanceof Boolean) {
+                gen.writeBoolean((Boolean) value);
+            } else {
+                gen.writeString(value.toString());
             }
+        }
+    }
 
-            @Override
-            public String getOrNull() {
-                return server;
-            }
-        };
+    @Override
+    @JsonSerialize(using = PropertySerializer.class)
+    public Property<String> getServer() {
+        return server;
     }
 
     public void setServer(String server) {
-        this.server = server;
+        this.serverProperty = serverProperty;
+    }
+
+    public String getServerProperty() {
+        if (server != null && server.isPresent()) {
+            return server.get();
+        }
+        return serverProperty;
     }
 
     @Nullable
     @Override
     @JsonIgnore
     public Property<String> getProjectId() {
-        return new ProxyProperty<String>() {
-            @Override
-            public void set(@Nullable String value) {
-                projectId = value;
-            }
-
-            @Override
-            public String get() {
-                return projectId;
-            }
-        };
+        throw new UnsupportedOperationException();
     }
 
     @Override
