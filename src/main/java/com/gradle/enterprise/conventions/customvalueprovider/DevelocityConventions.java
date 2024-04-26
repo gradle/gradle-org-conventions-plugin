@@ -54,11 +54,7 @@ public class DevelocityConventions {
     }
 
     private String determineDevelocityServerUrl() {
-<<<<<<< HEAD
-        String dvServerUrl = System.getProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME);
-=======
         String dvServerUrl = System.getProperty(DEVELOCITY_SERVER_URL, System.getProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME));
->>>>>>> blindpirate/fix-deprecated-api
         if (dvServerUrl != null) {
             return dvServerUrl;
         }
