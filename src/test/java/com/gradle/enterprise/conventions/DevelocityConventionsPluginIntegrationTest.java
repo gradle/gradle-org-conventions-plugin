@@ -33,7 +33,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
         succeeds("help", "-DagreePublicBuildScanTermOfService=yes");
 
         assertNull(getConfiguredRemoteCache().getUrl());
-        assertNull(getConfiguredDevelocity().getServerProperty());
+        assertNull(getConfiguredDevelocity().getServer());
         assertTrue(getConfiguredBuildScan().isCaptureFileFingerprints());
         assertFalse(getConfiguredBuildScan().isPublishIfAuthenticated());
         assertTrue(getConfiguredBuildScan().isUploadInBackground());
@@ -45,7 +45,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
 
         assertNull(getConfiguredRemoteCache().getUrl());
         assertTrue(getConfiguredBuildScan().isPublishAlways());
-        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredDevelocity().getServerProperty());
+        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredDevelocity().getServerValue());
         assertTrue(getConfiguredBuildScan().isCaptureFileFingerprints());
         assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
         assertTrue(getConfiguredBuildScan().isUploadInBackground());
@@ -57,7 +57,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
 
         assertNull(getConfiguredRemoteCache().getUrl());
         assertTrue(getConfiguredBuildScan().isPublishOnFailure());
-        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredDevelocity().getServerProperty());
+        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredDevelocity().getServerValue());
         assertTrue(getConfiguredBuildScan().isCaptureFileFingerprints());
         assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
         assertTrue(getConfiguredBuildScan().isUploadInBackground());
@@ -69,7 +69,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
 
         succeeds("help", "--no-scan");
 
-        assertNull(getConfiguredDevelocity().getServerProperty());
+        assertNull(getConfiguredDevelocity().getServer());
     }
 
     @ParameterizedTest
@@ -79,7 +79,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
 
         succeeds("properties");
 
-        assertNull(getConfiguredDevelocity().getServerProperty());
+        assertNull(getConfiguredDevelocity().getServer());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
 
         succeeds(":subprojectA:properties");
 
-        assertNull(getConfiguredDevelocity().getServerProperty());
+        assertNull(getConfiguredDevelocity().getServer());
     }
 
     @ParameterizedTest
@@ -97,6 +97,6 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
     void configureBuildScanViaSystemProperties(String paramName) {
         succeeds("help", "-DcacheNode=us", "-D" + paramName + "=https://ge.mycompany.com");
 
-        assertEquals("https://ge.mycompany.com", getConfiguredDevelocity().getServerProperty());
+        assertEquals("https://ge.mycompany.com", getConfiguredDevelocity().getServerValue());
     }
 }

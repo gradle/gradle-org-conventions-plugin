@@ -22,11 +22,12 @@ public class DevelocityConfigurationForTest implements DevelocityConfiguration {
 
     public DevelocityConfigurationForTest(ObjectFactory objectFactory) {
         this.server = objectFactory == null ? null : objectFactory.property(String.class);
+        this.buildScanConfiguration = new BuildScanConfigurationForTest(objectFactory);
     }
 
-    private BuildScanConfigurationForTest buildScanConfiguration = new BuildScanConfigurationForTest();
+    private BuildScanConfigurationForTest buildScanConfiguration;
     private Property<String> server;
-    private String serverProperty;
+    private String serverValue;
 
     @Override
     public BuildScanConfigurationForTest getBuildScan() {
@@ -63,14 +64,14 @@ public class DevelocityConfigurationForTest implements DevelocityConfiguration {
     }
 
     public void setServer(String server) {
-        this.serverProperty = serverProperty;
+        this.serverValue = server;
     }
 
-    public String getServerProperty() {
-        if (server != null && server.isPresent()) {
-            return server.get();
+    public String getServerValue() {
+        if (server != null) {
+            return server.getOrNull();
         }
-        return serverProperty;
+        return serverValue;
     }
 
     @Nullable

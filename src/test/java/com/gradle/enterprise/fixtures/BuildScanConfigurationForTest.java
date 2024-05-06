@@ -9,27 +9,45 @@ import com.gradle.develocity.agent.gradle.scan.BuildScanDataObfuscationConfigura
 import com.gradle.develocity.agent.gradle.scan.BuildScanPublishingConfiguration;
 import com.gradle.enterprise.conventions.PublishingConfigurationAction;
 import org.gradle.api.Action;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class BuildScanConfigurationForTest implements BuildScanConfigurationInternal {
+    public BuildScanConfigurationForTest() {
+        this(null);
+    }
+
+    public BuildScanConfigurationForTest(ObjectFactory objectFactory) {
+        if (objectFactory != null) {
+            this.termsOfUseUrlProperty = objectFactory.property(String.class);
+            this.termsOfUseAgreeProperty = objectFactory.property(String.class);
+            this.uploadInBackgroundProperty = objectFactory.property(Boolean.class);
+            this.captureFileFingerprintsProperty = objectFactory.property(Boolean.class);
+        }
+    }
+
     private List<String> tags = new ArrayList<>();
     private List<List<String>> values = new ArrayList<>();
     private List<List<String>> links = new ArrayList<>();
     private List<String> backgroundTags = new ArrayList<>();
     private List<List<String>> backgroundValues = new ArrayList<>();
     private List<List<String>> backgroundLinks = new ArrayList<>();
-    private String termsOfUseUrl;
-    private String termsOfUseAgree;
+
+    private Property<String> termsOfUseUrlProperty;
+    private String termsOfUseUrlValue;
+    private Property<String> termsOfUseAgreeProperty;
+    private String termsOfUseAgreeValue;
     private String server;
     private boolean allowUntrustedServer;
     private List<String> publishConfigurationActions = new ArrayList<>();
-    private boolean uploadInBackground;
-    private boolean captureFileFingerprints;
+    private Property<Boolean> uploadInBackgroundProperty;
+    private boolean uploadInBackgroundValue;
+    private Property<Boolean> captureFileFingerprintsProperty;
+    private boolean captureFileFingerprintsValue;
     private boolean inBackground;
 
     public boolean containsTag(String tag) {
@@ -121,11 +139,14 @@ public class BuildScanConfigurationForTest implements BuildScanConfigurationInte
     }
 
     public boolean isCaptureFileFingerprints() {
-        return captureFileFingerprints;
+        if (captureFileFingerprintsProperty != null && captureFileFingerprintsProperty.isPresent()) {
+            return captureFileFingerprintsProperty.get();
+        }
+        return captureFileFingerprintsValue;
     }
 
     public void setCaptureFileFingerprints(boolean captureFileFingerprints) {
-        this.captureFileFingerprints = captureFileFingerprints;
+        this.captureFileFingerprintsValue = captureFileFingerprints;
     }
 
     public List<String> getPublishConfigurationAction() {
@@ -137,11 +158,14 @@ public class BuildScanConfigurationForTest implements BuildScanConfigurationInte
     }
 
     public boolean isUploadInBackground() {
-        return uploadInBackground;
+        if (uploadInBackgroundProperty != null && uploadInBackgroundProperty.isPresent()) {
+            return uploadInBackgroundProperty.get();
+        }
+        return uploadInBackgroundValue;
     }
 
     public void setUploadInBackground(boolean uploadInBackground) {
-        this.uploadInBackground = uploadInBackground;
+        this.uploadInBackgroundValue = uploadInBackground;
     }
 
     @Override
@@ -184,49 +208,19 @@ public class BuildScanConfigurationForTest implements BuildScanConfigurationInte
     @Override
     @JsonIgnore
     public Property<String> getTermsOfUseUrl() {
-        return new ProxyProperty<String>() {
-            @Override
-            public String get() {
-                return termsOfUseUrl;
-            }
-
-            @Override
-            public void set(@Nullable String value) {
-                termsOfUseUrl = value;
-            }
-        };
+        return termsOfUseUrlProperty;
     }
 
     @Override
     @JsonIgnore
     public Property<String> getTermsOfUseAgree() {
-        return new ProxyProperty<String>() {
-            @Override
-            public void set(@javax.annotation.Nullable String value) {
-                termsOfUseAgree = value;
-            }
-
-            @Override
-            public String get() {
-                return termsOfUseAgree;
-            }
-        };
+        return termsOfUseAgreeProperty;
     }
 
     @Override
-    @JsonSerialize(using = ProxyProperty.ProxyPropertySerializer.class)
+    @JsonSerialize(using = DevelocityConfigurationForTest.PropertySerializer.class)
     public Property<Boolean> getUploadInBackground() {
-        return new ProxyProperty<Boolean>() {
-            @Override
-            public void set(@Nullable Boolean value) {
-                uploadInBackground = value;
-            }
-
-            @Override
-            public Boolean getOrNull() {
-                return uploadInBackground;
-            }
-        };
+        return uploadInBackgroundProperty;
     }
 
     @Override
@@ -262,17 +256,7 @@ public class BuildScanConfigurationForTest implements BuildScanConfigurationInte
         @Override
         @JsonIgnore
         public Property<Boolean> getFileFingerprints() {
-            return new ProxyProperty<Boolean>() {
-                @Override
-                public void set(@Nullable Boolean value) {
-                    captureFileFingerprints = value;
-                }
-
-                @Override
-                public Boolean getOrNull() {
-                    return captureFileFingerprints;
-                }
-            };
+            return captureFileFingerprintsProperty;
         }
 
         @Override
