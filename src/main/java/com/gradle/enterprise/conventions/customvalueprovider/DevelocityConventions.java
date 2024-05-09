@@ -1,7 +1,7 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
 
-import com.gradle.scan.plugin.BuildScanExtension;
+import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
@@ -29,11 +29,14 @@ import java.util.stream.Collectors;
 
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.GIT_COMMIT_NAME;
 
-public class GradleEnterpriseConventions {
-    private static final Logger LOGGER = Logging.getLogger(GradleEnterpriseConventions.class);
-    private static final String DEFAULT_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
+public class DevelocityConventions {
+    private static final Logger LOGGER = Logging.getLogger(DevelocityConventions.class);
+    private static final String DEFAULT_DEVELOCITY_SERVER = "https://ge.gradle.org";
     private static final String AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE = "agreePublicBuildScanTermOfService";
+
+    @Deprecated
     private static final String GRADLE_ENTERPRISE_URL_PROPERTY_NAME = "gradle.enterprise.url";
+    private static final String DEVELOCITY_SERVER_URL = "develocity.server.url";
     private static final String CI_ENV_NAME = "CI";
 
     private static final Pattern HTTPS_URL_PATTERN = Pattern.compile("https://github\\.com/([\\w-]+)/([\\w-]+)\\.git");
@@ -41,19 +44,19 @@ public class GradleEnterpriseConventions {
     private static final Pattern SHA_PATTERN = Pattern.compile("[0-9a-fA-F]+");
 
     private final ProviderFactory providerFactory;
-    private final String gradleEnterpriseServerUrl;
+    private final String develocityServerUrl;
     private final boolean isCiServer;
 
-    public GradleEnterpriseConventions(ProviderFactory providerFactory) {
+    public DevelocityConventions(ProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
-        this.gradleEnterpriseServerUrl = determineGradleEnterpriseUrl();
+        this.develocityServerUrl = determineDevelocityServerUrl();
         this.isCiServer = !getEnvVariable(CI_ENV_NAME, "").isEmpty();
     }
 
-    private String determineGradleEnterpriseUrl() {
-        String geServerUrl = System.getProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME);
-        if (geServerUrl != null) {
-            return geServerUrl;
+    private String determineDevelocityServerUrl() {
+        String dvServerUrl = System.getProperty(DEVELOCITY_SERVER_URL, System.getProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME));
+        if (dvServerUrl != null) {
+            return dvServerUrl;
         }
 
         String agreePublicBuildScanTermOfService = System.getProperty(AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE, "no");
@@ -61,24 +64,24 @@ public class GradleEnterpriseConventions {
             // So that we can publish to default GE instance (https://gradle.com)
             return null;
         } else {
-            return DEFAULT_GRADLE_ENTERPRISE_SERVER;
+            return DEFAULT_DEVELOCITY_SERVER;
         }
     }
 
     public Optional<String> customValueSearchUrl(Map<String, String> search) {
         // public GE instance
-        if (gradleEnterpriseServerUrl == null) {
+        if (develocityServerUrl == null) {
             return Optional.empty();
         }
         String query = search.entrySet()
             .stream()
             .map(entry -> String.format("search.names=%s&search.values=%s", urlEncode(entry.getKey()), urlEncode(entry.getValue())))
             .collect(Collectors.joining("&"));
-        return Optional.of(String.format("%s/scans?%s", gradleEnterpriseServerUrl, query));
+        return Optional.of(String.format("%s/scans?%s", develocityServerUrl, query));
     }
 
-    public String getGradleEnterpriseServerUrl() {
-        return gradleEnterpriseServerUrl;
+    public String getDevelocityServerUrl() {
+        return develocityServerUrl;
     }
 
     public boolean isCiServer() {
@@ -120,10 +123,10 @@ public class GradleEnterpriseConventions {
      * Add commit ID to tags.
      *
      * @param projectDir the project directory
-     * @param buildScan the build scan extension
-     * @param commitId the commit id
+     * @param buildScan  the build scan extension
+     * @param commitId   the commit id
      */
-    public void setCommitId(File projectDir, BuildScanExtension buildScan, String commitId) {
+    public void setCommitId(File projectDir, BuildScanConfiguration buildScan, String commitId) {
         if (!SHA_PATTERN.matcher(commitId).matches()) {
             LOGGER.warn("Detect illegal commitId: " + commitId + ", skip.");
             return;
@@ -166,7 +169,7 @@ public class GradleEnterpriseConventions {
      * Consider implementing {@link ValueSource} if you need to obtain external process output at configuration time.
      *
      * @param workingDir the working directory
-     * @param args the process to run and its command-line arguments
+     * @param args       the process to run and its command-line arguments
      * @return the contents of the stdout as a string
      */
     public static Optional<String> execAndGetStdout(File workingDir, String... args) {
@@ -190,7 +193,7 @@ public class GradleEnterpriseConventions {
     }
 
     static Optional<String> getRemoteGitHubRepository(File projectDir) {
-        return execAndGetStdout(projectDir, "git", "config", "--get", "remote.origin.url").flatMap(GradleEnterpriseConventions::parseGitHubRemoteUrl);
+        return execAndGetStdout(projectDir, "git", "config", "--get", "remote.origin.url").flatMap(DevelocityConventions::parseGitHubRemoteUrl);
     }
 
     @SuppressWarnings("UnstableApiUsage")

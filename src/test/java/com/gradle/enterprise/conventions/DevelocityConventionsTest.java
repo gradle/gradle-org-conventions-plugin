@@ -1,7 +1,7 @@
 package com.gradle.enterprise.conventions;
 
-import com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions;
-import com.gradle.scan.plugin.BuildScanExtension;
+import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
+import com.gradle.enterprise.conventions.customvalueprovider.DevelocityConventions;
 import org.gradle.api.provider.ProviderFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,27 +14,27 @@ import java.io.File;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
-public class GradleEnterpriseConventionsTest {
+public class DevelocityConventionsTest {
     @Mock
     ProviderFactory providerFactory;
 
     @Mock
-    BuildScanExtension buildScanExtension;
+    BuildScanConfiguration buildScanConfiguration;
 
     @Mock
     File projectDir;
 
-    GradleEnterpriseConventions gradleEnterpriseConventions;
+    DevelocityConventions develocityConventions;
 
     @BeforeEach
     public void setUp() {
-        gradleEnterpriseConventions = new GradleEnterpriseConventions(providerFactory);
+        develocityConventions = new DevelocityConventions(providerFactory);
     }
 
     @Test
     public void dontSetCommitIdWhenInvalid() {
-        gradleEnterpriseConventions.setCommitId(projectDir, buildScanExtension, "Invalid commit id");
+        develocityConventions.setCommitId(projectDir, buildScanConfiguration, "Invalid commit id");
 
-        verifyNoInteractions(buildScanExtension);
+        verifyNoInteractions(buildScanConfiguration);
     }
 }

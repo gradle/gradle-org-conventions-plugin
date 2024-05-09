@@ -1,17 +1,15 @@
 package com.gradle.enterprise.conventions;
 
+import com.gradle.develocity.agent.gradle.DevelocityConfiguration;
+import com.gradle.develocity.agent.gradle.DevelocityPlugin;
+import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import com.gradle.enterprise.conventions.customvalueprovider.BuildCacheCustomValueProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.BuildScanCustomValueProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.CITagProvider;
+import com.gradle.enterprise.conventions.customvalueprovider.DevelocityConventions;
 import com.gradle.enterprise.conventions.customvalueprovider.GitInformationCustomValueProvider;
-import com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions;
 import com.gradle.enterprise.conventions.customvalueprovider.LocalBuildCustomValueProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.WatchFilesystemCustomValueProvider;
-import com.gradle.enterprise.gradleplugin.GradleEnterpriseExtension;
-import com.gradle.enterprise.gradleplugin.GradleEnterprisePlugin;
-import com.gradle.enterprise.gradleplugin.internal.extension.BuildScanExtensionInternal;
-import com.gradle.scan.plugin.BuildScanCaptureSettings;
-import com.gradle.scan.plugin.BuildScanExtension;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.initialization.Settings;
@@ -27,8 +25,8 @@ import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCusto
 import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.TeamCityCustomValueProvider;
 import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.TravisCustomValueProvider;
 
-public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settings> {
-    private List<BuildScanCustomValueProvider> createBuildScanCustomValueProviders(GradleEnterpriseConventions conventions) {
+public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
+    private List<BuildScanCustomValueProvider> createBuildScanCustomValueProviders(DevelocityConventions conventions) {
         return Arrays.asList(
             new BuildCacheCustomValueProvider(conventions),
             new WatchFilesystemCustomValueProvider(conventions),
@@ -47,11 +45,11 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
 
     @Override
     public void apply(Settings settings) {
-        settings.getPlugins().withType(GradleEnterprisePlugin.class, p -> {
-            GradleEnterpriseConventions conventions = new GradleEnterpriseConventions(getProviderFactory());
+        settings.getPlugins().withType(DevelocityPlugin.class, p -> {
+            DevelocityConventions conventions = new DevelocityConventions(getProviderFactory());
             if (settings.getGradle().getStartParameter().isBuildCacheEnabled()) {
-                GradleEnterpriseExtension ge = settings.getExtensions().getByType(GradleEnterpriseExtension.class);
-                settings.buildCache(new BuildCacheConfigureAction(conventions, ge));
+                DevelocityConfiguration dv = settings.getExtensions().getByType(DevelocityConfiguration.class);
+                settings.buildCache(new BuildCacheConfigureAction(conventions, dv));
             }
             if (!settings.getGradle().getStartParameter().isNoBuildScan() && !containsPropertiesTask(settings)) {
                 configureBuildScan(settings, conventions);
@@ -66,51 +64,36 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             || settings.getGradle().getStartParameter().getTaskNames().stream().anyMatch(it -> it.endsWith(":properties"));
     }
 
-    private void configureBuildScan(Settings settings, GradleEnterpriseConventions conventions) {
-        BuildScanExtension buildScan = settings.getExtensions().getByType(GradleEnterpriseExtension.class).getBuildScan();
+
+    private void configureBuildScan(Settings settings, DevelocityConventions conventions) {
+        DevelocityConfiguration dv = settings.getExtensions().getByType(DevelocityConfiguration.class);
+        BuildScanConfiguration buildScan = dv.getBuildScan();
 
         // This means `-DagreePublicBuildScanTermOfService=yes` is present
-        if (conventions.getGradleEnterpriseServerUrl() == null) {
-            buildScan.setTermsOfServiceUrl("https://gradle.com/terms-of-service");
-            buildScan.setTermsOfServiceAgree("yes");
+        if (conventions.getDevelocityServerUrl() == null) {
+            buildScan.getTermsOfUseAgree().set("yes");
+            buildScan.getTermsOfUseUrl().set("https://gradle.com/terms-of-service");
         } else {
-            buildScan.setServer(conventions.getGradleEnterpriseServerUrl());
-            publishIfAuthenticated(buildScan);
+            dv.getServer().set(conventions.getDevelocityServerUrl());
+            buildScan.publishing(PublishingConfigurationAction.PUBLISH_IF_AUTHENTICATED);
         }
-        buildScan.capture(new Action<BuildScanCaptureSettings>() {
-            @Override
-            public void execute(BuildScanCaptureSettings buildScanCaptureSettings) {
-                buildScanCaptureSettings.setTaskInputFiles(true);
-            }
-        });
+        buildScan.capture(buildScanCaptureConfiguration -> buildScanCaptureConfiguration.getFileFingerprints().set(true));
         configurePublishStrategy(conventions, buildScan);
-        try {
-            buildScan.setUploadInBackground(!conventions.isCiServer());
-        } catch (NoSuchMethodError e) {
-            // GE Plugin version < 3.3. Continue
-        }
+        buildScan.getUploadInBackground().set(!conventions.isCiServer());
 
         createBuildScanCustomValueProviders(conventions).stream()
             .filter(BuildScanCustomValueProvider::isEnabled)
             .forEach(it -> it.accept(settings, buildScan));
     }
 
-    private void publishIfAuthenticated(BuildScanExtension buildScan) {
-        try {
-            ((BuildScanExtensionInternal)buildScan).publishIfAuthenticated();
-        } catch (ClassCastException e) {
-            throw new IllegalStateException("Could not call publishIfAuthenticated()", e);
-        }
-    }
-
-    private void configurePublishStrategy(GradleEnterpriseConventions conventions, BuildScanExtension buildScan) {
+    private void configurePublishStrategy(DevelocityConventions conventions, BuildScanConfiguration buildScan) {
         String strategy = conventions.getSystemProperty("publishStrategy", "publishAlways");
         switch (strategy) {
             case "publishAlways":
-                buildScan.publishAlways();
+                buildScan.publishing(PublishingConfigurationAction.PUBLISH_ALWAYS);
                 break;
             case "publishOnFailure":
-                buildScan.publishOnFailure();
+                buildScan.publishing(PublishingConfigurationAction.PUBLISH_ON_FAILURE);
                 break;
             default:
                 throw new IllegalStateException("Unknown strategy: " + strategy);
@@ -128,12 +111,12 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
         private static final String GRADLE_ENTERPRISE_ACCESS_KEY = "GRADLE_ENTERPRISE_ACCESS_KEY";
         private static final String GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME = "gradle.cache.remote.push";
         private static final String GRADLE_CACHE_NODE_PROPERTY_NAME = "cacheNode";
-        private final GradleEnterpriseConventions conventions;
-        private final GradleEnterpriseExtension ge;
+        private final DevelocityConventions conventions;
+        private final DevelocityConfiguration dv;
 
-        public BuildCacheConfigureAction(GradleEnterpriseConventions conventions, GradleEnterpriseExtension ge) {
+        public BuildCacheConfigureAction(DevelocityConventions conventions, DevelocityConfiguration dv) {
             this.conventions = conventions;
-            this.ge = ge;
+            this.dv = dv;
         }
 
         @Override
@@ -143,7 +126,7 @@ public abstract class GradleEnterpriseConventionsPlugin implements Plugin<Settin
             String develocityAccessKey = conventions.getEnvVariableThenSystemProperty(DEVELOCITY_ACCESS_KEY, DEVELOCITY_ACCESS_KEY, "");
             String geAccessKey = conventions.getEnvVariableThenSystemProperty(GRADLE_ENTERPRISE_ACCESS_KEY, GRADLE_ENTERPRISE_ACCESS_KEY, "");
             boolean disableLocalCache = Boolean.parseBoolean(conventions.getSystemProperty("disableLocalCache", "false"));
-            buildCache.remote(ge.getBuildCache(), remoteBuildCache -> {
+            buildCache.remote(dv.getBuildCache(), remoteBuildCache -> {
                 remoteBuildCache.setEnabled(true);
                 remoteBuildCache.setServer(remoteCacheUrl);
                 boolean accessKeySet = notNullOrEmpty(develocityAccessKey) || notNullOrEmpty(geAccessKey);

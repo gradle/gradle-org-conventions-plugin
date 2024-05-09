@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AbstractGradleEnterprisePluginIntegrationTest {
+public class AbstractDevelocityPluginIntegrationTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     static {
@@ -79,7 +79,7 @@ public class AbstractGradleEnterprisePluginIntegrationTest {
 
     private HttpBuildCache configuredRemoteCache;
     private DirectoryBuildCache configuredLocalCache;
-    private GradleEnterpriseExtensionForTest configuredGradleEnterprise;
+    private DevelocityConfigurationForTest configuredDevelocity;
     private File gradleHomeDir;
 
     @BeforeEach
@@ -191,20 +191,20 @@ public class AbstractGradleEnterprisePluginIntegrationTest {
         return configuredLocalCache;
     }
 
-    protected GradleEnterpriseExtensionForTest getConfiguredGradleEnterprise() {
-        if (configuredGradleEnterprise == null) {
+    protected DevelocityConfigurationForTest getConfiguredDevelocity() {
+        if (configuredDevelocity == null) {
             try {
-                String json = toString(new FileInputStream(new File(projectDir, "gradleEnterpriseConfiguration.json")));
-                System.out.println("configuredGradleEnterprise: " + json);
-                configuredGradleEnterprise = OBJECT_MAPPER.readValue(json, GradleEnterpriseExtensionForTest.class);
+                String json = toString(new FileInputStream(new File(projectDir, "develocityConfiguration.json")));
+                System.out.println("configuredDevelocity: " + json);
+                configuredDevelocity = OBJECT_MAPPER.readValue(json, DevelocityConfigurationForTest.class);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
         }
-        return configuredGradleEnterprise;
+        return configuredDevelocity;
     }
 
-    protected BuildScanExtensionForTest getConfiguredBuildScan() {
-        return getConfiguredGradleEnterprise().getBuildScan();
+    protected BuildScanConfigurationForTest getConfiguredBuildScan() {
+        return getConfiguredDevelocity().getBuildScan();
     }
 }

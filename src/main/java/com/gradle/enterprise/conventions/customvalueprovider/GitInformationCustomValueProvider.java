@@ -1,27 +1,27 @@
 package com.gradle.enterprise.conventions.customvalueprovider;
 
-import com.gradle.scan.plugin.BuildScanExtension;
+import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import org.gradle.api.Action;
 import org.gradle.api.initialization.Settings;
 
 import java.io.File;
 
-import static com.gradle.enterprise.conventions.customvalueprovider.GradleEnterpriseConventions.execAndGetStdout;
+import static com.gradle.enterprise.conventions.customvalueprovider.DevelocityConventions.execAndGetStdout;
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.GIT_BRANCH_NAME;
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.GIT_STATUS;
 
 public class GitInformationCustomValueProvider extends BuildScanCustomValueProvider {
-    public GitInformationCustomValueProvider(GradleEnterpriseConventions conventions) {
+    public GitInformationCustomValueProvider(DevelocityConventions conventions) {
         super(conventions);
     }
 
     @Override
-    public void accept(Settings settings, BuildScanExtension buildScan) {
+    public void accept(Settings settings, BuildScanConfiguration buildScan) {
         File rootDir = settings.getRootDir();
         buildScan.background(logGitInformationInBackground(rootDir));
     }
 
-    private static Action<BuildScanExtension> logGitInformationInBackground(File rootDir) {
+    private static Action<BuildScanConfiguration> logGitInformationInBackground(File rootDir) {
         return buildScan -> {
             execAndGetStdout(rootDir, "git", "status", "--porcelain")
                 .ifPresent(output -> {
