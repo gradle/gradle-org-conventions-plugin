@@ -20,6 +20,10 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.gradle.enterprise.conventions.PublishingConfigurationAction.CUSTOM;
+import static com.gradle.enterprise.conventions.PublishingConfigurationAction.PUBLISH_ALWAYS;
+import static com.gradle.enterprise.conventions.PublishingConfigurationAction.PUBLISH_IF_AUTHENTICATED;
+import static com.gradle.enterprise.conventions.PublishingConfigurationAction.PUBLISH_ON_FAILURE;
 import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.GitHubActionsCustomValueProvider;
 import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.JenkinsCustomValueProvider;
 import static com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.TeamCityCustomValueProvider;
@@ -69,16 +73,16 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
         DevelocityConfiguration dv = settings.getExtensions().getByType(DevelocityConfiguration.class);
         BuildScanConfiguration buildScan = dv.getBuildScan();
 
-        // This means `-DagreePublicBuildScanTermOfService=yes` is present
         if (conventions.getDevelocityServerUrl() == null) {
+            // This means `-DagreePublicBuildScanTermOfService=yes` is present
             buildScan.getTermsOfUseAgree().set("yes");
             buildScan.getTermsOfUseUrl().set("https://gradle.com/terms-of-service");
+            configurePublishStrategy(conventions, buildScan, PUBLISH_ALWAYS);
         } else {
             dv.getServer().set(conventions.getDevelocityServerUrl());
-            buildScan.publishing(PublishingConfigurationAction.PUBLISH_IF_AUTHENTICATED);
+            configurePublishStrategy(conventions, buildScan, PUBLISH_IF_AUTHENTICATED);
         }
         buildScan.capture(buildScanCaptureConfiguration -> buildScanCaptureConfiguration.getFileFingerprints().set(true));
-        configurePublishStrategy(conventions, buildScan);
         buildScan.getUploadInBackground().set(!conventions.isCiServer());
 
         createBuildScanCustomValueProviders(conventions).stream()
@@ -86,14 +90,20 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
             .forEach(it -> it.accept(settings, buildScan));
     }
 
-    private void configurePublishStrategy(DevelocityConventions conventions, BuildScanConfiguration buildScan) {
-        String strategy = conventions.getSystemProperty("publishStrategy", "publishAlways");
+    private void configurePublishStrategy(DevelocityConventions conventions, BuildScanConfiguration buildScan, PublishingConfigurationAction defaultStrategy) {
+        String strategy = conventions.getSystemProperty("publishStrategy", defaultStrategy.name);
         switch (strategy) {
+            case "publishIfAuthenticated":
+                buildScan.publishing(PUBLISH_IF_AUTHENTICATED);
+                break;
             case "publishAlways":
-                buildScan.publishing(PublishingConfigurationAction.PUBLISH_ALWAYS);
+                buildScan.publishing(PUBLISH_ALWAYS);
                 break;
             case "publishOnFailure":
-                buildScan.publishing(PublishingConfigurationAction.PUBLISH_ON_FAILURE);
+                buildScan.publishing(PUBLISH_ON_FAILURE);
+                break;
+            case "custom":
+                buildScan.publishing(CUSTOM);
                 break;
             default:
                 throw new IllegalStateException("Unknown strategy: " + strategy);

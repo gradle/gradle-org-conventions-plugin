@@ -44,23 +44,39 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
         succeeds("help");
 
         assertNull(getConfiguredRemoteCache().getUrl());
-        assertTrue(getConfiguredBuildScan().isPublishAlways());
         assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredDevelocity().getServerValue());
         assertTrue(getConfiguredBuildScan().isCaptureFileFingerprints());
         assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
         assertTrue(getConfiguredBuildScan().isUploadInBackground());
     }
 
-    @Test
-    public void configurePublishOnFailure() {
-        succeeds("help", "-DpublishStrategy=publishOnFailure", "-Dgradle.enterprise.url=https://ge.gradle.org");
+    @ParameterizedTest
+    @ValueSource(strings = {"publishOnFailure", "publishAlways", "custom"})
+    public void configurePublishStrategy(String strategy) {
+        succeeds("help", "-DpublishStrategy=" + strategy, "-Dgradle.enterprise.url=https://ge.gradle.org");
 
         assertNull(getConfiguredRemoteCache().getUrl());
-        assertTrue(getConfiguredBuildScan().isPublishOnFailure());
         assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredDevelocity().getServerValue());
-        assertTrue(getConfiguredBuildScan().isCaptureFileFingerprints());
+        switch (strategy) {
+            case "publishOnFailure":
+                assertTrue(getConfiguredBuildScan().isPublishOnFailure());
+                break;
+            case "publishAlways":
+                assertTrue(getConfiguredBuildScan().isPublishAlways());
+                break;
+            case "custom":
+                assertTrue(getConfiguredBuildScan().isCustomPublish());
+                break;
+        }
+    }
+
+    @Test
+    public void defaultPublishStrategyIsPublishIfAuthenticated() {
+        succeeds("help", "-Dgradle.enterprise.url=https://ge.gradle.org");
+
+        assertNull(getConfiguredRemoteCache().getUrl());
         assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
-        assertTrue(getConfiguredBuildScan().isUploadInBackground());
+        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredDevelocity().getServerValue());
     }
 
     @Test
