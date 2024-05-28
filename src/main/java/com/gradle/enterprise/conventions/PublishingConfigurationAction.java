@@ -5,7 +5,7 @@ import org.gradle.api.Action;
 
 public abstract class PublishingConfigurationAction implements Action<BuildScanPublishingConfiguration> {
 
-    public static final PublishingConfigurationAction PUBLISH_IF_AUTHENTICATED = new PublishingConfigurationAction("publishWhenAuthenticated") {
+    public static final PublishingConfigurationAction PUBLISH_IF_AUTHENTICATED = new PublishingConfigurationAction("publishIfAuthenticated") {
         @Override
         public void execute(BuildScanPublishingConfiguration publishing) {
             publishing.onlyIf(BuildScanPublishingConfiguration.PublishingContext::isAuthenticated);
@@ -22,6 +22,15 @@ public abstract class PublishingConfigurationAction implements Action<BuildScanP
         @Override
         public void execute(BuildScanPublishingConfiguration publishing) {
             publishing.onlyIf(__ -> true);
+        }
+    };
+
+    /**
+     * Don't apply any publishing strategy, the user will configure in their own init script.
+     */
+    public static final PublishingConfigurationAction CUSTOM = new PublishingConfigurationAction("custom") {
+        @Override
+        public void execute(BuildScanPublishingConfiguration publishing) {
         }
     };
     public final String name;

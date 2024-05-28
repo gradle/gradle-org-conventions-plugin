@@ -16,6 +16,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.gradle.enterprise.conventions.PublishingConfigurationAction.CUSTOM;
+import static com.gradle.enterprise.conventions.PublishingConfigurationAction.PUBLISH_ALWAYS;
+import static com.gradle.enterprise.conventions.PublishingConfigurationAction.PUBLISH_IF_AUTHENTICATED;
+import static com.gradle.enterprise.conventions.PublishingConfigurationAction.PUBLISH_ON_FAILURE;
+
 public class BuildScanConfigurationForTest implements BuildScanConfigurationInternal {
     public BuildScanConfigurationForTest() {
         this(null);
@@ -238,7 +243,7 @@ public class BuildScanConfigurationForTest implements BuildScanConfigurationInte
 
     @JsonIgnore
     public boolean isPublishOnFailure() {
-        return publishConfigurationActions.contains(PublishingConfigurationAction.PUBLISH_ON_FAILURE.name);
+        return publishConfigurationActions.contains(PUBLISH_ON_FAILURE.name);
     }
 
     @Override
@@ -311,12 +316,18 @@ public class BuildScanConfigurationForTest implements BuildScanConfigurationInte
 
     @JsonIgnore
     public boolean isPublishIfAuthenticated() {
-        return publishConfigurationActions.contains(PublishingConfigurationAction.PUBLISH_IF_AUTHENTICATED.name);
+        return publishConfigurationActions.contains(PUBLISH_IF_AUTHENTICATED.name);
     }
 
     @JsonIgnore
+    public boolean isCustomPublish() {
+        return publishConfigurationActions.contains(CUSTOM.name);
+    }
+
+
+    @JsonIgnore
     public boolean isPublishAlways() {
-        return publishConfigurationActions.contains(PublishingConfigurationAction.PUBLISH_ALWAYS.name);
+        return publishConfigurationActions.contains(PUBLISH_ALWAYS.name);
     }
 
     @Override
