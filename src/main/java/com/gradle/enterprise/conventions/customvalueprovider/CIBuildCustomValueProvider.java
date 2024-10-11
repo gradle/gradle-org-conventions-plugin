@@ -81,6 +81,21 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
             getConventions().setCommitId(settings.getRootDir(), buildScan, getConventions().getEnv("TRAVIS_COMMIT"));
         }
     }
+
+    public static class IDESyncCustomValueProvider extends BuildScanCustomValueProvider {
+        private static final String SYSTEM_PROP_IDEA_SYNC_ACTIVE = "idea.sync.active";
+
+        public IDESyncCustomValueProvider(DevelocityConventions conventions) {
+            super(conventions);
+        }
+
+        @Override
+        public void accept(Settings settings, BuildScanConfiguration buildScan) {
+            if (System.getProperty(SYSTEM_PROP_IDEA_SYNC_ACTIVE) != null) {
+                buildScan.tag("IDE Sync");
+            }
+        }
+    }
 }
 
 
