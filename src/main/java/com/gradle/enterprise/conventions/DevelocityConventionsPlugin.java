@@ -5,6 +5,8 @@ import com.gradle.develocity.agent.gradle.DevelocityPlugin;
 import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import com.gradle.enterprise.conventions.customvalueprovider.BuildCacheCustomValueProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.BuildScanCustomValueProvider;
+import com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider;
+import com.gradle.enterprise.conventions.customvalueprovider.CIBuildCustomValueProvider.IDESyncCustomValueProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.CITagProvider;
 import com.gradle.enterprise.conventions.customvalueprovider.DevelocityConventions;
 import com.gradle.enterprise.conventions.customvalueprovider.GitInformationCustomValueProvider;
@@ -40,7 +42,8 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
             new TeamCityCustomValueProvider(conventions),
             new TravisCustomValueProvider(conventions),
             new LocalBuildCustomValueProvider(conventions),
-            new GitInformationCustomValueProvider(conventions)
+            new GitInformationCustomValueProvider(conventions),
+            new IDESyncCustomValueProvider(conventions)
         );
     }
 
