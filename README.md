@@ -7,7 +7,7 @@ Requires Gradle 7.6+. The plugin is configuration-cache compatible when used the
 
 ## What it does
 
-When applied as a settings plugin alongside the [Gradle Enterprise Plugin](https://plugins.gradle.org/plugin/com.gradle.enterprise), this plugin does the following:
+When applied as a settings plugin alongside the [Develocity Plugin](https://plugins.gradle.org/plugin/com.gradle.develocity), this plugin does the following:
 
 - If the build cache is enabled (via `--build-cache` or `org.gradle.caching=true`, see [the doc](https://guides.gradle.org/using-build-cache/)):
   - Enable the local cache.
@@ -46,7 +46,7 @@ This is done by configuring a plugin management repository in `settings.gradle`,
 ```
 plugins {
     // …
-    id "com.gradle.enterprise" version "<<version>>"
+    id "com.gradle.develocity" version "<<version>>"
     id "io.github.gradle.gradle-enterprise-conventions-plugin" version "<<version>>"
     // …
 }
@@ -54,7 +54,7 @@ plugins {
 
 ## Credentials
 
-To enable build scan publishing, authenticate with [Gradle Enterprise doc](https://docs.gradle.com/enterprise/gradle-plugin/#authenticating_with_gradle_enterprise), then add a `gradle.enterprise.url` system property to your build.
+To enable build scan publishing, authenticate with [Develocity doc](https://docs.gradle.com/develocity/gradle-plugin/current/#authenticating_with_gradle_enterprise), then add a `gradle.enterprise.url` system property to your build.
 
 ```
 ./gradlew myBuildTask -Dgradle.enterprise.url=https://ge.mycompany.com/
@@ -71,7 +71,7 @@ export GRADLE_CACHE_REMOTE_URL=https://ge.mycompany.com/
 ./gradlew myBuildTask -Dgradle.cache.remote.server=https://ge.mycompany.com/
 ```
 
-To enable build scan publishing, you need to correctly authenticate as documented [here](https://docs.gradle.com/enterprise/gradle-plugin/#authenticating).
+To enable build scan publishing, you need to correctly authenticate as documented [here](https://docs.gradle.com/develocity/gradle-plugin/current/#authenticating).
 
 ## Development
 
@@ -96,10 +96,10 @@ buildscript {
 }
 
 plugins {
-    id("com.gradle.enterprise").version("3.16.2")
+    id("com.gradle.develocity").version("3.19.2")
 }
 
-apply(plugin= "io.github.gradle.gradle-enterprise-conventions-plugin")
+apply(plugin="io.github.gradle.gradle-enterprise-conventions-plugin")
 
 ```
 
