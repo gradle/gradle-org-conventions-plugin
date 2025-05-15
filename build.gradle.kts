@@ -5,7 +5,7 @@ plugins {
 }
 
 rootProject.group = "io.github.gradle"
-rootProject.version = "0.10.2"
+rootProject.version = "0.11.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -43,10 +43,10 @@ extensions.configure<ExtraPropertiesExtension>("ext") {
 }
 gradlePlugin {
     plugins.create("conventionsPlugin") {
-        id = "io.github.gradle.gradle-enterprise-conventions-plugin"
+        id = "io.github.gradle.gradle-org-develocity-conventions-plugin"
         implementationClass = "com.gradle.enterprise.conventions.DevelocityConventionsPlugin"
         displayName = "Develocity Conventions Plugin"
-        description = "Develocity Conventions Plugin"
+        description = "Develocity Conventions Plugin for OSS Gradle projects"
         website = "https://github.com/gradle/gradle-enterprise-conventions-plugin"
         vcsUrl = "https://github.com/gradle/gradle-enterprise-conventions-plugin.git"
         tags = listOf("gradle", "gradle enterprise")

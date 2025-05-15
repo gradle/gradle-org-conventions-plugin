@@ -1,8 +1,8 @@
 import groovy.json.JsonOutput
 
 plugins {
-    id "com.gradle.enterprise"
-    id "io.github.gradle.gradle-enterprise-conventions-plugin"
+    id "com.gradle.develocity"
+    id "io.github.gradle.gradle-org-develocity-conventions-plugin"
 }
 
 gradle.afterProject { project ->

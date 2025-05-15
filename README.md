@@ -47,7 +47,7 @@ This is done by configuring a plugin management repository in `settings.gradle`,
 plugins {
     // …
     id("com.gradle.develocity").version("<version>")
-    id("io.github.gradle.gradle-enterprise-conventions-plugin").version("<version>")
+    id("io.github.gradle.gradle-org-develocity-conventions-plugin").version("<version>")
     // …
 }
 ```
@@ -100,7 +100,7 @@ plugins {
     id("com.gradle.enterprise").version("3.16.2")
 }
 
-apply(plugin= "io.github.gradle.gradle-enterprise-conventions-plugin")
+apply(plugin= "io.github.gradle.gradle-org-develocity-conventions-plugin")
 
 ```
 
