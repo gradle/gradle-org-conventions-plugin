@@ -5,11 +5,12 @@ plugins {
 }
 
 rootProject.group = "io.github.gradle"
-rootProject.version = "0.10.3"
+version = "0.11.0"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 repositories {
@@ -41,7 +42,11 @@ extensions.configure<ExtraPropertiesExtension>("ext") {
     set("gradle.publish.key", project.findProperty("gradlePublishKey"))
     set("gradle.publish.secret", project.findProperty("gradlePublishSecret"))
 }
+
 gradlePlugin {
+    website = "https://github.com/gradle/gradle-enterprise-conventions-plugin"
+    vcsUrl = "https://github.com/gradle/gradle-enterprise-conventions-plugin.git"
+
     plugins.create("conventionsPlugin") {
         id = "io.github.gradle.gradle-enterprise-conventions-plugin"
         implementationClass = "com.gradle.enterprise.conventions.DevelocityConventionsPlugin"
