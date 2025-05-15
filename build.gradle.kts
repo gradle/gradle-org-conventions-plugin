@@ -4,7 +4,7 @@ plugins {
     id("maven-publish")
 }
 
-rootProject.group = "io.github.gradle"
+group = "io.github.gradle"
 version = "0.11.0"
 
 java {
@@ -19,22 +19,13 @@ repositories {
 }
 
 dependencies {
-    val develocityPluginVersion = "3.17.2"
-    val junit5Version = "5.10.2"
-    val jacksonVersion = "2.17.0"
-    val mockitoExtensionVersion = "3.12.4"
-
-    compileOnly("com.gradle:develocity-gradle-plugin:${develocityPluginVersion}")
-    testImplementation("com.gradle:develocity-gradle-plugin:${develocityPluginVersion}")
+    compileOnly(libs.develocity.plugin)
+    testImplementation(libs.develocity.plugin)
     implementation(gradleApi())
 
-    testImplementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    testImplementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:$junit5Version")
-    testImplementation("org.mockito:mockito-junit-jupiter:${mockitoExtensionVersion}")
+    testImplementation(libs.bundles.jackson)
+    testImplementation(libs.bundles.junit)
+    testImplementation(libs.mockitoJunitJupiter)
 }
 
 // Workaround for https://github.com/gradle/dev-infrastructure/issues/505#issuecomment-762060878
