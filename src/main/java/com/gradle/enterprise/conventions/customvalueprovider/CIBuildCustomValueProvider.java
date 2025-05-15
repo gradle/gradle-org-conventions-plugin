@@ -4,6 +4,7 @@ import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import org.gradle.api.initialization.Settings;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.BUILD_ID;
 import static com.gradle.enterprise.conventions.customvalueprovider.ScanCustomValueNames.GIT_COMMIT_NAME;
@@ -65,7 +66,8 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
         public void accept(Settings settings, BuildScanConfiguration buildScan) {
             buildScan.link("TeamCity Build", getConventions().getEnv("BUILD_URL"));
             buildScan.value(BUILD_ID, getConventions().getEnv("BUILD_ID"));
-            getConventions().setCommitId(settings.getRootDir(), buildScan, getConventions().getEnv("BUILD_VCS_NUMBER"));
+            Optional<String> gitCommitId = DevelocityConventions.execAndGetStdout(settings.getSettingsDir(), "git", "rev-parse", "--verify", "HEAD");
+            gitCommitId.ifPresent(s -> getConventions().setCommitId(settings.getRootDir(), buildScan, s));
         }
     }
 
