@@ -1,10 +1,10 @@
-import jetbrains.buildServer.configs.kotlin.v2019_2.AbsoluteId
-import jetbrains.buildServer.configs.kotlin.v2019_2.BuildType
-import jetbrains.buildServer.configs.kotlin.v2019_2.CheckoutMode
-import jetbrains.buildServer.configs.kotlin.v2019_2.Project
-import jetbrains.buildServer.configs.kotlin.v2019_2.buildFeatures.commitStatusPublisher
-import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.gradle
-import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
+import jetbrains.buildServer.configs.kotlin.AbsoluteId
+import jetbrains.buildServer.configs.kotlin.BuildType
+import jetbrains.buildServer.configs.kotlin.CheckoutMode
+import jetbrains.buildServer.configs.kotlin.Project
+import jetbrains.buildServer.configs.kotlin.buildFeatures.commitStatusPublisher
+import jetbrains.buildServer.configs.kotlin.buildSteps.gradle
+import jetbrains.buildServer.configs.kotlin.triggers.vcs
 
 
 object Project : Project({
@@ -44,7 +44,6 @@ object Verify : BuildType({
         param("env.GRADLE_CACHE_REMOTE_USERNAME", "%gradle.cache.remote.username%")
         param("env.GRADLE_CACHE_REMOTE_PASSWORD", "%gradle.cache.remote.password%")
     }
-
 
     steps {
         gradle {
@@ -93,12 +92,11 @@ object ReleasePlugin : BuildType({
             buildFile = "build.gradle.kts"
         }
     }
+
     params {
-        param("env.JAVA_HOME", "%linux.java8.oracle.64bit%")
         param("env.GRADLE_CACHE_REMOTE_USERNAME", "%gradle.cache.remote.username%")
         param("env.GRADLE_CACHE_REMOTE_PASSWORD", "%gradle.cache.remote.password%")
         param("env.ORG_GRADLE_PROJECT_gradlePublishKey", "%plugin.portal.publish.key%")
         param("env.ORG_GRADLE_PROJECT_gradlePublishSecret", "%plugin.portal.publish.secret%")
     }
 })
-
