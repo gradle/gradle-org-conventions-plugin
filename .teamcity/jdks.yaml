@@ -5,5 +5,5 @@ jdks:
     os: "linux"
     arch: "amd64"
     vendor: "temurin"
-    version: "jdk8u452-b09"
-    sha256: "9448308a21841960a591b47927cf2d44fdc4c0533a5f8111a4b243a6bafb5d27"
+    version: "jdk-17.0.15+6"
+    sha256: "9616877c733c9249328ea9bd83a5c8c30e0f9a7af180cac8ffda9034161c2df2"

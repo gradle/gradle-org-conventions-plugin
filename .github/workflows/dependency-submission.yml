@@ -1,0 +1,27 @@
+name: Generate and save dependency graph
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-submission:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v4
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: 17
+    - name: Generate and save dependency graph
+      uses: gradle/actions/dependency-submission@v4
+      with:
+        dependency-graph: generate-and-upload

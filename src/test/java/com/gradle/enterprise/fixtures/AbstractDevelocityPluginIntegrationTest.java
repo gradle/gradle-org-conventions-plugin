@@ -40,10 +40,10 @@ public class AbstractDevelocityPluginIntegrationTest {
     static {
         SimpleModule module = new SimpleModule();
         // Conflict setter: setUrl(URI)/setUrl(String)
-        module.addDeserializer(HttpBuildCache.class, new JsonDeserializer<HttpBuildCache>() {
+        module.addDeserializer(TestHttpBuildCache.class, new JsonDeserializer<TestHttpBuildCache>() {
             @Override
-            public HttpBuildCache deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-                HttpBuildCache buildCache = new HttpBuildCache();
+            public TestHttpBuildCache deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+                TestHttpBuildCache buildCache = new TestHttpBuildCache();
 
                 JsonNode node = p.getCodec().readTree(p);
                 String url = stringOrNull(node.get("url"));
@@ -167,7 +167,7 @@ public class AbstractDevelocityPluginIntegrationTest {
             try {
                 String json = toString(new FileInputStream(new File(projectDir, "remoteCacheConfiguration.json")));
                 System.out.println("configuredRemoteCache: " + json);
-                configuredRemoteCache = OBJECT_MAPPER.readValue(json, HttpBuildCache.class);
+                configuredRemoteCache = OBJECT_MAPPER.readValue(json, TestHttpBuildCache.class);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -183,7 +183,7 @@ public class AbstractDevelocityPluginIntegrationTest {
             try {
                 String json = toString(new FileInputStream(new File(projectDir, "localCacheConfiguration.json")));
                 System.out.println("configuredLocalCache: " + json);
-                configuredLocalCache = OBJECT_MAPPER.readValue(json, DirectoryBuildCache.class);
+                configuredLocalCache = OBJECT_MAPPER.readValue(json, TestDirectoryBuildCache.class);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -207,4 +207,8 @@ public class AbstractDevelocityPluginIntegrationTest {
     protected BuildScanConfigurationForTest getConfiguredBuildScan() {
         return getConfiguredDevelocity().getBuildScan();
     }
+
+    static class TestHttpBuildCache extends HttpBuildCache {}
+
+    static class TestDirectoryBuildCache extends DirectoryBuildCache {}
 }
