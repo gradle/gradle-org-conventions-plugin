@@ -1,0 +1,9 @@
+version: "v1"
+jdks:
+  - params:
+      - "env.JAVA_HOME"
+    os: "linux"
+    arch: "amd64"
+    vendor: "temurin"
+    version: "jdk8u452-b09"
+    sha256: "9448308a21841960a591b47927cf2d44fdc4c0533a5f8111a4b243a6bafb5d27"

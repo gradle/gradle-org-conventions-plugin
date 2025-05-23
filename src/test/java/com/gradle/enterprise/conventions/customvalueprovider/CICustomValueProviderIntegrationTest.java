@@ -20,7 +20,7 @@ public class CICustomValueProviderIntegrationTest extends AbstractDevelocityPlug
         execAndGetStdout(projectDir, "git", "commit", "-m", "Initial commit");
         execAndGetStdout(projectDir, "git", "config", "--add", "remote.origin.url", "https://github.com/gradle/gradle.git");
 
-        headCommitId = execAndGetStdout(projectDir, "git", "log", "-1", "--format=%H").get();
+        headCommitId = execAndGetStdout(projectDir, "git", "rev-parse", "--verify", "HEAD").get();
     }
 
     @Test
