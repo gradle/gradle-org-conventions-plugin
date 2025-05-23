@@ -2,7 +2,7 @@ import groovy.json.JsonOutput
 
 plugins {
     id "com.gradle.develocity"
-    id "io.github.gradle.gradle-org-develocity-conventions-plugin"
+    id "io.github.gradle.develocity-conventions-plugin"
 }
 
 gradle.afterProject { project ->

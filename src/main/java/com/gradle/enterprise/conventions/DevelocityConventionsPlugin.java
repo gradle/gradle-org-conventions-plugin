@@ -121,7 +121,6 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
         private static final String GRADLE_CACHE_REMOTE_SERVER_PROPERTY_NAME = "gradle.cache.remote.server";
         private static final String GRADLE_CACHE_REMOTE_SERVER_ENV_NAME = "GRADLE_CACHE_REMOTE_SERVER";
         private static final String DEVELOCITY_ACCESS_KEY = "DEVELOCITY_ACCESS_KEY";
-        private static final String GRADLE_ENTERPRISE_ACCESS_KEY = "GRADLE_ENTERPRISE_ACCESS_KEY";
         private static final String GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME = "gradle.cache.remote.push";
         private static final String GRADLE_CACHE_NODE_PROPERTY_NAME = "cacheNode";
         private final DevelocityConventions conventions;
@@ -137,12 +136,11 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
             String remoteCacheUrl = determineRemoteCacheUrl();
             boolean remotePush = Boolean.parseBoolean(conventions.getSystemProperty(GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME, "false"));
             String develocityAccessKey = conventions.getEnvVariableThenSystemProperty(DEVELOCITY_ACCESS_KEY, DEVELOCITY_ACCESS_KEY, "");
-            String geAccessKey = conventions.getEnvVariableThenSystemProperty(GRADLE_ENTERPRISE_ACCESS_KEY, GRADLE_ENTERPRISE_ACCESS_KEY, "");
             boolean disableLocalCache = Boolean.parseBoolean(conventions.getSystemProperty("disableLocalCache", "false"));
             buildCache.remote(dv.getBuildCache(), remoteBuildCache -> {
                 remoteBuildCache.setEnabled(true);
                 remoteBuildCache.setServer(remoteCacheUrl);
-                boolean accessKeySet = notNullOrEmpty(develocityAccessKey) || notNullOrEmpty(geAccessKey);
+                boolean accessKeySet = notNullOrEmpty(develocityAccessKey);
                 boolean push = (conventions.isCiServer() || remotePush) && accessKeySet;
                 remoteBuildCache.setPush(push);
             });
