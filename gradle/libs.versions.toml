@@ -2,7 +2,7 @@
 develocity = "3.17.2"
 junit = "5.10.2"
 jackson = "2.19.0"
-mockitoExtension = "3.12.4"
+mockitoExtension = "5.18.0"
 
 [libraries]
 develocity-plugin = { module = "com.gradle:develocity-gradle-plugin", version.ref = "develocity"}
