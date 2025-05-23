@@ -18,8 +18,8 @@ object Project : Project({
 object Verify : BuildType({
     id = AbsoluteId("VerifyGradleEnterpriseConventionsPlugin")
     uuid = "VerifyGradleEnterpriseConventionsPlugin"
-    name = "Verify Gradle Enterprise Conventions Plugin"
-    description = "Verify Gradle Enterprise Conventions Plugin"
+    name = "Verify Develocity Conventions Plugin"
+    description = "Verify Develocity Conventions Plugin"
 
     vcs {
         root(AbsoluteId("GradlePlugins_GradleEnterpriseConventionsPlugin_Master"))
@@ -70,8 +70,8 @@ object Verify : BuildType({
 object ReleasePlugin : BuildType({
     id = AbsoluteId("ReleaseGradleEnterpriseConventionsPlugin")
     uuid = "ReleaseGradleEnterpriseConventionsPlugin"
-    name = "Release Gradle Enterprise Conventions Plugin"
-    description = "Release Gradle Enterprise Conventions Plugin"
+    name = "Release Develocity Conventions Plugin"
+    description = "Release Develocity Conventions Plugin"
 
     vcs {
         root(AbsoluteId("GradlePlugins_GradleEnterpriseConventionsPlugin_Master"))

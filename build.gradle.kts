@@ -1,11 +1,11 @@
 plugins {
     `java-gradle-plugin`
-    id("com.gradle.plugin-publish") version "1.2.1"
+    id("com.gradle.plugin-publish") version "1.3.1"
     id("maven-publish")
 }
 
 rootProject.group = "io.github.gradle"
-rootProject.version = "0.10.3"
+rootProject.version = "0.11.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -43,17 +43,14 @@ extensions.configure<ExtraPropertiesExtension>("ext") {
 }
 gradlePlugin {
     plugins.create("conventionsPlugin") {
-        id = "io.github.gradle.gradle-enterprise-conventions-plugin"
+        id = "io.github.gradle.develocity-conventions-plugin"
         implementationClass = "com.gradle.enterprise.conventions.DevelocityConventionsPlugin"
         displayName = "Develocity Conventions Plugin"
-        description = "Develocity Conventions Plugin"
+        description = "Develocity Conventions Plugin for OSS Gradle projects"
+        website = "https://github.com/gradle/gradle-org-conventions-plugin"
+        vcsUrl = "https://github.com/gradle/gradle-org-conventions-plugin.git"
+        tags = listOf("gradle", "gradle enterprise", "develocity")
     }
-}
-
-pluginBundle {
-    website = "https://github.com/gradle/gradle-enterprise-conventions-plugin"
-    vcsUrl = "https://github.com/gradle/gradle-enterprise-conventions-plugin.git"
-    tags = listOf("gradle", "gradle enterprise")
 }
 
 tasks.named("publishPlugins", Task::class.java) {

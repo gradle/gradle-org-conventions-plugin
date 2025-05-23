@@ -1,13 +1,13 @@
 import groovy.json.JsonOutput
 
 plugins {
-    id "com.gradle.enterprise"
-    id "io.github.gradle.gradle-enterprise-conventions-plugin"
+    id "com.gradle.develocity"
+    id "io.github.gradle.develocity-conventions-plugin"
 }
 
 gradle.afterProject { project ->
-    def remoteCache = settings.buildCache?.remote ?: new HttpBuildCache()
-    def localCache = settings.buildCache?.local ?: new DirectoryBuildCache()
+    def remoteCache = settings.buildCache?.remote ?: new HttpBuildCache() {}
+    def localCache = settings.buildCache?.local ?: new DirectoryBuildCache() {}
     project.file('remoteCacheConfiguration.json') << JsonOutput.toJson([
         url                  : (remoteCache instanceof HttpBuildCache) ? remoteCache.url?.toString() : remoteCache.server,
         allowUntrustedServer : remoteCache.allowUntrustedServer,

@@ -1,20 +1,20 @@
-# Gradle Enterprise Conventions Plugin
+# Develocity Conventions Plugin
 
 Inspired by https://github.com/spring-gradle-plugins/gradle-enterprise-conventions-plugin, this plugin configures public [Gradle projects](https://github.com/gradle)
-to use the public Gradle Enterprise instance at [ge.gradle.org](https://ge.gradle.org).
+to use the public Develocity instance at [ge.gradle.org](https://ge.gradle.org).
 
-Requires Gradle 7.6+. The plugin is configuration-cache compatible when used the Gradle Enterprise plugin 3.11.3+.
+Requires Gradle 7.6+. The plugin is configuration-cache compatible when used the Develocity plugin 3.17+.
 
 ## What it does
 
-When applied as a settings plugin alongside the [Gradle Enterprise Plugin](https://plugins.gradle.org/plugin/com.gradle.enterprise), this plugin does the following:
+When applied as a settings plugin alongside the [Develocity Plugin](https://plugins.gradle.org/plugin/com.gradle.develocity), this plugin does the following:
 
 - If the build cache is enabled (via `--build-cache` or `org.gradle.caching=true`, see [the doc](https://guides.gradle.org/using-build-cache/)):
   - Enable the local cache.
   - Enable [ge.gradle.org](https://ge.gradle.org) as remote cache and anonymous read access, enjoy faster build!
     - There're three build cache node available on the earth: `eu`(the default)/`us`/`au`, you can use `-DcacheNode=us`/`-DcacheNode=au` to use other ones.
   - Enable pushing to remote cache on CI if required credentials are provided.
-- By default, build scans are published to `ge.gradle.org`. If you would like to publish to your own GE server, add `-Dgradle.enterprise.url=https://ge.mycompany.com/`.
+- By default, build scans are published to `ge.gradle.org`. If you would like to publish to your own Develocity server, add `-Ddevelocity.server.url=https://ge.mycompany.com/`.
   If you would like to publish to public build scan server (`scan.gradle.com`), add `-DagreePublicBuildScanTermOfService=yes` to your build.
   - For CI build (`CI` environment variable exists):
     - Add `CI` build scan tag.
@@ -46,18 +46,19 @@ This is done by configuring a plugin management repository in `settings.gradle`,
 ```
 plugins {
     // …
-    id "com.gradle.enterprise" version "<<version>>"
-    id "io.github.gradle.gradle-enterprise-conventions-plugin" version "<<version>>"
+    id("com.gradle.develocity").version("<version>")
+    id("io.github.gradle.develocity-conventions-plugin").version("<version>")
     // …
 }
 ```
 
 ## Credentials
 
-To enable build scan publishing, authenticate with [Gradle Enterprise doc](https://docs.gradle.com/enterprise/gradle-plugin/#authenticating_with_gradle_enterprise), then add a `gradle.enterprise.url` system property to your build.
+To enable build scan publishing, authenticate with [Develocity](https://docs.gradle.com/develocity/gradle-plugin/current/#authenticating).
+Then add a `develocity.server.url` system property to your build if you publish to a different server than the default one.
 
 ```
-./gradlew myBuildTask -Dgradle.enterprise.url=https://ge.mycompany.com/
+./gradlew myBuildTask -Ddevelocity.server.url=https://ge.mycompany.com/
 ```
 
 To enable build cache pushing, the access key associated with the build needs to have build cache write permission.
@@ -91,15 +92,15 @@ buildscript {
         mavenLocal() 
     }
     dependencies {
-        classpath("com.gradle.enterprise:gradle-enterprise-conventions-plugin:${thePluginVersion}")
+        classpath("com.gradle.enterprise:develocity-conventions-plugin:${thePluginVersion}")
     }
 }
 
 plugins {
-    id("com.gradle.enterprise").version("3.16.2")
+    id("com.gradle.develocity").version("4.0.1")
 }
 
-apply(plugin= "io.github.gradle.gradle-enterprise-conventions-plugin")
+apply(plugin= "io.github.gradle.develocity-conventions-plugin")
 
 ```
 

@@ -34,8 +34,6 @@ public class DevelocityConventions {
     private static final String DEFAULT_DEVELOCITY_SERVER = "https://ge.gradle.org";
     private static final String AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE = "agreePublicBuildScanTermOfService";
 
-    @Deprecated
-    private static final String GRADLE_ENTERPRISE_URL_PROPERTY_NAME = "gradle.enterprise.url";
     private static final String DEVELOCITY_SERVER_URL = "develocity.server.url";
     private static final String CI_ENV_NAME = "CI";
 
@@ -54,7 +52,7 @@ public class DevelocityConventions {
     }
 
     private String determineDevelocityServerUrl() {
-        String dvServerUrl = System.getProperty(DEVELOCITY_SERVER_URL, System.getProperty(GRADLE_ENTERPRISE_URL_PROPERTY_NAME));
+        String dvServerUrl = System.getProperty(DEVELOCITY_SERVER_URL);
         if (dvServerUrl != null) {
             return dvServerUrl;
         }
