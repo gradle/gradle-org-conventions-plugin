@@ -19,7 +19,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 
 /**
- * This is a dummy gradle enterprise plugin for testing. It writes the configuration to json to
+ * This is a dummy Develocity plugin for testing. It writes the configuration to json to
  * be verified in integration tests.
  */
 public class DevelocityPlugin implements Plugin<Settings> {

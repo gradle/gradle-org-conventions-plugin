@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
     private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org";
     private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org";
-    private static final String PUBLIC_GRADLE_ENTERPRISE_SERVER = "https://ge.gradle.org";
+    private static final String PUBLIC_DEVELOCITY_SERVER = "https://ge.gradle.org";
 
     @Test
     public void configureBuildCacheOnlyWhenBuildCacheEnabled() throws URISyntaxException {
@@ -44,7 +44,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
         succeeds("help");
 
         assertNull(getConfiguredRemoteCache().getUrl());
-        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredDevelocity().getServerValue());
+        assertEquals(PUBLIC_DEVELOCITY_SERVER, getConfiguredDevelocity().getServerValue());
         assertTrue(getConfiguredBuildScan().isCaptureFileFingerprints());
         assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
         assertTrue(getConfiguredBuildScan().isUploadInBackground());
@@ -53,10 +53,10 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
     @ParameterizedTest
     @ValueSource(strings = {"publishOnFailure", "publishAlways", "custom"})
     public void configurePublishStrategy(String strategy) {
-        succeeds("help", "-DpublishStrategy=" + strategy, "-Dgradle.enterprise.url=https://ge.gradle.org");
+        succeeds("help", "-DpublishStrategy=" + strategy, "-Ddevelocity.server.url=https://ge.gradle.org");
 
         assertNull(getConfiguredRemoteCache().getUrl());
-        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredDevelocity().getServerValue());
+        assertEquals(PUBLIC_DEVELOCITY_SERVER, getConfiguredDevelocity().getServerValue());
         switch (strategy) {
             case "publishOnFailure":
                 assertTrue(getConfiguredBuildScan().isPublishOnFailure());
@@ -72,11 +72,11 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
 
     @Test
     public void defaultPublishStrategyIsPublishIfAuthenticated() {
-        succeeds("help", "-Dgradle.enterprise.url=https://ge.gradle.org");
+        succeeds("help", "-Ddevelocity.server.url=https://ge.gradle.org");
 
         assertNull(getConfiguredRemoteCache().getUrl());
         assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
-        assertEquals(PUBLIC_GRADLE_ENTERPRISE_SERVER, getConfiguredDevelocity().getServerValue());
+        assertEquals(PUBLIC_DEVELOCITY_SERVER, getConfiguredDevelocity().getServerValue());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"gradle.enterprise.url", "develocity.server.url"})
+    @ValueSource(strings = {"develocity.server.url"})
     void configureBuildScanViaSystemProperties(String paramName) {
         succeeds("help", "-DcacheNode=us", "-D" + paramName + "=https://ge.mycompany.com");
 

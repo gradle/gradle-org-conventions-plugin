@@ -4,8 +4,8 @@ plugins {
     id("maven-publish")
 }
 
-group = "io.github.gradle"
-version = "0.11.0"
+rootProject.group = "io.github.gradle"
+rootProject.version = "0.12.0"
 
 java {
     toolchain {
@@ -39,13 +39,13 @@ gradlePlugin {
     vcsUrl = "https://github.com/gradle/gradle-enterprise-conventions-plugin.git"
 
     plugins.create("conventionsPlugin") {
-        id = "io.github.gradle.gradle-enterprise-conventions-plugin"
+        id = "io.github.gradle.develocity-conventions-plugin"
         implementationClass = "com.gradle.enterprise.conventions.DevelocityConventionsPlugin"
         displayName = "Develocity Conventions Plugin"
-        description = "Develocity Conventions Plugin"
-        website = "https://github.com/gradle/gradle-enterprise-conventions-plugin"
-        vcsUrl = "https://github.com/gradle/gradle-enterprise-conventions-plugin.git"
-        tags = listOf("gradle", "gradle enterprise")
+        description = "Develocity Conventions Plugin for OSS Gradle projects"
+        website = "https://github.com/gradle/gradle-org-conventions-plugin"
+        vcsUrl = "https://github.com/gradle/gradle-org-conventions-plugin.git"
+        tags = listOf("gradle", "gradle enterprise", "develocity")
     }
 }
 
