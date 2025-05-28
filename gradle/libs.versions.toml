@@ -1,5 +1,5 @@
 [versions]
-junit = "5.12.2"
+junit = "5.10.2"
 develocity = "4.0.2"
 jackson = "2.19.0"
 mockitoExtension = "5.18.0"

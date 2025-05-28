@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gradle.develocity.agent.gradle.DevelocityConfiguration;
 import com.gradle.develocity.agent.gradle.buildcache.DevelocityBuildCache;
+import com.gradle.develocity.agent.gradle.integration.DevelocityIntegrationConfiguration;
 import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import org.gradle.api.Action;
 import org.gradle.api.model.ObjectFactory;
@@ -63,6 +64,12 @@ public class DevelocityConfigurationForTest implements DevelocityConfiguration {
         return server;
     }
 
+    @Override
+    @JsonIgnore
+    public Property<Boolean> getEdgeDiscovery() {
+        throw new UnsupportedOperationException();
+    }
+
     public void setServer(String server) {
         this.serverValue = server;
     }
@@ -98,5 +105,11 @@ public class DevelocityConfigurationForTest implements DevelocityConfiguration {
     @JsonIgnore
     public Class<? extends DevelocityBuildCache> getBuildCache() {
         return DevelocityBuildCache.class;
+    }
+
+    @Override
+    @JsonIgnore
+    public DevelocityIntegrationConfiguration getIntegration() {
+        throw new UnsupportedOperationException();
     }
 }
