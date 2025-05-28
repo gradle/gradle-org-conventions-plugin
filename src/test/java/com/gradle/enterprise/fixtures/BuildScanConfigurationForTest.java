@@ -275,10 +275,15 @@ public class BuildScanConfigurationForTest implements BuildScanConfigurationInte
         public Property<Boolean> getTestLogging() {
             return null;
         }
+
+        @Override
+        public Property<Boolean> getResourceUsage() {
+            return null;
+        }
     }
 
     @Override
-    public void background(Runnable action) {
+    public void backgroundInternal(Runnable action) {
         inBackground = true;
         action.run();
         inBackground = false;
