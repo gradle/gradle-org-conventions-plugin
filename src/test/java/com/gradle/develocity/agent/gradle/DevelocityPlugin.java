@@ -2,7 +2,7 @@ package com.gradle.develocity.agent.gradle;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gradle.develocity.agent.gradle.buildcache.DevelocityBuildCache;
-import com.gradle.enterprise.fixtures.DevelocityConfigurationForTest;
+import io.github.gradle.fixtures.DevelocityConfigurationForTest;
 import org.gradle.api.Plugin;
 import org.gradle.api.initialization.Settings;
 import org.gradle.api.internal.GradleInternal;

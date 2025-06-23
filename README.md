@@ -92,7 +92,7 @@ buildscript {
         mavenLocal() 
     }
     dependencies {
-        classpath("com.gradle.enterprise:develocity-conventions-plugin:${thePluginVersion}")
+        classpath("io.github.gradle:develocity-conventions-plugin:${thePluginVersion}")
     }
 }
 
