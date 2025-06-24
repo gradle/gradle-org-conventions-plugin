@@ -64,7 +64,7 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
     }
 
     // Disable build scan for security reason
-    // https://github.com/gradle/gradle-enterprise-conventions-plugin/issues/9
+    // https://github.com/gradle/gradle-org-conventions-plugin/issues/9
     private boolean containsPropertiesTask(Settings settings) {
         return settings.getGradle().getStartParameter().getTaskNames().contains("properties")
             || settings.getGradle().getStartParameter().getTaskNames().stream().anyMatch(it -> it.endsWith(":properties"));

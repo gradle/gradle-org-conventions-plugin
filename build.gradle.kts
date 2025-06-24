@@ -45,7 +45,7 @@ gradlePlugin {
         description = "Develocity Conventions Plugin for OSS Gradle projects"
         website = "https://github.com/gradle/gradle-org-conventions-plugin"
         vcsUrl = "https://github.com/gradle/gradle-org-conventions-plugin.git"
-        tags = listOf("gradle", "gradle enterprise", "develocity")
+        tags = listOf("gradle", "develocity")
     }
 }
 

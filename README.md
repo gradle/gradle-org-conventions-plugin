@@ -1,6 +1,6 @@
 # Develocity Conventions Plugin
 
-Inspired by https://github.com/spring-gradle-plugins/gradle-enterprise-conventions-plugin, this plugin configures public [Gradle projects](https://github.com/gradle)
+Inspired by https://github.com/spring-io/develocity-conventions, this plugin configures public [Gradle projects](https://github.com/gradle)
 to use the public Develocity instance at [ge.gradle.org](https://ge.gradle.org).
 
 Requires Gradle 7.6+. The plugin is configuration-cache compatible when used the Develocity plugin 3.17+.
@@ -72,7 +72,7 @@ export GRADLE_CACHE_REMOTE_URL=https://ge.mycompany.com/
 ./gradlew myBuildTask -Dgradle.cache.remote.server=https://ge.mycompany.com/
 ```
 
-To enable build scan publishing, you need to correctly authenticate as documented [here](https://docs.gradle.com/enterprise/gradle-plugin/#authenticating).
+To enable build scan publishing, you need to correctly authenticate as documented [here](https://docs.gradle.com/develocity/gradle-plugin/current/#authenticating).
 
 ## Development
 
