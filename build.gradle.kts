@@ -35,17 +35,17 @@ extensions.configure<ExtraPropertiesExtension>("ext") {
 }
 
 gradlePlugin {
-    website = "https://github.com/gradle/gradle-enterprise-conventions-plugin"
-    vcsUrl = "https://github.com/gradle/gradle-enterprise-conventions-plugin.git"
+    website = "https://github.com/gradle/gradle-org-conventions-plugin"
+    vcsUrl = "https://github.com/gradle/gradle-org-conventions-plugin.git"
 
     plugins.create("conventionsPlugin") {
         id = "io.github.gradle.develocity-conventions-plugin"
-        implementationClass = "com.gradle.enterprise.conventions.DevelocityConventionsPlugin"
+        implementationClass = "io.github.gradle.conventions.DevelocityConventionsPlugin"
         displayName = "Develocity Conventions Plugin"
         description = "Develocity Conventions Plugin for OSS Gradle projects"
         website = "https://github.com/gradle/gradle-org-conventions-plugin"
         vcsUrl = "https://github.com/gradle/gradle-org-conventions-plugin.git"
-        tags = listOf("gradle", "gradle enterprise", "develocity")
+        tags = listOf("gradle", "develocity")
     }
 }
 
