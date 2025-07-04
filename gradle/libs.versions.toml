@@ -1,7 +1,7 @@
 [versions]
 develocity = "4.0.2"
 junit = "5.13.2"
-junit-launcher = "1.13.2"
+junit-launcher = "1.13.3"
 jackson = "2.19.1"
 mockitoExtension = "5.18.0"
 
