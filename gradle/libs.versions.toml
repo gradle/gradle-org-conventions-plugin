@@ -1,5 +1,5 @@
 [versions]
-develocity = "4.0.2"
+develocity = "4.1"
 junit = "5.13.2"
 junit-launcher = "1.13.3"
 jackson = "2.19.1"
