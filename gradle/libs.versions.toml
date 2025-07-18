@@ -2,7 +2,7 @@
 develocity = "4.1"
 junit = "5.13.2"
 junit-launcher = "1.13.3"
-jackson = "2.19.1"
+jackson = "2.19.2"
 mockitoExtension = "5.18.0"
 
 [libraries]
