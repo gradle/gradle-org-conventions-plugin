@@ -35,7 +35,12 @@ public class DevelocityConventions {
     private static final String AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE = "agreePublicBuildScanTermOfService";
 
     private static final String DEVELOCITY_SERVER_URL = "develocity.server.url";
+    private static final String DEVELOCITY_EDGE_DISCOVERY = "develocity.edge.discovery";
     private static final String CI_ENV_NAME = "CI";
+
+    private static final String GRADLE_CACHE_REMOTE_SERVER_ENV_NAME = "GRADLE_CACHE_REMOTE_SERVER";
+    private static final String GRADLE_CACHE_REMOTE_SERVER_PROPERTY_NAME = "gradle.cache.remote.server";
+    private static final String GRADLE_CACHE_NODE_PROPERTY_NAME = "cacheNode";
 
     private static final Pattern HTTPS_URL_PATTERN = Pattern.compile("https://github\\.com/([\\w-]+)/([\\w-]+)\\.git");
     private static final Pattern SSH_URL_PATTERN = Pattern.compile("git@github\\.com:([\\w-]+)/([\\w-]+)\\.git");
@@ -44,11 +49,30 @@ public class DevelocityConventions {
     private final ProviderFactory providerFactory;
     private final String develocityServerUrl;
     private final boolean isCiServer;
+    private final boolean edgeDiscovery;
 
     public DevelocityConventions(ProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
+        this.edgeDiscovery = determineEdgeDiscovery();
         this.develocityServerUrl = determineDevelocityServerUrl();
         this.isCiServer = !getEnvVariable(CI_ENV_NAME, "").isEmpty();
+    }
+
+    private boolean determineEdgeDiscovery() {
+        return Boolean.parseBoolean(getSystemProperty(DEVELOCITY_EDGE_DISCOVERY, "true"));
+    }
+
+    public Provider<String> getRemoteCacheUrl() {
+        return environmentVariableProvider(GRADLE_CACHE_REMOTE_SERVER_ENV_NAME)
+            .orElse(systemPropertyProvider(GRADLE_CACHE_REMOTE_SERVER_PROPERTY_NAME));
+    }
+
+    public Provider<String> getRemoteCacheNodeName() {
+        return systemPropertyProvider(GRADLE_CACHE_NODE_PROPERTY_NAME);
+    }
+
+    public boolean isRemoteCacheSpecified() {
+        return getRemoteCacheUrl().orElse(getRemoteCacheNodeName()).isPresent();
     }
 
     private String determineDevelocityServerUrl() {
@@ -76,6 +100,10 @@ public class DevelocityConventions {
             .map(entry -> String.format("search.names=%s&search.values=%s", urlEncode(entry.getKey()), urlEncode(entry.getValue())))
             .collect(Collectors.joining("&"));
         return Optional.of(String.format("%s/scans?%s", develocityServerUrl, query));
+    }
+
+    public boolean getEdgeDiscovery() {
+        return edgeDiscovery;
     }
 
     public String getDevelocityServerUrl() {
