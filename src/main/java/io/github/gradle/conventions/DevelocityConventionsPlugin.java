@@ -56,6 +56,7 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
             if (settings.getGradle().getStartParameter().isBuildCacheEnabled()) {
                 DevelocityConfiguration dv = settings.getExtensions().getByType(DevelocityConfiguration.class);
                 settings.buildCache(new BuildCacheConfigureAction(conventions, dv));
+                configureEdge(settings, conventions);
             }
             if (!settings.getGradle().getStartParameter().isNoBuildScan() && !containsPropertiesTask(settings)) {
                 configureBuildScan(settings, conventions);
@@ -68,6 +69,11 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
     private boolean containsPropertiesTask(Settings settings) {
         return settings.getGradle().getStartParameter().getTaskNames().contains("properties")
             || settings.getGradle().getStartParameter().getTaskNames().stream().anyMatch(it -> it.endsWith(":properties"));
+    }
+
+    private void configureEdge(Settings settings, DevelocityConventions conventions) {
+        DevelocityConfiguration dv = settings.getExtensions().getByType(DevelocityConfiguration.class);
+        dv.getEdgeDiscovery().set(conventions.getEdgeDiscovery());
     }
 
 
@@ -117,11 +123,8 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
         private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org";
         private static final String AU_CACHE_NODE = "https://au-build-cache.gradle.org";
 
-        private static final String GRADLE_CACHE_REMOTE_SERVER_PROPERTY_NAME = "gradle.cache.remote.server";
-        private static final String GRADLE_CACHE_REMOTE_SERVER_ENV_NAME = "GRADLE_CACHE_REMOTE_SERVER";
         private static final String DEVELOCITY_ACCESS_KEY = "DEVELOCITY_ACCESS_KEY";
         private static final String GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME = "gradle.cache.remote.push";
-        private static final String GRADLE_CACHE_NODE_PROPERTY_NAME = "cacheNode";
         private final DevelocityConventions conventions;
         private final DevelocityConfiguration dv;
 
@@ -143,26 +146,22 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
                 boolean push = (conventions.isCiServer() || remotePush) && accessKeySet;
                 remoteBuildCache.setPush(push);
             });
-
             buildCache.local(localBuildCache -> localBuildCache.setEnabled(!disableLocalCache));
         }
 
         private String determineRemoteCacheUrl() {
-            return conventions.environmentVariableProvider(GRADLE_CACHE_REMOTE_SERVER_ENV_NAME)
-                .orElse(conventions.systemPropertyProvider(GRADLE_CACHE_REMOTE_SERVER_PROPERTY_NAME))
-                .orElse(conventions.systemPropertyProvider(GRADLE_CACHE_NODE_PROPERTY_NAME)
-                    .map(cacheNode -> {
-                        switch (cacheNode) {
-                            case "eu":
-                                return EU_CACHE_NODE;
-                            case "us":
-                                return US_CACHE_NODE;
-                            case "au":
-                                return AU_CACHE_NODE;
-                            default:
-                                throw new IllegalArgumentException("Unrecognized cacheNode: " + cacheNode);
-                        }
-                    })).orElse(EU_CACHE_NODE).get();
+            return conventions.getRemoteCacheUrl()
+                .getOrElse(getRemoteCacheUrlFromNodeName());
+        }
+
+        private String getRemoteCacheUrlFromNodeName() {
+            return conventions.getRemoteCacheNodeName()
+                .map(cacheNode -> switch (cacheNode) {
+                    case "eu" -> EU_CACHE_NODE;
+                    case "us" -> US_CACHE_NODE;
+                    case "au" -> AU_CACHE_NODE;
+                    default -> throw new IllegalArgumentException("Unrecognized cacheNode: " + cacheNode);
+                }).getOrNull();
         }
 
         private boolean notNullOrEmpty(String value) {

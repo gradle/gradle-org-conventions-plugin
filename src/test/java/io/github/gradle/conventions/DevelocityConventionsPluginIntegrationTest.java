@@ -16,13 +16,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
     private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org";
-    private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org";
     private static final String PUBLIC_DEVELOCITY_SERVER = "https://ge.gradle.org";
 
     @Test
     public void configureBuildCacheOnlyWhenBuildCacheEnabled() throws URISyntaxException {
         succeeds("help", "--build-cache");
 
+        assertTrue(getConfiguredDevelocity().getEdgeDiscoveryValue());
+        assertNull(getConfiguredRemoteCache().getUrl());
+        assertFalse(getConfiguredRemoteCache().isPush());
+        assertTrue(getConfiguredLocalCache().isEnabled());
+    }
+
+    @Test
+    public void configureBuildCacheOnlyWhenBuildCacheEnabledAndCacheNodeIsSet() throws URISyntaxException {
+        succeeds("help", "--build-cache", "-DcacheNode=eu");
+
+        assertTrue(getConfiguredDevelocity().getEdgeDiscoveryValue());
         assertEquals(new URI(EU_CACHE_NODE), getConfiguredRemoteCache().getUrl());
         assertFalse(getConfiguredRemoteCache().isPush());
         assertTrue(getConfiguredLocalCache().isEnabled());

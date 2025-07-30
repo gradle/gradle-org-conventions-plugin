@@ -23,12 +23,16 @@ public class DevelocityConfigurationForTest implements DevelocityConfiguration {
 
     public DevelocityConfigurationForTest(ObjectFactory objectFactory) {
         this.server = objectFactory == null ? null : objectFactory.property(String.class);
+        this.edgeDiscovery = objectFactory == null ? null : objectFactory.property(Boolean.class);
         this.buildScanConfiguration = new BuildScanConfigurationForTest(objectFactory);
     }
+
 
     private BuildScanConfigurationForTest buildScanConfiguration;
     private Property<String> server;
     private String serverValue;
+    private Property<Boolean> edgeDiscovery;
+    private boolean edgeDiscoveryValue;
 
     @Override
     public BuildScanConfigurationForTest getBuildScan() {
@@ -65,15 +69,28 @@ public class DevelocityConfigurationForTest implements DevelocityConfiguration {
     }
 
     @Override
-    @JsonIgnore
+    @JsonSerialize(using = PropertySerializer.class)
     public Property<Boolean> getEdgeDiscovery() {
-        throw new UnsupportedOperationException();
+        return edgeDiscovery;
+    }
+
+    public void setEdgeDiscovery(boolean value) {
+        this.edgeDiscoveryValue = value;
+    }
+
+    @JsonIgnore
+    public boolean getEdgeDiscoveryValue() {
+        if (edgeDiscovery != null) {
+            return edgeDiscovery.getOrElse(false);
+        }
+        return edgeDiscoveryValue;
     }
 
     public void setServer(String server) {
         this.serverValue = server;
     }
 
+    @JsonIgnore
     public String getServerValue() {
         if (server != null) {
             return server.getOrNull();
