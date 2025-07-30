@@ -178,6 +178,16 @@ public class DevelocityConventions {
             .ifPresent(repoUrl -> buildScan.link("Source", String.format("%s/commit/%s", repoUrl, commitId)));
     }
 
+    public Optional<String> getCommitId(File workDir) {
+        Provider<String> commitIdProvider = providerFactory.of(
+            CurrentCommitIdValueSource.class,
+            it -> it.parameters(
+                parameters -> parameters.getWorkDir().set(workDir)
+            )
+        );
+        return toOptional(commitIdProvider);
+    }
+
     private static Optional<String> toOptional(Provider<String> remoteGitHubRepositoryProvider) {
         return Optional.ofNullable(remoteGitHubRepositoryProvider.getOrNull());
     }
@@ -215,6 +225,22 @@ public class DevelocityConventions {
         } catch (IOException | InterruptedException e) {
             LOGGER.error("Run " + Arrays.toString(args) + " in " + workingDir.getAbsolutePath() + " failed:", e);
             return Optional.empty();
+        }
+    }
+
+    static Optional<String> getCurrentCommitId(File workDir) {
+        return execAndGetStdout(workDir, "git", "rev-parse", "--verify", "HEAD");
+    }
+
+    public abstract static class CurrentCommitIdValueSource implements ValueSource<String, CurrentCommitIdValueSource.Params> {
+        interface Params extends ValueSourceParameters {
+            DirectoryProperty getWorkDir();
+        }
+
+        @Nullable
+        @Override
+        public String obtain() {
+            return getCurrentCommitId(getParameters().getWorkDir().getAsFile().get()).orElse(null);
         }
     }
 

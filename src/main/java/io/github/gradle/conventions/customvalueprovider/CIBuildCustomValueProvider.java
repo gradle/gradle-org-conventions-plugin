@@ -66,7 +66,7 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
         public void accept(Settings settings, BuildScanConfiguration buildScan) {
             buildScan.link("TeamCity Build", getConventions().getEnv("BUILD_URL"));
             buildScan.value(BUILD_ID, getConventions().getEnv("BUILD_ID"));
-            Optional<String> gitCommitId = DevelocityConventions.execAndGetStdout(settings.getSettingsDir(), "git", "rev-parse", "--verify", "HEAD");
+            Optional<String> gitCommitId = getConventions().getCommitId(settings.getSettingsDir());
             gitCommitId.ifPresent(s -> getConventions().setCommitId(settings.getRootDir(), buildScan, s));
         }
     }
