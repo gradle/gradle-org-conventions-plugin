@@ -119,9 +119,9 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
     }
 
     private static class BuildCacheConfigureAction implements Action<BuildCacheConfiguration> {
-        private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org";
-        private static final String US_CACHE_NODE = "https://us-build-cache.gradle.org";
-        private static final String AU_CACHE_NODE = "https://au-build-cache.gradle.org";
+        private static final String EU_CACHE_NODE = "https://eun-edge.gradle.org";
+        private static final String US_CACHE_NODE = "https://usw-edge.gradle.org";
+        private static final String AU_CACHE_NODE = "https://au-edge.gradle.org";
 
         private static final String DEVELOCITY_ACCESS_KEY = "DEVELOCITY_ACCESS_KEY";
         private static final String GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME = "gradle.cache.remote.push";

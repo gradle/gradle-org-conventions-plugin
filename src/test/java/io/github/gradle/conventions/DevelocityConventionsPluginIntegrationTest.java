@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
-    private static final String EU_CACHE_NODE = "https://eu-build-cache.gradle.org";
+    private static final String EU_CACHE_NODE = "https://eun-edge.gradle.org";
     private static final String PUBLIC_DEVELOCITY_SERVER = "https://ge.gradle.org";
 
     @Test

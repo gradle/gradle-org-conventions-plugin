@@ -5,7 +5,7 @@ plugins {
 }
 
 rootProject.group = "io.github.gradle"
-rootProject.version = "0.12.0"
+rootProject.version = "0.12.1"
 
 java {
     toolchain {
