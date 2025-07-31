@@ -11,8 +11,9 @@ When applied as a settings plugin alongside the [Develocity Plugin](https://plug
 
 - If the build cache is enabled (via `--build-cache` or `org.gradle.caching=true`, see [the doc](https://guides.gradle.org/using-build-cache/)):
   - Enable the local cache.
+  - Enable [ge.gradle.org](https://ge.gradle.org) as remote cache if credentials are provided, enjoy faster build! (using your preferred [location](https://ge.gradle.org/settings/location)) 
   - Enable [ge.gradle.org](https://ge.gradle.org) as remote cache and anonymous read access, enjoy faster build!
-    - There're three build cache node available on the earth: `eu`(the default)/`us`/`au`, you can use `-DcacheNode=us`/`-DcacheNode=au` to use other ones.
+    - There're four build cache node available on the earth: `Develocity` (the default; Germany) /`eu` (Finland) /`us` (N.California) /`au` (Sydney), you can use `-DcacheNode=eu`/ `-DcacheNode=us`/`-DcacheNode=au` to use other ones.
   - Enable pushing to remote cache on CI if required credentials are provided.
 - By default, build scans are published to `ge.gradle.org`. If you would like to publish to your own Develocity server, add `-Ddevelocity.server.url=https://ge.mycompany.com/`.
   If you would like to publish to public build scan server (`scan.gradle.com`), add `-DagreePublicBuildScanTermOfService=yes` to your build.
