@@ -1,6 +1,5 @@
 package io.github.gradle.conventions.customvalueprovider;
 
-
 import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.logging.Logger;
@@ -16,8 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -83,7 +82,7 @@ public class DevelocityConventions {
 
         String agreePublicBuildScanTermOfService = System.getProperty(AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE, "no");
         if ("yes".equals(agreePublicBuildScanTermOfService)) {
-            // So that we can publish to default GE instance (https://gradle.com)
+            // So that we can publish to default DV instance (https://scans.gradle.com)
             return null;
         } else {
             return DEFAULT_DEVELOCITY_SERVER;
@@ -91,7 +90,7 @@ public class DevelocityConventions {
     }
 
     public Optional<String> customValueSearchUrl(Map<String, String> search) {
-        // public GE instance
+        // public DV instance
         if (develocityServerUrl == null) {
             return Optional.empty();
         }
@@ -262,11 +261,7 @@ public class DevelocityConventions {
     }
 
     private static String urlEncode(String s) {
-        try {
-            return URLEncoder.encode(s, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return URLEncoder.encode(s, StandardCharsets.UTF_8);
     }
 
     private static Optional<String> parseGitHubRemoteUrl(String gitOutput) {

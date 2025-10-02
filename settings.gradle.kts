@@ -1,4 +1,4 @@
-rootProject.name = "develocity-conventions-plugin"
+rootProject.name = "gradle-org-conventions-plugin"
 
 plugins {
     id("com.gradle.develocity").version("4.0.1")

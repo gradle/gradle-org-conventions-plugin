@@ -1,7 +1,6 @@
 [versions]
 develocity = "4.2.2"
 junit = "6.0.0"
-junit-launcher = "6.0.0"
 jackson = "2.19.2"
 mockitoExtension = "5.20.0"
 
@@ -14,7 +13,7 @@ mockitoJunitJupiter = { module = "org.mockito:mockito-junit-jupiter", version.re
 junitJupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junitJupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 junitJupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
-junitJupiter-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-launcher" }
+junitJupiter-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
 
 [bundles]
 jackson = ["jackson-core", "jackson-databind", "jackson-annotations"]
