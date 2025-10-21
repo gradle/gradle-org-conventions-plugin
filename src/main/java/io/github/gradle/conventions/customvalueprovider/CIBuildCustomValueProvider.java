@@ -9,7 +9,6 @@ import java.util.Optional;
 import static io.github.gradle.conventions.customvalueprovider.ScanCustomValueNames.BUILD_ID;
 import static io.github.gradle.conventions.customvalueprovider.ScanCustomValueNames.GIT_COMMIT_NAME;
 
-
 public abstract class CIBuildCustomValueProvider extends BuildScanCustomValueProvider {
     private final String markEnvVariableName;
 
@@ -44,19 +43,6 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
         }
     }
 
-    public static class JenkinsCustomValueProvider extends CIBuildCustomValueProvider {
-        public JenkinsCustomValueProvider(DevelocityConventions conventions) {
-            super("JENKINS_HOME", conventions);
-        }
-
-        @Override
-        public void accept(Settings settings, BuildScanConfiguration buildScan) {
-            buildScan.link("Jenkins Build", getConventions().getEnv("BUILD_URL"));
-            buildScan.value(BUILD_ID, getConventions().getEnv("BUILD_ID"));
-            getConventions().setCommitId(settings.getRootDir(), buildScan, getConventions().getEnv("GIT_COMMIT"));
-        }
-    }
-
     public static class TeamCityCustomValueProvider extends CIBuildCustomValueProvider {
         public TeamCityCustomValueProvider(DevelocityConventions conventions) {
             super("TEAMCITY_VERSION", conventions);
@@ -70,20 +56,6 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
             gitCommitId.ifPresent(s -> getConventions().setCommitId(settings.getRootDir(), buildScan, s));
         }
     }
-
-    public static class TravisCustomValueProvider extends CIBuildCustomValueProvider {
-        public TravisCustomValueProvider(DevelocityConventions conventions) {
-            super("TRAVIS", conventions);
-        }
-
-        @Override
-        public void accept(Settings settings, BuildScanConfiguration buildScan) {
-            buildScan.link("Travis Build", getConventions().getEnv("TRAVIS_BUILD_WEB_URL"));
-            buildScan.value(BUILD_ID, getConventions().getEnv("TRAVIS_BUILD_ID"));
-            getConventions().setCommitId(settings.getRootDir(), buildScan, getConventions().getEnv("TRAVIS_COMMIT"));
-        }
-    }
-
     public static class IDESyncCustomValueProvider extends BuildScanCustomValueProvider {
         private static final String SYSTEM_PROP_IDEA_SYNC_ACTIVE = "idea.sync.active";
 
@@ -99,5 +71,3 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
         }
     }
 }
-
-

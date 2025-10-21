@@ -24,21 +24,6 @@ public class CICustomValueProviderIntegrationTest extends AbstractDevelocityPlug
     }
 
     @Test
-    public void workWithJenkins() {
-        withEnvironmentVariable("CI", "1");
-        withEnvironmentVariable("JENKINS_HOME", "1");
-        withEnvironmentVariable("BUILD_URL", "https://jenkins");
-        withEnvironmentVariable("BUILD_ID", "jenkins_id");
-        withEnvironmentVariable("GIT_COMMIT", headCommitId);
-
-        succeeds("help", "-Ddevelocity.server.url=https://ge.gradle.org");
-
-        assertTrue(getConfiguredBuildScan().containsLink("Jenkins Build", "https://jenkins"));
-        assertTrue(getConfiguredBuildScan().containsValue("buildId", "jenkins_id"));
-        verifyGitCommitInformation();
-    }
-
-    @Test
     public void workWithTeamCity() {
         withEnvironmentVariable("CI", "1");
         withEnvironmentVariable("TEAMCITY_VERSION", "1");
@@ -50,21 +35,6 @@ public class CICustomValueProviderIntegrationTest extends AbstractDevelocityPlug
 
         assertTrue(getConfiguredBuildScan().containsLink("TeamCity Build", "https://teamcity"));
         assertTrue(getConfiguredBuildScan().containsValue("buildId", "teamcity_id"));
-        verifyGitCommitInformation();
-    }
-
-    @Test
-    public void workWithTravis() {
-        withEnvironmentVariable("CI", "1");
-        withEnvironmentVariable("TRAVIS", "1");
-        withEnvironmentVariable("TRAVIS_BUILD_WEB_URL", "https://travis");
-        withEnvironmentVariable("TRAVIS_BUILD_ID", "travis_id");
-        withEnvironmentVariable("TRAVIS_COMMIT", headCommitId);
-
-        succeeds("help", "-Ddevelocity.server.url=https://ge.gradle.org");
-
-        assertTrue(getConfiguredBuildScan().containsLink("Travis Build", "https://travis"));
-        assertTrue(getConfiguredBuildScan().containsValue("buildId", "travis_id"));
         verifyGitCommitInformation();
     }
 

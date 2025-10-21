@@ -26,9 +26,7 @@ import static io.github.gradle.conventions.PublishingConfigurationAction.PUBLISH
 import static io.github.gradle.conventions.PublishingConfigurationAction.PUBLISH_IF_AUTHENTICATED;
 import static io.github.gradle.conventions.PublishingConfigurationAction.PUBLISH_ON_FAILURE;
 import static io.github.gradle.conventions.customvalueprovider.CIBuildCustomValueProvider.GitHubActionsCustomValueProvider;
-import static io.github.gradle.conventions.customvalueprovider.CIBuildCustomValueProvider.JenkinsCustomValueProvider;
 import static io.github.gradle.conventions.customvalueprovider.CIBuildCustomValueProvider.TeamCityCustomValueProvider;
-import static io.github.gradle.conventions.customvalueprovider.CIBuildCustomValueProvider.TravisCustomValueProvider;
 
 public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
     private List<BuildScanCustomValueProvider> createBuildScanCustomValueProviders(DevelocityConventions conventions) {
@@ -37,9 +35,7 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
             new WatchFilesystemCustomValueProvider(conventions),
             new CITagProvider(conventions),
             new GitHubActionsCustomValueProvider(conventions),
-            new JenkinsCustomValueProvider(conventions),
             new TeamCityCustomValueProvider(conventions),
-            new TravisCustomValueProvider(conventions),
             new LocalBuildCustomValueProvider(conventions),
             new GitInformationCustomValueProvider(conventions),
             new IDESyncCustomValueProvider(conventions)
