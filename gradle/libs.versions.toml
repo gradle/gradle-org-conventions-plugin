@@ -10,11 +10,10 @@ jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
 mockitoJunitJupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockitoExtension" }
-junitJupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
-junitJupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
-junitJupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
-junitJupiter-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" } # keep for automatic updates
 
 [bundles]
 jackson = ["jackson-core", "jackson-databind", "jackson-annotations"]
-junit = ["junitJupiter-api", "junitJupiter-engine", "junitJupiter-params", "junitJupiter-launcher"]
+
+[plugins]
+plugin-publish = { id = "com.gradle.plugin-publish", version = "2.0.0" }
