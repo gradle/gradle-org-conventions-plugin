@@ -18,7 +18,7 @@ public abstract class PublishingConfigurationAction implements Action<BuildScanP
             publishing.onlyIf(spec -> !spec.getBuildResult().getFailures().isEmpty());
         }
     };
-    public static final PublishingConfigurationAction PUBLISH_ALWAYS = new PublishingConfigurationAction("publishOnFailure") {
+    public static final PublishingConfigurationAction PUBLISH_ALWAYS = new PublishingConfigurationAction("publishAlways") {
         @Override
         public void execute(BuildScanPublishingConfiguration publishing) {
             publishing.onlyIf(__ -> true);
