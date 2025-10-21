@@ -6,12 +6,12 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class BuildCacheCustomValueProviderIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
+class BuildCacheCustomValueProviderIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
     @ParameterizedTest
     @CsvSource({
         "true", "false"
     })
-    public void tagCachedIfBuildCacheEnabled(boolean buildCacheEnabled) {
+    void tagCachedIfBuildCacheEnabled(boolean buildCacheEnabled) {
         succeeds("help", buildCacheEnabled ? "--build-cache" : "--no-build-cache");
 
         assertEquals(buildCacheEnabled, getConfiguredBuildScan().containsTag("CACHED"));

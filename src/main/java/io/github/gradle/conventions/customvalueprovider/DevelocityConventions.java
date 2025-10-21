@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -151,9 +152,9 @@ public class DevelocityConventions {
      * @param buildScan  the build scan extension
      * @param commitId   the commit id
      */
-    public void setCommitId(File projectDir, BuildScanConfiguration buildScan, String commitId) {
+    public void setCommitId(Path projectDir, BuildScanConfiguration buildScan, String commitId) {
         if (!SHA_PATTERN.matcher(commitId).matches()) {
-            LOGGER.warn("Detect illegal commitId: " + commitId + ", skip.");
+            LOGGER.warn("Detect illegal commitId: {}, skip.", commitId);
             return;
         }
 
@@ -165,11 +166,10 @@ public class DevelocityConventions {
         // buildScan.background callback, but this value doesn't change very often.
         // CI value providers call this method outside the background callback, so the ValueSource is mandatory to avoid
         // failing the build because of CC errors there.
-        @SuppressWarnings("UnstableApiUsage")
         Provider<String> remoteGitHubRepositoryProvider = providerFactory.of(
             RemoteGitHubRepositoryValueSource.class,
             it -> it.parameters(
-                parameters -> parameters.getProjectDir().set(projectDir)
+                parameters -> parameters.getProjectDir().set(projectDir.toFile())
             )
         );
 
@@ -207,27 +207,26 @@ public class DevelocityConventions {
      * @param args       the process to run and its command-line arguments
      * @return the contents of the stdout as a string
      */
-    public static Optional<String> execAndGetStdout(File workingDir, String... args) {
+    public static Optional<String> execAndGetStdout(Path workingDir, String... args) {
         try {
-            Process process = new ProcessBuilder(args).directory(workingDir).start();
+            Process process = new ProcessBuilder(args).directory(workingDir.toFile()).start();
             process.waitFor(1, TimeUnit.MINUTES);
             String stdout = toString(process.getInputStream());
             String stderr = toString(process.getErrorStream());
             if (process.exitValue() != 0) {
-                LOGGER.error("Run " + Arrays.toString(args) + " in " + workingDir.getAbsolutePath()
-                    + " returns " + process.exitValue() + ", outputs: \n" + stdout + "\n" + stderr);
+                LOGGER.error("Run {} in {} returns {}, outputs: \n{}\n{}", Arrays.toString(args), workingDir.toFile().getAbsolutePath(), process.exitValue(), stdout, stderr);
                 return Optional.empty();
             }
 
-            LOGGER.info("Run " + Arrays.toString(args) + " in " + workingDir.getAbsolutePath() + " outputs \n" + stdout + "\n" + stderr);
+            LOGGER.info("Run {} in {} outputs \n{}\n{}", Arrays.toString(args), workingDir.toFile().getAbsolutePath(), stdout, stderr);
             return Optional.of(stdout.trim());
         } catch (IOException | InterruptedException e) {
-            LOGGER.error("Run " + Arrays.toString(args) + " in " + workingDir.getAbsolutePath() + " failed:", e);
+            LOGGER.error("Run {} in {} failed:", Arrays.toString(args), workingDir.toFile().getAbsolutePath(), e);
             return Optional.empty();
         }
     }
 
-    static Optional<String> getCurrentCommitId(File workDir) {
+    static Optional<String> getCurrentCommitId(Path workDir) {
         return execAndGetStdout(workDir, "git", "rev-parse", "--verify", "HEAD");
     }
 
@@ -239,15 +238,14 @@ public class DevelocityConventions {
         @Nullable
         @Override
         public String obtain() {
-            return getCurrentCommitId(getParameters().getWorkDir().getAsFile().get()).orElse(null);
+            return getCurrentCommitId(getParameters().getWorkDir().getAsFile().get().toPath()).orElse(null);
         }
     }
 
-    static Optional<String> getRemoteGitHubRepository(File projectDir) {
+    static Optional<String> getRemoteGitHubRepository(Path projectDir) {
         return execAndGetStdout(projectDir, "git", "config", "--get", "remote.origin.url").flatMap(DevelocityConventions::parseGitHubRemoteUrl);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     public abstract static class RemoteGitHubRepositoryValueSource implements ValueSource<String, RemoteGitHubRepositoryValueSource.Params> {
         interface Params extends ValueSourceParameters {
             DirectoryProperty getProjectDir();
@@ -256,7 +254,7 @@ public class DevelocityConventions {
         @Nullable
         @Override
         public String obtain() {
-            return getRemoteGitHubRepository(getParameters().getProjectDir().getAsFile().get()).orElse(null);
+            return getRemoteGitHubRepository(getParameters().getProjectDir().getAsFile().get().toPath()).orElse(null);
         }
     }
 

@@ -53,7 +53,7 @@ public abstract class CIBuildCustomValueProvider extends BuildScanCustomValuePro
             buildScan.link("TeamCity Build", getConventions().getEnv("BUILD_URL"));
             buildScan.value(BUILD_ID, getConventions().getEnv("BUILD_ID"));
             Optional<String> gitCommitId = getConventions().getCommitId(settings.getSettingsDir());
-            gitCommitId.ifPresent(s -> getConventions().setCommitId(settings.getRootDir(), buildScan, s));
+            gitCommitId.ifPresent(s -> getConventions().setCommitId(settings.getRootDir().toPath(), buildScan, s));
         }
     }
     public static class IDESyncCustomValueProvider extends BuildScanCustomValueProvider {

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -13,13 +12,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
+class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
     private static final String EU_CACHE_NODE = "https://eun-edge.gradle.org";
     private static final String PUBLIC_DEVELOCITY_SERVER = "https://ge.gradle.org";
 
     @Test
-    public void configureBuildCacheOnlyWhenBuildCacheEnabled() throws URISyntaxException {
+    void configureBuildCacheOnlyWhenBuildCacheEnabled() {
         succeeds("help", "--build-cache");
 
         assertTrue(getConfiguredDevelocity().getEdgeDiscoveryValue());
@@ -29,7 +29,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
     }
 
     @Test
-    public void configureBuildCacheOnlyWhenBuildCacheEnabledAndCacheNodeIsSet() throws URISyntaxException {
+    void configureBuildCacheOnlyWhenBuildCacheEnabledAndCacheNodeIsSet() throws URISyntaxException {
         succeeds("help", "--build-cache", "-DcacheNode=eu");
 
         assertTrue(getConfiguredDevelocity().getEdgeDiscoveryValue());
@@ -39,7 +39,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
     }
 
     @Test
-    public void configurePublicBuildScanServerIfAgreePublicBuildScanTermOfService() {
+    void configurePublicBuildScanServerIfAgreePublicBuildScanTermOfService() {
         succeeds("help", "-DagreePublicBuildScanTermOfService=yes");
 
         assertNull(getConfiguredRemoteCache().getUrl());
@@ -50,7 +50,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
     }
 
     @Test
-    public void configureBuildScanButNotBuildCacheByDefault() {
+    void configureBuildScanButNotBuildCacheByDefault() {
         succeeds("help");
 
         assertNull(getConfiguredRemoteCache().getUrl());
@@ -62,7 +62,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
 
     @ParameterizedTest
     @ValueSource(strings = {"publishOnFailure", "publishAlways", "custom"})
-    public void configurePublishStrategy(String strategy) {
+    void configurePublishStrategy(String strategy) {
         succeeds("help", "-DpublishStrategy=" + strategy, "-Ddevelocity.server.url=https://ge.gradle.org");
 
         assertNull(getConfiguredRemoteCache().getUrl());
@@ -77,11 +77,13 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
             case "custom":
                 assertTrue(getConfiguredBuildScan().isCustomPublish());
                 break;
+            default:
+                fail("Unexpected test input");
         }
     }
 
     @Test
-    public void defaultPublishStrategyIsPublishIfAuthenticated() {
+    void defaultPublishStrategyIsPublishIfAuthenticated() {
         succeeds("help", "-Ddevelocity.server.url=https://ge.gradle.org");
 
         assertNull(getConfiguredRemoteCache().getUrl());
@@ -90,7 +92,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
     }
 
     @Test
-    public void disableBuildScanWithNoBuildScan() {
+    void disableBuildScanWithNoBuildScan() {
         withEnvironmentVariable("CI", "1");
 
         succeeds("help", "--no-scan");
@@ -100,7 +102,7 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
 
     @ParameterizedTest
     @ValueSource(strings = {"CI", "LOCAL"})
-    public void disableBuildScanUponPropertiesTask(String env) {
+    void disableBuildScanUponPropertiesTask(String env) {
         withEnvironmentVariable(env, "1");
 
         succeeds("properties");
@@ -109,9 +111,10 @@ public class DevelocityConventionsPluginIntegrationTest extends AbstractDeveloci
     }
 
     @Test
-    public void disableBuildScanUpSubprojectPropertiesTask() {
+    void disableBuildScanUpSubprojectPropertiesTask() {
         write("settings.gradle", "include(\"subprojectA\")");
-        new File(projectDir, "subprojectA").mkdir();
+
+        subproject("subprojectA");
 
         succeeds(":subprojectA:properties");
 

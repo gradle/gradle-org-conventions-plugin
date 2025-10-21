@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import static io.github.gradle.conventions.customvalueprovider.DevelocityConventions.execAndGetStdout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LocalBuildCustomValueProviderIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
+class LocalBuildCustomValueProviderIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
     @Test
-    public void tagIDEAVersionIfAvailable() {
+    void tagIDEAVersionIfAvailable() {
         succeeds("help", "-Didea.active", "-Didea.paths.selector=2020.1");
 
         assertTrue(getConfiguredBuildScan().containsTag("LOCAL"));
@@ -18,7 +18,7 @@ public class LocalBuildCustomValueProviderIntegrationTest extends AbstractDevelo
 
 
     @Test
-    public void addGitCommitLinkLocally() {
+    void addGitCommitLinkLocally() {
         write("fileToCommit.txt", "hello");
         execAndGetStdout(projectDir, "git", "init");
         execAndGetStdout(projectDir, "git", "config", "--add", "remote.origin.url", "https://github.com/gradle/gradle.git");
