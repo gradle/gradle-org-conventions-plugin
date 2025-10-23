@@ -31,12 +31,6 @@ dependencies {
     testImplementation(libs.mockitoJunitJupiter)
 }
 
-// Workaround for https://github.com/gradle/dev-infrastructure/issues/505#issuecomment-762060878
-extensions.configure<ExtraPropertiesExtension>("ext") {
-    set("gradle.publish.key", project.findProperty("gradlePublishKey"))
-    set("gradle.publish.secret", project.findProperty("gradlePublishSecret"))
-}
-
 gradlePlugin {
     website = "https://github.com/gradle/gradle-org-conventions-plugin"
     vcsUrl = "https://github.com/gradle/gradle-org-conventions-plugin.git"
