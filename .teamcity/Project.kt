@@ -110,7 +110,7 @@ object ReleasePlugin : BuildType({
     }
 
     params {
-        param("env.ORG_GRADLE_PROJECT_gradlePublishKey", "%plugin.portal.publish.key%")
-        param("env.ORG_GRADLE_PROJECT_gradlePublishSecret", "%plugin.portal.publish.secret%")
+        param("env.GRADLE_PUBLISH_KEY", "%plugin.portal.publish.key%")
+        param("env.GRADLE_PUBLISH_SECRET", "%plugin.portal.publish.secret%")
     }
 })
