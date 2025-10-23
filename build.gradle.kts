@@ -23,7 +23,10 @@ dependencies {
 
     implementation(gradleApi())
 
-    testImplementation(libs.bundles.jackson)
+    testImplementation(platform(libs.jackson.bom))
+    testImplementation("com.fasterxml.jackson.core:jackson-annotations")
+    testImplementation("tools.jackson.core:jackson-core")
+    testImplementation("tools.jackson.core:jackson-databind")
     testImplementation(libs.develocity.plugin)
     testImplementation(libs.mockitoJunitJupiter)
 }

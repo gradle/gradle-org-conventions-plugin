@@ -1,17 +1,17 @@
 package io.github.gradle.fixtures;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.gradle.caching.http.HttpBuildCache;
 import org.gradle.caching.local.DirectoryBuildCache;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,19 +35,20 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static tools.jackson.core.StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION;
 
 public abstract class AbstractDevelocityPluginIntegrationTest {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final JsonMapper JSON_MAPPER;
 
     static {
         SimpleModule module = new SimpleModule();
         // Conflict setter: setUrl(URI)/setUrl(String)
-        module.addDeserializer(TestHttpBuildCache.class, new JsonDeserializer<TestHttpBuildCache>() {
+        module.addDeserializer(TestHttpBuildCache.class, new ValueDeserializer<>() {
             @Override
-            public TestHttpBuildCache deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            public TestHttpBuildCache deserialize(JsonParser p, DeserializationContext ctxt) {
                 TestHttpBuildCache buildCache = new TestHttpBuildCache();
 
-                JsonNode node = p.getCodec().readTree(p);
+                JsonNode node = p.objectReadContext().readTree(p);
                 String url = stringOrNull(node.get("url"));
                 if (url == null) {
                     buildCache.setUrl((URI) null);
@@ -68,10 +69,13 @@ public abstract class AbstractDevelocityPluginIntegrationTest {
             }
 
             private String stringOrNull(JsonNode node) {
-                return node.isNull() ? null : node.asText();
+                return node.isNull() ? null : node.asString();
             }
         });
-        OBJECT_MAPPER.registerModules(module);
+        JSON_MAPPER = JsonMapper.builder()
+            .addModule(module)
+            .enable(INCLUDE_SOURCE_IN_LOCATION)
+            .build();
     }
 
     @TempDir
@@ -175,7 +179,7 @@ public abstract class AbstractDevelocityPluginIntegrationTest {
             try {
                 String json = Files.readString(projectDir.resolve("remoteCacheConfiguration.json"), StandardCharsets.UTF_8);
                 System.out.println("configuredRemoteCache: " + json);
-                configuredRemoteCache = OBJECT_MAPPER.readValue(json, TestHttpBuildCache.class);
+                configuredRemoteCache = JSON_MAPPER.readValue(json, TestHttpBuildCache.class);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -191,7 +195,7 @@ public abstract class AbstractDevelocityPluginIntegrationTest {
             try {
                 String json = Files.readString(projectDir.resolve("localCacheConfiguration.json"), StandardCharsets.UTF_8);
                 System.out.println("configuredLocalCache: " + json);
-                configuredLocalCache = OBJECT_MAPPER.readValue(json, TestDirectoryBuildCache.class);
+                configuredLocalCache = JSON_MAPPER.readValue(json, TestDirectoryBuildCache.class);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -204,7 +208,7 @@ public abstract class AbstractDevelocityPluginIntegrationTest {
             try {
                 String json = Files.readString(projectDir.resolve("develocityConfiguration.json"), StandardCharsets.UTF_8);
                 System.out.println("configuredDevelocity: " + json);
-                configuredDevelocity = OBJECT_MAPPER.readValue(json, DevelocityConfigurationForTest.class);
+                configuredDevelocity = JSON_MAPPER.readValue(json, DevelocityConfigurationForTest.class);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }

@@ -1,7 +1,8 @@
 package io.github.gradle.fixtures;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.gradle.develocity.agent.gradle.internal.scan.BuildScanCaptureConfigurationInternal;
 import com.gradle.develocity.agent.gradle.internal.scan.BuildScanConfigurationInternal;
 import com.gradle.develocity.agent.gradle.scan.BuildScanCaptureConfiguration;
@@ -11,6 +12,7 @@ import io.github.gradle.conventions.PublishingConfigurationAction;
 import org.gradle.api.Action;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -150,6 +152,7 @@ public class BuildScanConfigurationForTest implements BuildScanConfigurationInte
         return captureFileFingerprintsValue;
     }
 
+    @JsonSetter(nulls = Nulls.SKIP)
     public void setCaptureFileFingerprints(boolean captureFileFingerprints) {
         this.captureFileFingerprintsValue = captureFileFingerprints;
     }
@@ -169,6 +172,7 @@ public class BuildScanConfigurationForTest implements BuildScanConfigurationInte
         return uploadInBackgroundValue;
     }
 
+    @JsonSetter(nulls = Nulls.SKIP)
     public void setUploadInBackground(boolean uploadInBackground) {
         this.uploadInBackgroundValue = uploadInBackground;
     }

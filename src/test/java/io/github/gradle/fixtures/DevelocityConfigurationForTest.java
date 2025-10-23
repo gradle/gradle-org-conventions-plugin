@@ -1,10 +1,8 @@
 package io.github.gradle.fixtures;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.gradle.develocity.agent.gradle.DevelocityConfiguration;
 import com.gradle.develocity.agent.gradle.buildcache.DevelocityBuildCache;
 import com.gradle.develocity.agent.gradle.integration.DevelocityIntegrationConfiguration;
@@ -12,9 +10,13 @@ import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import org.gradle.api.Action;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 
 public class DevelocityConfigurationForTest implements DevelocityConfiguration {
     public DevelocityConfigurationForTest() {
@@ -48,9 +50,9 @@ public class DevelocityConfigurationForTest implements DevelocityConfiguration {
         action.execute(buildScanConfiguration);
     }
 
-    static class PropertySerializer extends JsonSerializer<Property<?>> {
+    static class PropertySerializer extends ValueSerializer<Property<?>> {
         @Override
-        public void serialize(Property property, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+        public void serialize(Property<?> property, JsonGenerator gen, SerializationContext ctxt) throws JacksonException {
             Object value = property.getOrNull();
             if (value == null) {
                 gen.writeNull();
@@ -60,6 +62,7 @@ public class DevelocityConfigurationForTest implements DevelocityConfiguration {
                 gen.writeString(value.toString());
             }
         }
+
     }
 
     @Override
@@ -74,6 +77,7 @@ public class DevelocityConfigurationForTest implements DevelocityConfiguration {
         return edgeDiscovery;
     }
 
+    @JsonSetter(nulls = Nulls.SKIP)
     public void setEdgeDiscovery(boolean value) {
         this.edgeDiscoveryValue = value;
     }
