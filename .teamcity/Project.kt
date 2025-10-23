@@ -49,9 +49,9 @@ object Verify : BuildType({
     triggers {
         vcs {
             branchFilter = """
-    +:refs/heads/(*)
-    +:refs/pull/(*/merge)
-""".trimIndent()
+                +:refs/heads/*
+                +:refs/pull/*/merge
+                """.trimIndent()
         }
     }
 
@@ -68,9 +68,7 @@ object Verify : BuildType({
             vcsRootExtId = vcsRoot.absoluteId
             publisher = github {
                 githubUrl = "https://api.github.com"
-                authType = personalToken {
-                    token = "%github.bot-teamcity.token%"
-                }
+                authType = vcsRoot()
             }
         }
 
