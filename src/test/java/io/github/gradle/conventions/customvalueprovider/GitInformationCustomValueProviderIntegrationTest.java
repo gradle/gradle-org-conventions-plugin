@@ -7,9 +7,9 @@ import static io.github.gradle.conventions.customvalueprovider.DevelocityConvent
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GitInformationCustomValueProviderIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
+class GitInformationCustomValueProviderIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
     @Test
-    public void doNothingIfNotAGitRepo() {
+    void doNothingIfNotAGitRepo() {
         succeeds("help");
 
         assertFalse(getConfiguredBuildScan().containsBackgroundTag("dirty"));
@@ -18,7 +18,7 @@ public class GitInformationCustomValueProviderIntegrationTest extends AbstractDe
     }
 
     @Test
-    public void tagDirtyIfGitRepoIsDirty() {
+    void tagDirtyIfGitRepoIsDirty() {
         execAndGetStdout(projectDir, "git", "init");
         execAndGetStdout(projectDir, "git", "add", ".");
 
@@ -30,7 +30,7 @@ public class GitInformationCustomValueProviderIntegrationTest extends AbstractDe
     }
 
     @Test
-    public void addGitBranchNameIfAvailable() {
+    void addGitBranchNameIfAvailable() {
         write(".gitignore", "*", "!fileToCommit.txt");
         write("fileToCommit.txt", "hello");
         execAndGetStdout(projectDir, "git", "init");

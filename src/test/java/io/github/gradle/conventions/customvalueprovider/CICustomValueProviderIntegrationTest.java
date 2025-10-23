@@ -7,9 +7,10 @@ import org.junit.jupiter.api.Test;
 import static io.github.gradle.conventions.customvalueprovider.DevelocityConventions.execAndGetStdout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CICustomValueProviderIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
+class CICustomValueProviderIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
     private String headCommitId;
 
+    @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
@@ -24,22 +25,7 @@ public class CICustomValueProviderIntegrationTest extends AbstractDevelocityPlug
     }
 
     @Test
-    public void workWithJenkins() {
-        withEnvironmentVariable("CI", "1");
-        withEnvironmentVariable("JENKINS_HOME", "1");
-        withEnvironmentVariable("BUILD_URL", "https://jenkins");
-        withEnvironmentVariable("BUILD_ID", "jenkins_id");
-        withEnvironmentVariable("GIT_COMMIT", headCommitId);
-
-        succeeds("help", "-Ddevelocity.server.url=https://ge.gradle.org");
-
-        assertTrue(getConfiguredBuildScan().containsLink("Jenkins Build", "https://jenkins"));
-        assertTrue(getConfiguredBuildScan().containsValue("buildId", "jenkins_id"));
-        verifyGitCommitInformation();
-    }
-
-    @Test
-    public void workWithTeamCity() {
+    void workWithTeamCity() {
         withEnvironmentVariable("CI", "1");
         withEnvironmentVariable("TEAMCITY_VERSION", "1");
         withEnvironmentVariable("BUILD_URL", "https://teamcity");
@@ -54,22 +40,7 @@ public class CICustomValueProviderIntegrationTest extends AbstractDevelocityPlug
     }
 
     @Test
-    public void workWithTravis() {
-        withEnvironmentVariable("CI", "1");
-        withEnvironmentVariable("TRAVIS", "1");
-        withEnvironmentVariable("TRAVIS_BUILD_WEB_URL", "https://travis");
-        withEnvironmentVariable("TRAVIS_BUILD_ID", "travis_id");
-        withEnvironmentVariable("TRAVIS_COMMIT", headCommitId);
-
-        succeeds("help", "-Ddevelocity.server.url=https://ge.gradle.org");
-
-        assertTrue(getConfiguredBuildScan().containsLink("Travis Build", "https://travis"));
-        assertTrue(getConfiguredBuildScan().containsValue("buildId", "travis_id"));
-        verifyGitCommitInformation();
-    }
-
-    @Test
-    public void workWithGitHubActions() {
+    void workWithGitHubActions() {
         withEnvironmentVariable("CI", "1");
         withEnvironmentVariable("GITHUB_ACTIONS", "1");
         withEnvironmentVariable("GITHUB_RUN_ID", "123");

@@ -40,11 +40,6 @@ object Verify : BuildType({
         }
     }
 
-    params {
-        param("env.GRADLE_CACHE_REMOTE_USERNAME", "%gradle.cache.remote.username%")
-        param("env.GRADLE_CACHE_REMOTE_PASSWORD", "%gradle.cache.remote.password%")
-    }
-
     steps {
         gradle {
             useGradleWrapper = true
@@ -94,8 +89,6 @@ object ReleasePlugin : BuildType({
     }
 
     params {
-        param("env.GRADLE_CACHE_REMOTE_USERNAME", "%gradle.cache.remote.username%")
-        param("env.GRADLE_CACHE_REMOTE_PASSWORD", "%gradle.cache.remote.password%")
         param("env.ORG_GRADLE_PROJECT_gradlePublishKey", "%plugin.portal.publish.key%")
         param("env.ORG_GRADLE_PROJECT_gradlePublishSecret", "%plugin.portal.publish.secret%")
     }

@@ -1,7 +1,7 @@
 plugins {
     `java-gradle-plugin`
-    id("com.gradle.plugin-publish") version "2.0.0"
-    id("maven-publish")
+    alias(libs.plugins.plugin.publish)
+    `maven-publish`
 }
 
 rootProject.group = "io.github.gradle"
@@ -20,11 +20,11 @@ repositories {
 
 dependencies {
     compileOnly(libs.develocity.plugin)
-    testImplementation(libs.develocity.plugin)
+
     implementation(gradleApi())
 
     testImplementation(libs.bundles.jackson)
-    testImplementation(libs.bundles.junit)
+    testImplementation(libs.develocity.plugin)
     testImplementation(libs.mockitoJunitJupiter)
 }
 
@@ -53,6 +53,10 @@ tasks.named("publishPlugins", Task::class.java) {
     dependsOn("check")
 }
 
-tasks.named("test", Test::class.java) {
-    useJUnitPlatform()
+testing {
+    suites {
+        withType<JvmTestSuite> {
+            useJUnitJupiter(libs.versions.junit.get())
+        }
+    }
 }

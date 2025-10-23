@@ -4,7 +4,7 @@ import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import org.gradle.api.Action;
 import org.gradle.api.initialization.Settings;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import static io.github.gradle.conventions.customvalueprovider.DevelocityConventions.execAndGetStdout;
 import static io.github.gradle.conventions.customvalueprovider.ScanCustomValueNames.GIT_BRANCH_NAME;
@@ -17,11 +17,10 @@ public class GitInformationCustomValueProvider extends BuildScanCustomValueProvi
 
     @Override
     public void accept(Settings settings, BuildScanConfiguration buildScan) {
-        File rootDir = settings.getRootDir();
-        buildScan.background(logGitInformationInBackground(rootDir));
+        buildScan.background(logGitInformationInBackground(settings.getRootDir().toPath()));
     }
 
-    private static Action<BuildScanConfiguration> logGitInformationInBackground(File rootDir) {
+    private static Action<BuildScanConfiguration> logGitInformationInBackground(Path rootDir) {
         return buildScan -> {
             execAndGetStdout(rootDir, "git", "status", "--porcelain")
                 .ifPresent(output -> {

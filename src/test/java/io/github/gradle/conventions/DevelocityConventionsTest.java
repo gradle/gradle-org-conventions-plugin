@@ -9,12 +9,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
-public class DevelocityConventionsTest {
+class DevelocityConventionsTest {
     @Mock
     ProviderFactory providerFactory;
 
@@ -22,17 +22,17 @@ public class DevelocityConventionsTest {
     BuildScanConfiguration buildScanConfiguration;
 
     @Mock
-    File projectDir;
+    Path projectDir;
 
     DevelocityConventions develocityConventions;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         develocityConventions = new DevelocityConventions(providerFactory);
     }
 
     @Test
-    public void dontSetCommitIdWhenInvalid() {
+    void dontSetCommitIdWhenInvalid() {
         develocityConventions.setCommitId(projectDir, buildScanConfiguration, "Invalid commit id");
 
         verifyNoInteractions(buildScanConfiguration);

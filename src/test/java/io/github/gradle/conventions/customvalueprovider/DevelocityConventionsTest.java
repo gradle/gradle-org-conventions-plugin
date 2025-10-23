@@ -4,8 +4,9 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static io.github.gradle.conventions.customvalueprovider.DevelocityConventions.execAndGetStdout;
 import static io.github.gradle.conventions.customvalueprovider.DevelocityConventions.getRemoteGitHubRepository;
@@ -14,12 +15,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class DevelocityConventionsTest {
     @TempDir
-    File projectDir;
+    Path projectDir;
 
     @ParameterizedTest
     @CsvSource({"https://github.com/gradle/gradle.git", "git@github.com:gradle/gradle.git", "not_a_url"})
-    public void getRemoteGitHubRepositoryTest(String url) throws IOException {
-        new File(projectDir, "fileToCommit.txt").createNewFile();
+    void getRemoteGitHubRepositoryTest(String url) throws IOException {
+        Files.createFile(projectDir.resolve("fileToCommit.txt"));
         execAndGetStdout(projectDir, "git", "init");
         execAndGetStdout(projectDir, "git", "checkout", "-b", "new-branch");
         execAndGetStdout(projectDir, "git", "add", "fileToCommit.txt");

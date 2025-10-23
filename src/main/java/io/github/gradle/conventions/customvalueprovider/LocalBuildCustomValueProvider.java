@@ -4,7 +4,7 @@ import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import org.gradle.api.Action;
 import org.gradle.api.initialization.Settings;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static io.github.gradle.conventions.customvalueprovider.ScanCustomValueNames.IDEA_VERSION;
@@ -23,15 +23,14 @@ public class LocalBuildCustomValueProvider extends BuildScanCustomValueProvider 
     public void accept(Settings settings, BuildScanConfiguration buildScan) {
         buildScan.tag("LOCAL");
         DevelocityConventions conventions = getConventions();
-        File rootDir = settings.getRootDir();
-        buildScan.background(new BackgroundTagsAction(conventions, rootDir));
+        buildScan.background(new BackgroundTagsAction(conventions, settings.getRootDir().toPath()));
     }
 
     private static class BackgroundTagsAction implements Action<BuildScanConfiguration> {
         private final DevelocityConventions conventions;
-        private final File rootDir;
+        private final Path rootDir;
 
-        BackgroundTagsAction(DevelocityConventions conventions, File rootDir) {
+        BackgroundTagsAction(DevelocityConventions conventions, Path rootDir) {
             this.conventions = conventions;
             this.rootDir = rootDir;
         }
