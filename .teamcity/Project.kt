@@ -2,10 +2,13 @@ import jetbrains.buildServer.configs.kotlin.AbsoluteId
 import jetbrains.buildServer.configs.kotlin.BuildType
 import jetbrains.buildServer.configs.kotlin.CheckoutMode
 import jetbrains.buildServer.configs.kotlin.Project
+import jetbrains.buildServer.configs.kotlin.buildFeatures.PullRequests
 import jetbrains.buildServer.configs.kotlin.buildFeatures.commitStatusPublisher
+import jetbrains.buildServer.configs.kotlin.buildFeatures.pullRequests
 import jetbrains.buildServer.configs.kotlin.buildSteps.gradle
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
 
+private val vcsRoot = AbsoluteId("GradlePlugins_GradleEnterpriseConventionsPlugin_Master")
 
 object Project : Project({
     buildType(Verify)
@@ -33,7 +36,7 @@ object Verify : BuildType({
     description = "Verify Develocity Conventions Plugin"
 
     vcs {
-        root(AbsoluteId("GradlePlugins_GradleEnterpriseConventionsPlugin_Master"))
+        root(vcsRoot)
 
         checkoutMode = CheckoutMode.ON_AGENT
         cleanCheckout = true
@@ -46,7 +49,8 @@ object Verify : BuildType({
     triggers {
         vcs {
             branchFilter = """
-    +:refs/heads/*
+    +:refs/heads/(*)
+    +:refs/pull/(*/merge)
 """.trimIndent()
         }
     }
@@ -61,12 +65,21 @@ object Verify : BuildType({
 
     features {
         commitStatusPublisher {
-            vcsRootExtId = "GradlePlugins_GradleEnterpriseConventionsPlugin_Master"
+            vcsRootExtId = vcsRoot.absoluteId
             publisher = github {
                 githubUrl = "https://api.github.com"
                 authType = personalToken {
                     token = "%github.bot-teamcity.token%"
                 }
+            }
+        }
+
+        pullRequests {
+            vcsRootExtId = vcsRoot.absoluteId
+            provider = github {
+                authType = vcsRoot()
+                filterAuthorRole = PullRequests.GitHubRoleFilter.MEMBER
+                ignoreDrafts = true
             }
         }
     }
@@ -75,12 +88,12 @@ object Verify : BuildType({
 object ReleasePlugin : BuildType({
     id = AbsoluteId("ReleaseGradleEnterpriseConventionsPlugin")
     uuid = "ReleaseGradleEnterpriseConventionsPlugin"
+    type = Type.DEPLOYMENT
     name = "Release Develocity Conventions Plugin"
     description = "Release Develocity Conventions Plugin"
 
     vcs {
-        root(AbsoluteId("GradlePlugins_GradleEnterpriseConventionsPlugin_Master"))
-
+        root(vcsRoot)
         checkoutMode = CheckoutMode.ON_AGENT
         cleanCheckout = true
     }
