@@ -15,6 +15,17 @@ object Project : Project({
     }
 })
 
+private val defaultGradleParameters = listOf(
+    "--build-cache",
+    "-Dorg.gradle.java.installations.auto-download=false",
+    "-Dorg.gradle.java.installations.auto-detect=false",
+    "-Dorg.gradle.java.installations.fromEnv=JAVA_HOME,JAVA_TOOLCHAIN",
+    // drop after upgrading to Gradle 9.2+
+    "-Porg.gradle.java.installations.auto-download=false",
+    "-Porg.gradle.java.installations.auto-detect=false",
+    "-Porg.gradle.java.installations.fromEnv=JAVA_HOME,JAVA_TOOLCHAIN",
+)
+
 object Verify : BuildType({
     id = AbsoluteId("VerifyGradleEnterpriseConventionsPlugin")
     uuid = "VerifyGradleEnterpriseConventionsPlugin"
@@ -44,8 +55,7 @@ object Verify : BuildType({
         gradle {
             useGradleWrapper = true
             tasks = "check"
-            gradleParams = "--build-cache"
-            buildFile = "build.gradle.kts"
+            gradleParams = defaultGradleParameters.joinToString(" ")
         }
     }
 
@@ -82,9 +92,8 @@ object ReleasePlugin : BuildType({
     steps {
         gradle {
             useGradleWrapper = true
-            gradleParams = "--build-cache -Dgradle.publish.skip.namespace.check=true"
+            gradleParams = (listOf("-Dgradle.publish.skip.namespace.check=true") + defaultGradleParameters).joinToString(" ")
             tasks = "publishPlugins"
-            buildFile = "build.gradle.kts"
         }
     }
 

@@ -15,10 +15,8 @@ jobs:
     - uses: actions/setup-java@v5
       with:
         distribution: temurin
-        java-version: 17
-
+        java-version: 21
     - name: Generate and submit dependency graph
       uses: gradle/actions/dependency-submission@v5
-
     - name: Perform dependency review
       uses: actions/dependency-review-action@v4

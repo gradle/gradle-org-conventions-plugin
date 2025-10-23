@@ -1,6 +1,5 @@
 package com.gradle.develocity.agent.gradle;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gradle.develocity.agent.gradle.buildcache.DevelocityBuildCache;
 import io.github.gradle.fixtures.DevelocityConfigurationForTest;
 import org.gradle.api.Plugin;
@@ -13,6 +12,7 @@ import org.gradle.caching.BuildCacheException;
 import org.gradle.caching.BuildCacheKey;
 import org.gradle.caching.BuildCacheService;
 import org.gradle.caching.BuildCacheServiceFactory;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -23,8 +23,6 @@ import java.nio.file.Files;
  * be verified in integration tests.
  */
 public class DevelocityPlugin implements Plugin<Settings> {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
     @Override
     public void apply(Settings settings) {
         ObjectFactory objectFactory = ((GradleInternal) settings.getGradle()).getServices().get(ObjectFactory.class);
@@ -35,7 +33,7 @@ public class DevelocityPlugin implements Plugin<Settings> {
         settings.getExtensions().add("develocityForTest", extension);
         settings.getGradle().afterProject(project -> {
             try {
-                Files.write(project.file("develocityConfiguration.json").toPath(), OBJECT_MAPPER.writeValueAsBytes(extension));
+                Files.write(project.file("develocityConfiguration.json").toPath(), JsonMapper.shared().writeValueAsBytes(extension));
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
