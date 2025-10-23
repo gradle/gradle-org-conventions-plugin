@@ -19,9 +19,7 @@ When applied as a settings plugin alongside the [Develocity Plugin](https://plug
   If you would like to publish to public build scan server (`scan.gradle.com`), add `-DagreePublicBuildScanTermOfService=yes` to your build.
   - For CI build (`CI` environment variable exists):
     - Add `CI` build scan tag.
-    - Add build scan link and build scan custom value `gitCommitId` to the build (by auto detecting environment variables):
-      - Travis: `TRAVIS_BUILD_ID`/`TRAVIS_BUILD_WEB_URL`
-      - Jenkins: `BUILD_ID`/`BUILD_URL`
+    - Add build scan link and build scan custom value `gitCommitId` to the build (by auto-detecting environment variables):
       - GitHub Actions: `${System.getenv("GITHUB_RUN_ID")} ${System.getenv("GITHUB_RUN_NUMBER")}`/`https://github.com/gradle/gradle/runs/${System.getenv("GITHUB_RUN_ID")}`
       - TeamCity: `BUILD_ID`/`BUILD_URL`
     - Upload build scans in the foreground.
