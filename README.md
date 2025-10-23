@@ -3,7 +3,7 @@
 Inspired by https://github.com/spring-io/develocity-conventions, this plugin configures public [Gradle projects](https://github.com/gradle)
 to use the public Develocity instance at [ge.gradle.org](https://ge.gradle.org).
 
-Requires Gradle 7.6+. The plugin is configuration-cache compatible when used the Develocity plugin 3.17+.
+Requires Java 17+ and Gradle 8.14+ and Develocity plugin 4.2+.
 
 ## What it does
 
@@ -13,7 +13,7 @@ When applied as a settings plugin alongside the [Develocity Plugin](https://plug
   - Enable the local cache.
   - Enable [ge.gradle.org](https://ge.gradle.org) as remote cache if credentials are provided, enjoy faster build! (using your preferred [location](https://ge.gradle.org/settings/location)) 
   - Enable [ge.gradle.org](https://ge.gradle.org) as remote cache and anonymous read access, enjoy faster build!
-    - There're four build cache node available on the earth: `Develocity` (the default; Germany) /`eu` (Finland) /`us` (N.California) /`au` (Sydney), you can use `-DcacheNode=eu`/ `-DcacheNode=us`/`-DcacheNode=au` to use other ones.
+    - There are four build cache node available on the earth: `Develocity` (the default; Germany) /`eu` (Finland) /`us` (N.California) /`au` (Sydney), you can use `-DcacheNode=eu`/ `-DcacheNode=us`/`-DcacheNode=au` to use other ones.
   - Enable pushing to remote cache on CI if required credentials are provided.
 - By default, build scans are published to `ge.gradle.org`. If you would like to publish to your own Develocity server, add `-Ddevelocity.server.url=https://ge.mycompany.com/`.
   If you would like to publish to public build scan server (`scan.gradle.com`), add `-DagreePublicBuildScanTermOfService=yes` to your build.
