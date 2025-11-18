@@ -11,6 +11,7 @@ import jetbrains.buildServer.configs.kotlin.buildSteps.script
 object Project : Project({
     buildType(Verify)
     params {
+        param("aws-secrets-plugin.enforceVcsRestrictions", "true")
         param("dv.access.key", "!awssm://tc/gradle-org-conventions-plugin/_all/DEVELOCITY_ACCESS_KEY")
         param("main.branch.only", "!awssm://tc/gradle-org-conventions-plugin/main/DEVELOCITY_ACCESS_KEY")
         param("another.repo", "!awssm://tc/another-repo/main/DEVELOCITY_ACCESS_KEY")
