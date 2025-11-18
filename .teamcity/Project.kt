@@ -28,10 +28,6 @@ object Verify : BuildType({
         cleanCheckout = true
     }
 
-    requirements {
-        contains("teamcity.agent.jvm.os.name", "Linux")
-    }
-
     triggers {
         vcs {
             branchFilter = """
