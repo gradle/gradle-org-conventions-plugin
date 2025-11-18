@@ -11,7 +11,7 @@ import jetbrains.buildServer.configs.kotlin.buildSteps.script
 object Project : Project({
     buildType(Verify)
     params {
-        param("env.DEVELOCITY_ACCESS_KEY", "tc/gradle-org-conventions-plugin/_all/DEVELOCITY_ACCESS_KEY")
+        param("env.DEVELOCITY_ACCESS_KEY", "!awssm://tc/gradle-org-conventions-plugin/_all/DEVELOCITY_ACCESS_KEY")
     }
 })
 
