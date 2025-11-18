@@ -55,37 +55,3 @@ object Verify : BuildType({
         }
     }
 })
-
-object ReleasePlugin : BuildType({
-    id = AbsoluteId("ReleaseGradleEnterpriseConventionsPlugin")
-    uuid = "ReleaseGradleEnterpriseConventionsPlugin"
-    name = "Release Develocity Conventions Plugin"
-    description = "Release Develocity Conventions Plugin"
-
-    vcs {
-        root(AbsoluteId("GradlePlugins_GradleEnterpriseConventionsPlugin_Master"))
-
-        checkoutMode = CheckoutMode.ON_AGENT
-        cleanCheckout = true
-    }
-
-    requirements {
-        contains("teamcity.agent.jvm.os.name", "Linux")
-    }
-
-    steps {
-        gradle {
-            useGradleWrapper = true
-            gradleParams = "--build-cache -Dgradle.publish.skip.namespace.check=true"
-            tasks = "publishPlugins"
-            buildFile = "build.gradle.kts"
-        }
-    }
-
-    params {
-        param("env.GRADLE_CACHE_REMOTE_USERNAME", "%gradle.cache.remote.username%")
-        param("env.GRADLE_CACHE_REMOTE_PASSWORD", "%gradle.cache.remote.password%")
-        param("env.ORG_GRADLE_PROJECT_gradlePublishKey", "%plugin.portal.publish.key%")
-        param("env.ORG_GRADLE_PROJECT_gradlePublishSecret", "%plugin.portal.publish.secret%")
-    }
-})
