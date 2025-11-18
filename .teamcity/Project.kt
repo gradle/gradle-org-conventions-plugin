@@ -12,7 +12,11 @@ object Project : Project({
     buildType(Verify)
     params {
         param("dv.access.key", "!awssm://tc/gradle-org-conventions-plugin/_all/DEVELOCITY_ACCESS_KEY")
+        param("main.branch.only", "!awssm://tc/gradle-org-conventions-plugin/main/DEVELOCITY_ACCESS_KEY")
+        param("another.repo", "!awssm://tc/another-repo/main/DEVELOCITY_ACCESS_KEY")
         param("env.DEVELOCITY_ACCESS_KEY", "%dv.access.key%")
+        param("env.DEVELOCITY_ACCESS_KEY2", "%main.branch.only%")
+        param("env.DEVELOCITY_ACCESS_KEY3", "%another.repo%")
     }
 })
 
@@ -42,6 +46,8 @@ object Verify : BuildType({
             name = "Test"
             scriptContent = """
                 echo -n "${'$'}DEVELOCITY_ACCESS_KEY" > result.txt
+                echo -n "${'$'}DEVELOCITY_ACCESS_KEY2" >> result.txt
+                echo -n "${'$'}DEVELOCITY_ACCESS_KEY3" >> result.txt
             """.trimIndent()
         }
     }
