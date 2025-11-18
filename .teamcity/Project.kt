@@ -5,13 +5,13 @@ import jetbrains.buildServer.configs.kotlin.Project
 import jetbrains.buildServer.configs.kotlin.buildFeatures.commitStatusPublisher
 import jetbrains.buildServer.configs.kotlin.buildSteps.gradle
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
+import jetbrains.buildServer.configs.kotlin.buildSteps.script
 
 
 object Project : Project({
     buildType(Verify)
-    buildType(ReleasePlugin)
     params {
-        param("env.DEVELOCITY_ACCESS_KEY", "%ge.gradle.org.access.key%")
+        param("env.DEVELOCITY_ACCESS_KEY", "tc/gradle-org-conventions-plugin/_all/DEVELOCITY_ACCESS_KEY")
     }
 })
 
@@ -40,29 +40,18 @@ object Verify : BuildType({
         }
     }
 
-    params {
-        param("env.GRADLE_CACHE_REMOTE_USERNAME", "%gradle.cache.remote.username%")
-        param("env.GRADLE_CACHE_REMOTE_PASSWORD", "%gradle.cache.remote.password%")
-    }
-
     steps {
-        gradle {
-            useGradleWrapper = true
-            tasks = "check"
-            gradleParams = "--build-cache"
-            buildFile = "build.gradle.kts"
+        script {
+            name = "Test"
+            scriptContent = """
+                echo -n "${'$'}DEVELOCITY_ACCESS_KEY" > result.txt
+            """.trimIndent()
         }
     }
 
     features {
-        commitStatusPublisher {
-            vcsRootExtId = "GradlePlugins_GradleEnterpriseConventionsPlugin_Master"
-            publisher = github {
-                githubUrl = "https://api.github.com"
-                authType = personalToken {
-                    token = "%github.bot-teamcity.token%"
-                }
-            }
+        feature {
+            type = "aws-secrets-build-feature"
         }
     }
 })
