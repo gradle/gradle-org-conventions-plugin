@@ -14,7 +14,7 @@ object Project : Project({
     buildType(Verify)
     buildType(ReleasePlugin)
     params {
-        param("env.DEVELOCITY_ACCESS_KEY", "%ge.gradle.org.access.key%")
+        param("env.DEVELOCITY_ACCESS_KEY", "!awssm://teamcity/gradle-org-conventions-plugin/_all/DEVELOCITY_ACCESS_KEY")
     }
 })
 
@@ -63,6 +63,9 @@ object Verify : BuildType({
     }
 
     features {
+        feature {
+            type = "aws-secrets-build-feature"
+        }
         commitStatusPublisher {
             vcsRootExtId = vcsRoot.absoluteId
             publisher = github {
