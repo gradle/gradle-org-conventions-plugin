@@ -21,7 +21,6 @@ gradle.afterProject { project ->
     ])
     project.file('localCacheConfiguration.json') << JsonOutput.toJson([
         directory                   : localCache.directory,
-        removeUnusedEntriesAfterDays: localCache.removeUnusedEntriesAfterDays,
         enabled                     : localCache.enabled,
         push                        : localCache.push
     ])
