@@ -1,6 +1,6 @@
 [versions]
 develocity = "4.3.2"
-junit = "6.0.2"
+junit = "6.0.3"
 jackson = "3.0.4"
 mockitoExtension = "5.21.0"
 
