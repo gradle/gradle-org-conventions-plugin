@@ -11,4 +11,4 @@ mockitoJunitJupiter = { module = "org.mockito:mockito-junit-jupiter", version.re
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" } # keep for automatic updates
 
 [plugins]
-plugin-publish = { id = "com.gradle.plugin-publish", version = "2.0.0" }
+plugin-publish = { id = "com.gradle.plugin-publish", version = "2.1.0" }
