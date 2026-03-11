@@ -23,6 +23,7 @@ class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPlugi
         succeeds("help", "--build-cache");
 
         assertTrue(getConfiguredDevelocity().getEdgeDiscoveryValue());
+        assertEquals(PUBLIC_DEVELOCITY_SERVER, getConfiguredDevelocity().getServerValue());
         assertNull(getConfiguredRemoteCache().getUrl());
         assertFalse(getConfiguredRemoteCache().isPush());
         assertTrue(getConfiguredLocalCache().isEnabled());
@@ -33,6 +34,7 @@ class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPlugi
         succeeds("help", "--build-cache", "-DcacheNode=eu");
 
         assertTrue(getConfiguredDevelocity().getEdgeDiscoveryValue());
+        assertEquals(PUBLIC_DEVELOCITY_SERVER, getConfiguredDevelocity().getServerValue());
         assertEquals(new URI(EU_CACHE_NODE), getConfiguredRemoteCache().getUrl());
         assertFalse(getConfiguredRemoteCache().isPush());
         assertTrue(getConfiguredLocalCache().isEnabled());
@@ -93,11 +95,13 @@ class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPlugi
 
     @Test
     void disableBuildScanWithNoBuildScan() {
-        withEnvironmentVariable("CI", "1");
-
         succeeds("help", "--no-scan");
 
-        assertNull(getConfiguredDevelocity().getServer());
+        // The DV server is still configured because it may be used elsewhere
+        assertEquals(PUBLIC_DEVELOCITY_SERVER, getConfiguredDevelocity().getServerValue());
+        assertNull(getConfiguredBuildScan().getTermsOfUseUrl());
+        assertNull(getConfiguredBuildScan().getTermsOfUseAgree());
+        assertNull(getConfiguredBuildScan().getUploadInBackground());
     }
 
     @ParameterizedTest

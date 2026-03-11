@@ -49,13 +49,19 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
     public void apply(Settings settings) {
         settings.getPlugins().withType(DevelocityPlugin.class, p -> {
             DevelocityConventions conventions = new DevelocityConventions(getProviderFactory());
+            DevelocityConfiguration dv = settings.getExtensions().getByType(DevelocityConfiguration.class);
+
+            String serverUrl = conventions.getDevelocityServerUrl();
+            if (serverUrl != null) {
+                dv.getServer().set(serverUrl);
+            }
+
             if (settings.getGradle().getStartParameter().isBuildCacheEnabled()) {
-                DevelocityConfiguration dv = settings.getExtensions().getByType(DevelocityConfiguration.class);
                 settings.buildCache(new BuildCacheConfigureAction(conventions, dv));
-                configureEdge(settings, conventions);
+                configureEdge(dv, conventions);
             }
             if (!settings.getGradle().getStartParameter().isNoBuildScan() && !containsPropertiesTask(settings)) {
-                configureBuildScan(settings, conventions);
+                configureBuildScan(settings, dv, conventions);
             }
         });
     }
@@ -67,14 +73,12 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
             || settings.getGradle().getStartParameter().getTaskNames().stream().anyMatch(it -> it.endsWith(":properties"));
     }
 
-    private void configureEdge(Settings settings, DevelocityConventions conventions) {
-        DevelocityConfiguration dv = settings.getExtensions().getByType(DevelocityConfiguration.class);
+    private void configureEdge(DevelocityConfiguration dv, DevelocityConventions conventions) {
         dv.getEdgeDiscovery().set(conventions.getEdgeDiscovery());
     }
 
 
-    private void configureBuildScan(Settings settings, DevelocityConventions conventions) {
-        DevelocityConfiguration dv = settings.getExtensions().getByType(DevelocityConfiguration.class);
+    private void configureBuildScan(Settings settings, DevelocityConfiguration dv, DevelocityConventions conventions) {
         BuildScanConfiguration buildScan = dv.getBuildScan();
 
         if (conventions.getDevelocityServerUrl() == null) {
@@ -83,7 +87,6 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
             buildScan.getTermsOfUseUrl().set("https://gradle.com/terms-of-service");
             configurePublishStrategy(conventions, buildScan, PUBLISH_ALWAYS);
         } else {
-            dv.getServer().set(conventions.getDevelocityServerUrl());
             configurePublishStrategy(conventions, buildScan, PUBLISH_IF_AUTHENTICATED);
         }
         buildScan.capture(buildScanCaptureConfiguration -> buildScanCaptureConfiguration.getFileFingerprints().set(true));
