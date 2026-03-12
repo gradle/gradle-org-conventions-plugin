@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AIAgentTagProviderIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
+class AIAgentCustomValueProviderIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
 
     @Override
     @BeforeEach

@@ -3,7 +3,7 @@ package io.github.gradle.conventions;
 import com.gradle.develocity.agent.gradle.DevelocityConfiguration;
 import com.gradle.develocity.agent.gradle.DevelocityPlugin;
 import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
-import io.github.gradle.conventions.customvalueprovider.AIAgentTagProvider;
+import io.github.gradle.conventions.customvalueprovider.AIAgentCustomValueProvider;
 import io.github.gradle.conventions.customvalueprovider.BuildCacheCustomValueProvider;
 import io.github.gradle.conventions.customvalueprovider.BuildScanCustomValueProvider;
 import io.github.gradle.conventions.customvalueprovider.CIBuildCustomValueProvider.IDESyncCustomValueProvider;
@@ -40,7 +40,7 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
             new LocalBuildCustomValueProvider(conventions),
             new GitInformationCustomValueProvider(conventions),
             new IDESyncCustomValueProvider(conventions),
-            new AIAgentTagProvider(conventions)
+            new AIAgentCustomValueProvider(conventions)
         );
     }
 

@@ -20,10 +20,9 @@ import java.util.Optional;
  * </ul>
  *
  * <p>Any tool can also be detected by setting the proposed standard {@code AGENT} environment variable
- * (see <a href="https://github.com/agentsmd/agents.md/issues/136">agents.md#136</a>)
- * variable.
+ * (see <a href="https://github.com/agentsmd/agents.md/issues/136">agents.md#136</a>).
  */
-public class AIAgentTagProvider extends BuildScanCustomValueProvider {
+public class AIAgentCustomValueProvider extends BuildScanCustomValueProvider {
     private static final Map<String, String> KNOWN_AGENTS = Map.of(
         "CLAUDECODE", "Claude Code",
         "CURSOR_AGENT", "Cursor",
@@ -32,7 +31,7 @@ public class AIAgentTagProvider extends BuildScanCustomValueProvider {
         "OPENCODE_CLIENT", "OpenCode"
     );
 
-    public AIAgentTagProvider(DevelocityConventions conventions) {
+    public AIAgentCustomValueProvider(DevelocityConventions conventions) {
         super(conventions);
     }
 
