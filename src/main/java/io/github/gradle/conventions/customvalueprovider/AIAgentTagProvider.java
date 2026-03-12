@@ -3,7 +3,6 @@ package io.github.gradle.conventions.customvalueprovider;
 import com.gradle.develocity.agent.gradle.scan.BuildScanConfiguration;
 import org.gradle.api.initialization.Settings;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,16 +24,13 @@ import java.util.Optional;
  * variable.
  */
 public class AIAgentTagProvider extends BuildScanCustomValueProvider {
-    // Ordered map of env var -> agent name
-    private static final Map<String, String> KNOWN_AGENTS = new LinkedHashMap<>();
-
-    static {
-        KNOWN_AGENTS.put("CLAUDECODE", "Claude Code");
-        KNOWN_AGENTS.put("CURSOR_AGENT", "Cursor");
-        KNOWN_AGENTS.put("GEMINI_CLI", "Gemini CLI");
-        KNOWN_AGENTS.put("CODEX_SANDBOX", "Codex CLI");
-        KNOWN_AGENTS.put("OPENCODE_CLIENT", "OpenCode");
-    }
+    private static final Map<String, String> KNOWN_AGENTS = Map.of(
+        "CLAUDECODE", "Claude Code",
+        "CURSOR_AGENT", "Cursor",
+        "GEMINI_CLI", "Gemini CLI",
+        "CODEX_SANDBOX", "Codex CLI",
+        "OPENCODE_CLIENT", "OpenCode"
+    );
 
     public AIAgentTagProvider(DevelocityConventions conventions) {
         super(conventions);
