@@ -30,6 +30,10 @@ When applied as a settings plugin alongside the [Develocity Plugin](https://plug
       - Add `IDEA` build scan tag.
       - Add build scan custom value `ideaVersion` to IDEA version.
     - Upload build scans in the background.
+  - When an AI coding agent is detected:
+    - Add `AGENT` build scan tag.
+    - Add build scan custom value `ai.agent` with the name of the detected agent.
+    - Detection checks the [`AGENT` environment variable](https://github.com/agentsmd/agents.md/issues/136), then falls back to tool-specific variables: `CLAUDECODE`, `CURSOR_AGENT`, `GEMINI_CLI`, `CODEX_SANDBOX`, `OPENCODE_CLIENT`.
   - For CI and local builds:
     - Add build scan custom value `gitBranchName` by running `git rev-parse --abbrev-ref HEAD`.
     - If the build directory is dirty:
