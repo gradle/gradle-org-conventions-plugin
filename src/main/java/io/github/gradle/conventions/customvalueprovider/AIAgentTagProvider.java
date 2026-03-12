@@ -5,6 +5,7 @@ import org.gradle.api.initialization.Settings;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Adds an "AGENT" tag to the build scan when an AI coding agent is detected.
@@ -14,6 +15,9 @@ import java.util.Map;
  * <ul>
  *     <li>{@code CLAUDECODE} - Claude Code</li>
  *     <li>{@code CURSOR_AGENT} - Cursor</li>
+ *     <li>{@code GEMINI_CLI} - Gemini CLI</li>
+ *     <li>{@code CODEX_SANDBOX} - Codex CLI</li>
+ *     <li>{@code OPENCODE_CLIENT} - OpenCode</li>
  * </ul>
  *
  * <p>Any tool can also be detected by setting the proposed standard {@code AGENT} environment variable
@@ -27,6 +31,9 @@ public class AIAgentTagProvider extends BuildScanCustomValueProvider {
     static {
         KNOWN_AGENTS.put("CLAUDECODE", "Claude Code");
         KNOWN_AGENTS.put("CURSOR_AGENT", "Cursor");
+        KNOWN_AGENTS.put("GEMINI_CLI", "Gemini CLI");
+        KNOWN_AGENTS.put("CODEX_SANDBOX", "Codex CLI");
+        KNOWN_AGENTS.put("OPENCODE_CLIENT", "OpenCode");
     }
 
     public AIAgentTagProvider(DevelocityConventions conventions) {
@@ -35,33 +42,37 @@ public class AIAgentTagProvider extends BuildScanCustomValueProvider {
 
     @Override
     public boolean isEnabled() {
-        return detectAgent() != null;
+        return detectAgent().isPresent();
     }
 
     @Override
     public void accept(Settings settings, BuildScanConfiguration buildScan) {
-        String agent = detectAgent();
-        if (agent != null) {
+        detectAgent().ifPresent(agent -> {
             buildScan.tag("AGENT");
             buildScan.value("ai.agent", agent);
-        }
+        });
     }
 
-    private String detectAgent() {
+    private Optional<String> detectAgent() {
         // Check for proposed standard AGENT env var first (agents.md#136)
-        String agent = getConventions().getEnv("AGENT");
-        if (agent != null && !agent.isEmpty()) {
+        Optional<String> agent = getNonEmptyEnv("AGENT");
+        if (agent.isPresent()) {
             return agent;
         }
 
         // Check known agent-specific env vars
         for (Map.Entry<String, String> entry : KNOWN_AGENTS.entrySet()) {
-            String value = getConventions().getEnv(entry.getKey());
-            if (value != null && !value.isEmpty()) {
-                return entry.getValue();
+            Optional<String> value = getNonEmptyEnv(entry.getKey());
+            if (value.isPresent()) {
+                return Optional.of(entry.getValue());
             }
         }
 
-        return null;
+        return Optional.empty();
+    }
+
+    private Optional<String> getNonEmptyEnv(String name) {
+        String value = getConventions().getEnv(name);
+        return value != null && !value.isEmpty() ? Optional.of(value) : Optional.empty();
     }
 }

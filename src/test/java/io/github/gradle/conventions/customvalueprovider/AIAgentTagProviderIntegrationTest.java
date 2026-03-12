@@ -17,6 +17,9 @@ class AIAgentTagProviderIntegrationTest extends AbstractDevelocityPluginIntegrat
         withEnvironmentVariable("AGENT", "");
         withEnvironmentVariable("CLAUDECODE", "");
         withEnvironmentVariable("CURSOR_AGENT", "");
+        withEnvironmentVariable("GEMINI_CLI", "");
+        withEnvironmentVariable("CODEX_SANDBOX", "");
+        withEnvironmentVariable("OPENCODE_CLIENT", "");
     }
 
     @Test
@@ -57,6 +60,36 @@ class AIAgentTagProviderIntegrationTest extends AbstractDevelocityPluginIntegrat
         succeeds("help");
 
         assertTrue(getConfiguredBuildScan().containsValue("ai.agent", "MyAgent"));
+    }
+
+    @Test
+    void tagAIAgentWhenGeminiDetected() {
+        withEnvironmentVariable("GEMINI_CLI", "1");
+
+        succeeds("help");
+
+        assertTrue(getConfiguredBuildScan().containsTag("AGENT"));
+        assertTrue(getConfiguredBuildScan().containsValue("ai.agent", "Gemini CLI"));
+    }
+
+    @Test
+    void tagAIAgentWhenCodexDetected() {
+        withEnvironmentVariable("CODEX_SANDBOX", "seatbelt");
+
+        succeeds("help");
+
+        assertTrue(getConfiguredBuildScan().containsTag("AGENT"));
+        assertTrue(getConfiguredBuildScan().containsValue("ai.agent", "Codex CLI"));
+    }
+
+    @Test
+    void tagAIAgentWhenOpenCodeDetected() {
+        withEnvironmentVariable("OPENCODE_CLIENT", "1");
+
+        succeeds("help");
+
+        assertTrue(getConfiguredBuildScan().containsTag("AGENT"));
+        assertTrue(getConfiguredBuildScan().containsValue("ai.agent", "OpenCode"));
     }
 
     @Test
