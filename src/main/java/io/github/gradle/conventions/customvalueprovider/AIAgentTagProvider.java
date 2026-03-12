@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Adds an "AI_AGENT" tag to the build scan when an AI coding agent is detected.
+ * Adds an "AGENT" tag to the build scan when an AI coding agent is detected.
  * Also adds a custom value with the name of the detected agent.
  *
  * <p>Detection is based on environment variables commonly set by AI coding tools:
