@@ -11,6 +11,7 @@ import jetbrains.buildServer.configs.kotlin.triggers.vcs
 private val vcsRoot = AbsoluteId("GradlePlugins_GradleEnterpriseConventionsPlugin_Master")
 
 object Project : Project({
+    description = "Gradle Org Develocity Conventions Plugin "
     buildType(Verify)
     buildType(ReleasePlugin)
     params {
@@ -33,7 +34,6 @@ object Verify : BuildType({
     id = AbsoluteId("VerifyGradleEnterpriseConventionsPlugin")
     uuid = "VerifyGradleEnterpriseConventionsPlugin"
     name = "Verify Develocity Conventions Plugin"
-    description = "Verify Develocity Conventions Plugin"
 
     vcs {
         root(vcsRoot)
@@ -92,7 +92,6 @@ object ReleasePlugin : BuildType({
     uuid = "ReleaseGradleEnterpriseConventionsPlugin"
     type = Type.DEPLOYMENT
     name = "Release Develocity Conventions Plugin"
-    description = "Release Develocity Conventions Plugin"
 
     vcs {
         root(vcsRoot)
