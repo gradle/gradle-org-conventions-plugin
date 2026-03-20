@@ -115,4 +115,10 @@ object ReleasePlugin : BuildType({
         param("env.GRADLE_PUBLISH_KEY", "%plugin.portal.publish.key%")
         param("env.GRADLE_PUBLISH_SECRET", "%plugin.portal.publish.secret%")
     }
+
+    features {
+        feature {
+            type = "aws-secrets-build-feature"
+        }
+    }
 })
