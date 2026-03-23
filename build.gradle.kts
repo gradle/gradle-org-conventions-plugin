@@ -2,10 +2,11 @@ plugins {
     `java-gradle-plugin`
     alias(libs.plugins.plugin.publish)
     `maven-publish`
+    signing
 }
 
 rootProject.group = "io.github.gradle"
-rootProject.version = "0.14.0"
+rootProject.version = "0.14.1"
 
 java {
     toolchain {
@@ -44,6 +45,17 @@ gradlePlugin {
         vcsUrl = "https://github.com/gradle/gradle-org-conventions-plugin.git"
         tags = listOf("gradle", "develocity")
     }
+}
+
+signing {
+    useInMemoryPgpKeys(
+        project.providers.environmentVariable("PGP_SIGNING_KEY").orNull,
+        project.providers.environmentVariable("PGP_SIGNING_KEY_PASSPHRASE").orNull
+    )
+
+    setRequired({
+        providers.environmentVariable("CI").isPresent
+    })
 }
 
 tasks.named("publishPlugins", Task::class.java) {
