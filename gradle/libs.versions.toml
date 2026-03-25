@@ -1,14 +1,12 @@
 [versions]
 develocity = "4.3.2"
 junit = "6.0.3"
-jackson = "3.1.0"
-mockitoExtension = "5.23.0"
 
 [libraries]
 develocity-plugin = { module = "com.gradle:develocity-gradle-plugin", version.ref = "develocity"}
-jackson-bom = { module = "tools.jackson:jackson-bom", version.ref = "jackson" }
-mockitoJunitJupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockitoExtension" }
+jackson-bom = { module = "tools.jackson:jackson-bom", version = "3.1.0" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" } # keep for automatic updates
+mockitoJunitJupiter = { module = "org.mockito:mockito-junit-jupiter", version = "5.23.0" }
 
 [plugins]
 plugin-publish = { id = "com.gradle.plugin-publish", version = "2.1.1" }
