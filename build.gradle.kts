@@ -69,7 +69,3 @@ testing {
         }
     }
 }
-
-tasks.updateDaemonJvm.configure {
-    toolchainDownloadUrls.empty()
-}

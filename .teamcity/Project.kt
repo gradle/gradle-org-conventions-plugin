@@ -24,10 +24,6 @@ private val defaultGradleParameters = listOf(
     "-Dorg.gradle.java.installations.auto-download=false",
     "-Dorg.gradle.java.installations.auto-detect=false",
     "-Dorg.gradle.java.installations.fromEnv=JAVA_HOME,JAVA_TOOLCHAIN",
-    // drop after upgrading to Gradle 9.2+
-    "-Porg.gradle.java.installations.auto-download=false",
-    "-Porg.gradle.java.installations.auto-detect=false",
-    "-Porg.gradle.java.installations.fromEnv=JAVA_HOME,JAVA_TOOLCHAIN",
 )
 
 object Verify : BuildType({
