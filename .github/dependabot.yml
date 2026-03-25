@@ -5,21 +5,27 @@
 
 version: 2
 updates:
-  - package-ecosystem: "gradle"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    labels:
-        - "@dev-productivity"
   - package-ecosystem: "github-actions"
+    cooldown:
+      default-days: 7 # don't immediately create PRs for available updates
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     labels:
       - "@dev-productivity"
   - package-ecosystem: "maven"
+    cooldown:
+      default-days: 7 # don't immediately create PRs for available updates
     directory: "/.teamcity"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    labels:
+      - "@dev-productivity"
+  - package-ecosystem: "gradle"
+    cooldown:
+      default-days: 7 # don't immediately create PRs for available updates
+    directory: "/"
+    schedule:
+      interval: "weekly"
     labels:
       - "@dev-productivity"
