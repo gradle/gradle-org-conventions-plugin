@@ -11,12 +11,11 @@ When applied as a settings plugin alongside the [Develocity Plugin](https://plug
 
 - If the build cache is enabled (via `--build-cache` or `org.gradle.caching=true`, see [the doc](https://guides.gradle.org/using-build-cache/)):
   - Enable the local cache.
-  - Enable [ge.gradle.org](https://ge.gradle.org) as remote cache if credentials are provided, enjoy faster build! (using your preferred [location](https://ge.gradle.org/settings/location)) 
-  - Enable [ge.gradle.org](https://ge.gradle.org) as remote cache and anonymous read access, enjoy faster build!
-    - There are four build cache node available on the earth: `Develocity` (the default; Germany) /`eu` (Finland) /`us` (N.California) /`au` (Sydney), you can use `-DcacheNode=eu`/ `-DcacheNode=us`/`-DcacheNode=au` to use other ones.
+  - Enable [ge.gradle.org](https://ge.gradle.org) as remote cache with anonymous read access, enjoy faster build!
+  - Enable edge discovery by default so the nearest edge node is selected based on your preferred [location](https://ge.gradle.org/settings/location).
   - Enable pushing to remote cache on CI if required credentials are provided.
-- By default, build scans are published to `ge.gradle.org`. If you would like to publish to your own Develocity server, add `-Ddevelocity.server.url=https://ge.mycompany.com/`.
-  If you would like to publish to public build scan server (`scan.gradle.com`), add `-DagreePublicBuildScanTermOfService=yes` to your build.
+- By default, build scans are published to `ge.gradle.org`. If you would like to publish to your own Develocity server, set `-Ddevelocity.server.url=https://ge.example.org/` or the `DEVELOCITY_SERVER_URL` environment variable. The URL can point directly at an edge node (for example `https://edge.example.org`) to use a specific build cache location when edge discovery is disabled.
+  If you would like to publish to public build scan server (`scans.gradle.com`), add `-DagreePublicBuildScanTermOfService=yes` to your build.
   - For CI build (`CI` environment variable exists):
     - Add `CI` build scan tag.
     - Add build scan link and build scan custom value `gitCommitId` to the build (by auto-detecting environment variables):
@@ -58,22 +57,31 @@ plugins {
 ## Credentials
 
 To enable build scan publishing, authenticate with [Develocity](https://docs.gradle.com/develocity/gradle-plugin/current/#authenticating).
-Then add a `develocity.server.url` system property to your build if you publish to a different server than the default one.
+Then set the Develocity server URL via the `develocity.server.url` system property or the `DEVELOCITY_SERVER_URL` environment variable if you publish to a different server than the default one.
+
+Edge discovery is enabled by default for the remote build cache. To disable it, set the `develocity.edge.discovery` system property or the `DEVELOCITY_EDGE_DISCOVERY` environment variable to `false`. The system property takes precedence over the environment variable.
+
+The legacy `-DcacheNode` system property is no longer supported. Set your preferred location at [ge.gradle.org/settings/location](https://ge.gradle.org/settings/location) instead.
 
 ```
-./gradlew myBuildTask -Ddevelocity.server.url=https://ge.mycompany.com/
+./gradlew myBuildTask -Ddevelocity.server.url=https://ge.example.org/
+```
+
+```
+export DEVELOCITY_SERVER_URL=https://edge.example.org
+./gradlew myBuildTask
+```
+
+```
+./gradlew myBuildTask --build-cache -Ddevelocity.edge.discovery=false
+```
+
+```
+export DEVELOCITY_EDGE_DISCOVERY=false
+./gradlew myBuildTask --build-cache
 ```
 
 To enable build cache pushing, the access key associated with the build needs to have build cache write permission.
-
-```
-export GRADLE_CACHE_REMOTE_URL=https://ge.mycompany.com/
-./gradlew myBuildTask 
-```
-
-```
-./gradlew myBuildTask -Dgradle.cache.remote.server=https://ge.mycompany.com/
-```
 
 To enable build scan publishing, you need to correctly authenticate as documented [here](https://docs.gradle.com/develocity/gradle-plugin/current/#authenticating).
 

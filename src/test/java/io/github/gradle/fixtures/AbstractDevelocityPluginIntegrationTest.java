@@ -2,6 +2,7 @@ package io.github.gradle.fixtures;
 
 import org.gradle.caching.http.HttpBuildCache;
 import org.gradle.caching.local.DirectoryBuildCache;
+import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -132,7 +133,7 @@ public abstract class AbstractDevelocityPluginIntegrationTest {
         return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
     }
 
-    protected void succeeds(String... args) {
+    protected BuildResult succeeds(String... args) {
         var gradleHomeDir = projectDir.resolve("gradleHome");
         Assertions.assertDoesNotThrow(() -> Files.createDirectories(gradleHomeDir));
 
@@ -144,7 +145,7 @@ public abstract class AbstractDevelocityPluginIntegrationTest {
         tasksAndArguments.add("--info");
         writeSystemProperties(Stream.of(args).filter(s -> s.startsWith("-D")).toList());
 
-        GradleRunner.create()
+        return GradleRunner.create()
             .withProjectDir(projectDir.toFile())
             .withEnvironment(buildEnvs())
             .withPluginClasspath(Stream.of(System.getProperty("java.class.path").split(File.pathSeparator)).map(File::new).toList())

@@ -34,12 +34,11 @@ public class DevelocityConventions {
     private static final String DEFAULT_DEVELOCITY_SERVER = "https://ge.gradle.org";
     private static final String AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE = "agreePublicBuildScanTermOfService";
 
-    private static final String DEVELOCITY_SERVER_URL = "develocity.server.url";
-    private static final String DEVELOCITY_EDGE_DISCOVERY = "develocity.edge.discovery";
+    private static final String DEVELOCITY_SERVER_URL_PROPERTY_NAME = "develocity.server.url";
+    private static final String DEVELOCITY_SERVER_URL_ENV_NAME = "DEVELOCITY_SERVER_URL";
+    private static final String DEVELOCITY_EDGE_DISCOVERY_PROPERTY_NAME = "develocity.edge.discovery";
+    private static final String DEVELOCITY_EDGE_DISCOVERY_ENV_NAME = "DEVELOCITY_EDGE_DISCOVERY";
     private static final String CI_ENV_NAME = "CI";
-
-    private static final String GRADLE_CACHE_REMOTE_SERVER_ENV_NAME = "GRADLE_CACHE_REMOTE_SERVER";
-    private static final String GRADLE_CACHE_REMOTE_SERVER_PROPERTY_NAME = "gradle.cache.remote.server";
     private static final String GRADLE_CACHE_NODE_PROPERTY_NAME = "cacheNode";
 
     private static final Pattern HTTPS_URL_PATTERN = Pattern.compile("https://github\\.com/([\\w-]+)/([\\w-]+)\\.git");
@@ -56,27 +55,22 @@ public class DevelocityConventions {
         this.edgeDiscovery = determineEdgeDiscovery();
         this.develocityServerUrl = determineDevelocityServerUrl();
         this.isCiServer = !getEnvVariable(CI_ENV_NAME, "").isEmpty();
+        warnIfUnsupportedCacheNodePropertyIsSet();
     }
 
     private boolean determineEdgeDiscovery() {
-        return Boolean.parseBoolean(getSystemProperty(DEVELOCITY_EDGE_DISCOVERY, "true"));
+        return Boolean.parseBoolean(getSystemPropertyThenEnvVariable(DEVELOCITY_EDGE_DISCOVERY_PROPERTY_NAME, DEVELOCITY_EDGE_DISCOVERY_ENV_NAME, "true"));
     }
 
-    public Provider<String> getRemoteCacheUrl() {
-        return environmentVariableProvider(GRADLE_CACHE_REMOTE_SERVER_ENV_NAME)
-            .orElse(systemPropertyProvider(GRADLE_CACHE_REMOTE_SERVER_PROPERTY_NAME));
-    }
-
-    public Provider<String> getRemoteCacheNodeName() {
-        return systemPropertyProvider(GRADLE_CACHE_NODE_PROPERTY_NAME);
-    }
-
-    public boolean isRemoteCacheSpecified() {
-        return getRemoteCacheUrl().orElse(getRemoteCacheNodeName()).isPresent();
+    private void warnIfUnsupportedCacheNodePropertyIsSet() {
+        String cacheNode = getSystemProperty(GRADLE_CACHE_NODE_PROPERTY_NAME);
+        if (cacheNode != null) {
+            LOGGER.warn("-DcacheNode={} is no longger supported. Please set prefered location in {}/settings/location", cacheNode, DEFAULT_DEVELOCITY_SERVER);
+        }
     }
 
     private String determineDevelocityServerUrl() {
-        String dvServerUrl = System.getProperty(DEVELOCITY_SERVER_URL);
+        String dvServerUrl = getSystemPropertyThenEnvVariable(DEVELOCITY_SERVER_URL_PROPERTY_NAME, DEVELOCITY_SERVER_URL_ENV_NAME);
         if (dvServerUrl != null) {
             return dvServerUrl;
         }
@@ -117,6 +111,26 @@ public class DevelocityConventions {
     public String getEnvVariableThenSystemProperty(String envName, String systemPropertyName, String defaultValue) {
         String value = getEnv(envName);
         return value != null ? value : getSystemProperty(systemPropertyName, defaultValue);
+    }
+
+    public String getSystemPropertyThenEnvVariable(String systemPropertyName, String envName, String defaultValue) {
+        String value = getSystemPropertyThenEnvVariable(systemPropertyName, envName);
+        return value != null ? value : defaultValue;
+    }
+
+    @Nullable
+    public String getSystemPropertyThenEnvVariable(String systemPropertyName, String envName) {
+        String value = getSystemProperty(systemPropertyName);
+        if (value != null && !value.isEmpty()) {
+            return value;
+        }
+
+        value = getEnv(envName);
+        if (value != null && !value.isEmpty()) {
+            return value;
+        }
+
+        return null;
     }
 
     public String getSystemProperty(String name, String defaultValue) {

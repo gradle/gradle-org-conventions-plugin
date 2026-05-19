@@ -120,10 +120,6 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
     }
 
     private static class BuildCacheConfigureAction implements Action<BuildCacheConfiguration> {
-        private static final String EU_CACHE_NODE = "https://eun-edge.gradle.org";
-        private static final String US_CACHE_NODE = "https://usw-edge.gradle.org";
-        private static final String AU_CACHE_NODE = "https://au-edge.gradle.org";
-
         private static final String DEVELOCITY_ACCESS_KEY = "DEVELOCITY_ACCESS_KEY";
         private static final String GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME = "gradle.cache.remote.push";
         private final DevelocityConventions conventions;
@@ -136,33 +132,17 @@ public abstract class DevelocityConventionsPlugin implements Plugin<Settings> {
 
         @Override
         public void execute(BuildCacheConfiguration buildCache) {
-            String remoteCacheUrl = determineRemoteCacheUrl();
             boolean remotePush = Boolean.parseBoolean(conventions.getSystemProperty(GRADLE_CACHE_REMOTE_PUSH_PROPERTY_NAME, "false"));
             String develocityAccessKey = conventions.getEnvVariableThenSystemProperty(DEVELOCITY_ACCESS_KEY, DEVELOCITY_ACCESS_KEY, "");
             boolean disableLocalCache = Boolean.parseBoolean(conventions.getSystemProperty("disableLocalCache", "false"));
             buildCache.remote(dv.getBuildCache(), remoteBuildCache -> {
                 remoteBuildCache.setEnabled(true);
-                remoteBuildCache.setServer(remoteCacheUrl);
+                remoteBuildCache.setServer(conventions.getDevelocityServerUrl());
                 boolean accessKeySet = notNullOrEmpty(develocityAccessKey);
                 boolean push = (conventions.isCiServer() || remotePush) && accessKeySet;
                 remoteBuildCache.setPush(push);
             });
             buildCache.local(localBuildCache -> localBuildCache.setEnabled(!disableLocalCache));
-        }
-
-        private String determineRemoteCacheUrl() {
-            return conventions.getRemoteCacheUrl()
-                .getOrElse(getRemoteCacheUrlFromNodeName());
-        }
-
-        private String getRemoteCacheUrlFromNodeName() {
-            return conventions.getRemoteCacheNodeName()
-                .map(cacheNode -> switch (cacheNode) {
-                    case "eu" -> EU_CACHE_NODE;
-                    case "us" -> US_CACHE_NODE;
-                    case "au" -> AU_CACHE_NODE;
-                    default -> throw new IllegalArgumentException("Unrecognized cacheNode: " + cacheNode);
-                }).getOrNull();
         }
 
         private boolean notNullOrEmpty(String value) {
