@@ -19,25 +19,68 @@ class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPlugi
     private static final String PUBLIC_DEVELOCITY_SERVER = "https://ge.gradle.org";
 
     @Test
-    void configureBuildCacheOnlyWhenBuildCacheEnabled() {
+    void configureBuildCacheOnlyWhenBuildCacheEnabled() throws URISyntaxException {
         succeeds("help", "--build-cache");
 
         assertTrue(getConfiguredDevelocity().getEdgeDiscoveryValue());
         assertEquals(PUBLIC_DEVELOCITY_SERVER, getConfiguredDevelocity().getServerValue());
-        assertNull(getConfiguredRemoteCache().getUrl());
+        assertEquals(new URI(PUBLIC_DEVELOCITY_SERVER), getConfiguredRemoteCache().getUrl());
         assertFalse(getConfiguredRemoteCache().isPush());
         assertTrue(getConfiguredLocalCache().isEnabled());
     }
 
     @Test
-    void configureBuildCacheOnlyWhenBuildCacheEnabledAndCacheNodeIsSet() throws URISyntaxException {
-        succeeds("help", "--build-cache", "-DcacheNode=eu");
+    void configureBuildCacheWithEdgeNodeUrl() throws URISyntaxException {
+        succeeds("help", "--build-cache", "-Ddevelocity.server.url=" + EU_CACHE_NODE);
 
         assertTrue(getConfiguredDevelocity().getEdgeDiscoveryValue());
-        assertEquals(PUBLIC_DEVELOCITY_SERVER, getConfiguredDevelocity().getServerValue());
+        assertEquals(EU_CACHE_NODE, getConfiguredDevelocity().getServerValue());
         assertEquals(new URI(EU_CACHE_NODE), getConfiguredRemoteCache().getUrl());
         assertFalse(getConfiguredRemoteCache().isPush());
         assertTrue(getConfiguredLocalCache().isEnabled());
+    }
+
+    @Test
+    void configureEdgeDiscoveryFromEnvironmentVariable() {
+        withEnvironmentVariable("DEVELOCITY_EDGE_DISCOVERY", "false");
+
+        succeeds("help", "--build-cache");
+
+        assertFalse(getConfiguredDevelocity().getEdgeDiscoveryValue());
+    }
+
+    @Test
+    void systemPropertyTakesPrecedenceOverEdgeDiscoveryEnvironmentVariable() {
+        withEnvironmentVariable("DEVELOCITY_EDGE_DISCOVERY", "false");
+
+        succeeds("help", "--build-cache", "-Ddevelocity.edge.discovery=true");
+
+        assertTrue(getConfiguredDevelocity().getEdgeDiscoveryValue());
+    }
+
+    @Test
+    void warnWhenUnsupportedCacheNodeSystemPropertyIsSet() {
+        String output = succeeds("help", "-DcacheNode=eu").getOutput();
+
+        assertTrue(output.contains("-DcacheNode=eu is no longger supported. Please set prefered location in https://ge.gradle.org/settings/location"));
+    }
+
+    @Test
+    void configureDevelocityServerUrlFromEnvironmentVariable() {
+        withEnvironmentVariable("DEVELOCITY_SERVER_URL", "https://ge.mycompany.com");
+
+        succeeds("help");
+
+        assertEquals("https://ge.mycompany.com", getConfiguredDevelocity().getServerValue());
+    }
+
+    @Test
+    void systemPropertyTakesPrecedenceOverDevelocityServerUrlEnvironmentVariable() {
+        withEnvironmentVariable("DEVELOCITY_SERVER_URL", "https://ge.mycompany.com");
+
+        succeeds("help", "-Ddevelocity.server.url=https://ge.example.com");
+
+        assertEquals("https://ge.example.com", getConfiguredDevelocity().getServerValue());
     }
 
     @Test
@@ -128,7 +171,7 @@ class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPlugi
     @ParameterizedTest
     @ValueSource(strings = {"develocity.server.url"})
     void configureBuildScanViaSystemProperties(String paramName) {
-        succeeds("help", "-DcacheNode=us", "-D" + paramName + "=https://ge.mycompany.com");
+        succeeds("help", "-D" + paramName + "=https://ge.mycompany.com");
 
         assertEquals("https://ge.mycompany.com", getConfiguredDevelocity().getServerValue());
     }
