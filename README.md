@@ -61,7 +61,7 @@ Then set the Develocity server URL via the `develocity.server.url` system proper
 
 Edge discovery is enabled by default for the remote build cache. To disable it, set the `develocity.edge.discovery` system property or the `DEVELOCITY_EDGE_DISCOVERY` environment variable to `false`. The system property takes precedence over the environment variable.
 
-The legacy `-DcacheNode` system property is no longer supported. Set your preferred location at [ge.gradle.org/settings/location](https://ge.gradle.org/settings/location) instead.
+The legacy `-DcacheNode` system property is no longer supported. Set your preferred location at [ge.gradle.org/settings/location](https://ge.gradle.org/settings/location) instead. Setting a preferred location requires a registered `ge.gradle.org` account; if you are not logged in, point `develocity.server.url` / `DEVELOCITY_SERVER_URL` directly at an edge node to pick a build cache location: `https://eun-edge.gradle.org` (EU), `https://usw-edge.gradle.org` (US), or `https://au-edge.gradle.org` (AU).
 
 ```
 ./gradlew myBuildTask -Ddevelocity.server.url=https://ge.example.org/
