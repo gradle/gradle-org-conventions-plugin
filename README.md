@@ -61,7 +61,7 @@ Then set the Develocity server URL via the `develocity.server.url` system proper
 
 Edge discovery is enabled by default for the remote build cache. To disable it, set the `develocity.edge.discovery` system property or the `DEVELOCITY_EDGE_DISCOVERY` environment variable to `false`. The system property takes precedence over the environment variable.
 
-The legacy `-DcacheNode` system property is no longer supported. Set your preferred location at [ge.gradle.org/settings/location](https://ge.gradle.org/settings/location) instead.
+The legacy `-DcacheNode` system property is no longer supported. See [Change edge node location](#change-edge-node-location) for how to target a specific build cache location.
 
 ```
 ./gradlew myBuildTask -Ddevelocity.server.url=https://ge.example.org/
@@ -84,6 +84,29 @@ export DEVELOCITY_EDGE_DISCOVERY=false
 To enable build cache pushing, the access key associated with the build needs to have build cache write permission.
 
 To enable build scan publishing, you need to correctly authenticate as documented [here](https://docs.gradle.com/develocity/gradle-plugin/current/#authenticating).
+
+## Change edge node location
+
+The remote build cache is served by geographically distributed edge nodes. With edge discovery enabled (the default), the nearest edge is picked automatically based on your preferred [location](https://ge.gradle.org/settings/location) at `ge.gradle.org`.
+
+If you have a registered `ge.gradle.org` account, set your preferred location at [ge.gradle.org/settings/location](https://ge.gradle.org/settings/location) and edge discovery will route your builds accordingly.
+
+If you do not have an account (and therefore cannot set a preferred location), point `develocity.server.url` / `DEVELOCITY_SERVER_URL` directly at an edge node:
+
+| Region | URL                            |
+|--------|--------------------------------|
+| EU     | `https://eun-edge.gradle.org`  |
+| US     | `https://usw-edge.gradle.org`  |
+| AU     | `https://au-edge.gradle.org`   |
+
+```
+./gradlew myBuildTask -Ddevelocity.server.url=https://eun-edge.gradle.org
+```
+
+```
+export DEVELOCITY_SERVER_URL=https://usw-edge.gradle.org
+./gradlew myBuildTask
+```
 
 ## Development
 
