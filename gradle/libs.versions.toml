@@ -1,6 +1,6 @@
 [versions]
 develocity = "4.4.1"
-junit = "6.0.3"
+junit = "6.1.0"
 
 [libraries]
 develocity-plugin = { module = "com.gradle:develocity-gradle-plugin", version.ref = "develocity"}
