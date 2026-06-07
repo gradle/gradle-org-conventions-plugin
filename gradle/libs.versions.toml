@@ -1,5 +1,5 @@
 [versions]
-develocity = "4.4.1"
+develocity = "4.4.2"
 junit = "6.1.0"
 
 [libraries]
