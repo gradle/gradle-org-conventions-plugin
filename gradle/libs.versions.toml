@@ -4,7 +4,7 @@ junit = "6.1.1"
 
 [libraries]
 develocity-plugin = { module = "com.gradle:develocity-gradle-plugin", version.ref = "develocity"}
-jackson-bom = { module = "tools.jackson:jackson-bom", version = "3.2.0" }
+jackson-bom = { module = "tools.jackson:jackson-bom", version = "3.2.1" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" } # keep for automatic updates
 mockitoJunitJupiter = { module = "org.mockito:mockito-junit-jupiter", version = "5.23.0" }
 
