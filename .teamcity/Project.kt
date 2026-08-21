@@ -110,6 +110,7 @@ object ReleasePlugin : BuildType({
     params {
         param("env.GRADLE_PUBLISH_KEY", "%plugin.portal.publish.key%")
         param("env.GRADLE_PUBLISH_SECRET", "%plugin.portal.publish.secret%")
+        param("env.PGP_SIGNING_KEY_ID", "%pgpSigningKeyId%")
         param("env.PGP_SIGNING_KEY", "%pgpSigningKey%")
         param("env.PGP_SIGNING_KEY_PASSPHRASE", "%pgpSigningPassphrase%")
     }
