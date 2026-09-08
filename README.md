@@ -108,6 +108,57 @@ export DEVELOCITY_SERVER_URL=https://usw-edge.gradle.org
 ./gradlew myBuildTask
 ```
 
+## Publishing Conventions Plugin
+
+This repository also hosts `io.github.gradle.publishing-conventions-plugin`, a settings plugin that configures
+publishing to the Gradle internal repository. It exists so that repositories publishing to `repo.grdev.net` do not each
+carry a hand-written `publishing` block and matching `.teamcity/` credential plumbing.
+
+Apply it in `settings.gradle.kts`:
+
+```
+plugins {
+    id("io.github.gradle.publishing-conventions-plugin").version("<version>")
+}
+```
+
+Every project that applies `maven-publish` then gets a single Maven repository named `gradleInternal`, so
+`publishAllPublicationsToGradleInternalRepository` is named identically — and is discoverable — both locally and on CI.
+Projects that do not apply `maven-publish` are left untouched.
+
+Only the repository's target changes with the environment:
+
+- When `GRADLE_INTERNAL_REPO_URL` is set, it points at `$GRADLE_INTERNAL_REPO_URL/libs-snapshots-local` for versions
+  ending in `-SNAPSHOT` and `$GRADLE_INTERNAL_REPO_URL/libs-releases-local` otherwise, authenticating with an
+  `Authorization` header.
+- Otherwise it points at `build/staging-repo`, so publishing locally needs no credentials and no configuration.
+
+### Credentials
+
+The plugin never reads the token. The repository declares `HttpHeaderCredentials` without values, which makes Gradle
+resolve them from Gradle properties named after the repository:
+
+| Gradle property | Value |
+|-----------------|-------|
+| `gradleInternalAuthHeaderName` | `Authorization` |
+| `gradleInternalAuthHeaderValue` | `Bearer <token>` |
+
+CI supplies them using Gradle's standard environment variable convention:
+
+```
+ORG_GRADLE_PROJECT_gradleInternalAuthHeaderName=Authorization
+ORG_GRADLE_PROJECT_gradleInternalAuthHeaderValue=Bearer <token>
+```
+
+Letting Gradle resolve the credentials, rather than populating them in the build, means:
+
+- Publishing tasks stay compatible with the configuration cache. Explicit credentials make
+  `PublishToMavenRepository` opt out of it, which disables the configuration cache for the whole build.
+- A missing token fails the build with a message naming the two properties, instead of silently publishing
+  unauthenticated or sending a literal `Bearer null`.
+- Gradle demands the credentials only when a task publishing to this repository is in the task graph, so `check` and
+  `build` are unaffected.
+
 ## Development
 
 Feel free to fork this repository, customize the plugin, and make a contribution!
