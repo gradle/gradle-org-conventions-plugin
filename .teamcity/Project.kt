@@ -45,7 +45,11 @@ object Verify : BuildType({
     triggers {
         vcs {
             branchFilter = """
-                +:refs/heads/*
+                +:<default>
+                +:devprod/*
+                -:dependabot/*
+                +pr: github_role=MEMBER
+                -pr: source=dependabot/*
                 """.trimIndent()
         }
     }
@@ -76,8 +80,8 @@ object Verify : BuildType({
             vcsRootExtId = vcsRoot.absoluteId
             provider = github {
                 authType = vcsRoot()
-                filterAuthorRole = PullRequests.GitHubRoleFilter.MEMBER
-                ignoreDrafts = true
+                filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
+                ignoreDrafts = false
             }
         }
     }
