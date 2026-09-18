@@ -21,10 +21,16 @@ import java.util.Optional;
  *
  * <p>Any tool can also be detected by setting the proposed standard {@code AGENT} environment variable
  * (see <a href="https://github.com/agentsmd/agents.md/issues/136">agents.md#136</a>).
+ *
+ * <p>When Claude Code is detected, the {@code CLAUDE_CODE_SESSION_ID} environment variable, if set, is
+ * captured as an additional custom value so the build scan can be correlated with the agent session.
  */
 public class AIAgentCustomValueProvider extends BuildScanCustomValueProvider {
+    private static final String CLAUDE_CODE_AGENT_NAME = "Claude Code";
+    private static final String CLAUDE_CODE_SESSION_ID_ENV = "CLAUDE_CODE_SESSION_ID";
+
     private static final Map<String, String> KNOWN_AGENTS = Map.of(
-        "CLAUDECODE", "Claude Code",
+        "CLAUDECODE", CLAUDE_CODE_AGENT_NAME,
         "CURSOR_AGENT", "Cursor",
         "GEMINI_CLI", "Gemini CLI",
         "CODEX_SANDBOX", "Codex CLI",
@@ -45,6 +51,11 @@ public class AIAgentCustomValueProvider extends BuildScanCustomValueProvider {
         detectAgent().ifPresent(agent -> {
             buildScan.tag("AGENT");
             buildScan.value("ai.agent", agent);
+
+            if (CLAUDE_CODE_AGENT_NAME.equals(agent)) {
+                getNonEmptyEnv(CLAUDE_CODE_SESSION_ID_ENV)
+                    .ifPresent(sessionId -> buildScan.value("ai.agent.session", sessionId));
+            }
         });
     }
 
