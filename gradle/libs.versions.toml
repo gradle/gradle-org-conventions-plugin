@@ -9,4 +9,4 @@ junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.re
 mockitoJunitJupiter = { module = "org.mockito:mockito-junit-jupiter", version = "5.23.0" }
 
 [plugins]
-plugin-publish = { id = "com.gradle.plugin-publish", version = "2.2.0" }
+plugin-publish = { id = "com.gradle.plugin-publish", version = "2.2.1" }
