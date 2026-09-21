@@ -20,6 +20,7 @@ class AIAgentCustomValueProviderIntegrationTest extends AbstractDevelocityPlugin
         withEnvironmentVariable("GEMINI_CLI", "");
         withEnvironmentVariable("CODEX_SANDBOX", "");
         withEnvironmentVariable("OPENCODE_CLIENT", "");
+        withEnvironmentVariable("CLAUDE_CODE_SESSION_ID", "");
     }
 
     @Test
@@ -30,6 +31,36 @@ class AIAgentCustomValueProviderIntegrationTest extends AbstractDevelocityPlugin
 
         assertTrue(getConfiguredBuildScan().containsTag("AGENT"));
         assertTrue(getConfiguredBuildScan().containsValue("ai.agent", "Claude Code"));
+    }
+
+    @Test
+    void capturesClaudeCodeSessionIdWhenClaudeCodeDetected() {
+        withEnvironmentVariable("CLAUDECODE", "1");
+        withEnvironmentVariable("CLAUDE_CODE_SESSION_ID", "abc-123");
+
+        succeeds("help");
+
+        assertTrue(getConfiguredBuildScan().containsValue("ai.agent", "Claude Code"));
+        assertTrue(getConfiguredBuildScan().containsValue("ai.agent.session", "abc-123"));
+    }
+
+    @Test
+    void noClaudeCodeSessionIdValueWhenSessionIdNotSet() {
+        withEnvironmentVariable("CLAUDECODE", "1");
+
+        succeeds("help");
+
+        assertFalse(getConfiguredBuildScan().containsValue("ai.agent.session"));
+    }
+
+    @Test
+    void noClaudeCodeSessionIdValueWhenNotClaudeCode() {
+        withEnvironmentVariable("CURSOR_AGENT", "1");
+        withEnvironmentVariable("CLAUDE_CODE_SESSION_ID", "abc-123");
+
+        succeeds("help");
+
+        assertFalse(getConfiguredBuildScan().containsValue("ai.agent.session"));
     }
 
     @Test
