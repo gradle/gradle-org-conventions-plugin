@@ -45,6 +45,16 @@ gradlePlugin {
         vcsUrl = "https://github.com/gradle/gradle-org-conventions-plugin.git"
         tags = listOf("gradle", "develocity")
     }
+
+    plugins.create("publishingConventionsPlugin") {
+        id = "io.github.gradle.publishing-conventions-plugin"
+        implementationClass = "io.github.gradle.conventions.publishing.PublishingConventionsPlugin"
+        displayName = "Publishing Conventions Plugin"
+        description = "Configures publishing to the Gradle internal repository for Gradle projects"
+        website = "https://github.com/gradle/gradle-org-conventions-plugin"
+        vcsUrl = "https://github.com/gradle/gradle-org-conventions-plugin.git"
+        tags = listOf("gradle", "publishing")
+    }
 }
 
 signing {
