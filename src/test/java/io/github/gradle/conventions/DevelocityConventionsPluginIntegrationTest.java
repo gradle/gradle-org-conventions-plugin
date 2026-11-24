@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPluginIntegrationTest {
     private static final String EU_CACHE_NODE = "https://eun-edge.gradle.org";
-    private static final String PUBLIC_DEVELOCITY_SERVER = "https://ge.gradle.org";
+    private static final String PUBLIC_DEVELOCITY_SERVER = "https://develocity.gradle.org";
 
     @Test
     void configureBuildCacheOnlyWhenBuildCacheEnabled() throws URISyntaxException {
@@ -62,7 +62,7 @@ class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPlugi
     void warnWhenUnsupportedCacheNodeSystemPropertyIsSet() {
         String output = succeeds("help", "-DcacheNode=eu").getOutput();
 
-        assertTrue(output.contains("-DcacheNode=eu is no longger supported. Please set prefered location in https://ge.gradle.org/settings/location"));
+        assertTrue(output.contains("-DcacheNode=eu is no longger supported. Please set prefered location in https://develocity.gradle.org/settings/location"));
     }
 
     @Test
@@ -108,7 +108,7 @@ class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPlugi
     @ParameterizedTest
     @ValueSource(strings = {"publishOnFailure", "publishAlways", "custom"})
     void configurePublishStrategy(String strategy) {
-        succeeds("help", "-DpublishStrategy=" + strategy, "-Ddevelocity.server.url=https://ge.gradle.org");
+        succeeds("help", "-DpublishStrategy=" + strategy, "-Ddevelocity.server.url=https://develocity.gradle.org");
 
         assertNull(getConfiguredRemoteCache().getUrl());
         assertEquals(PUBLIC_DEVELOCITY_SERVER, getConfiguredDevelocity().getServerValue());
@@ -129,7 +129,7 @@ class DevelocityConventionsPluginIntegrationTest extends AbstractDevelocityPlugi
 
     @Test
     void defaultPublishStrategyIsPublishIfAuthenticated() {
-        succeeds("help", "-Ddevelocity.server.url=https://ge.gradle.org");
+        succeeds("help", "-Ddevelocity.server.url=https://develocity.gradle.org");
 
         assertNull(getConfiguredRemoteCache().getUrl());
         assertTrue(getConfiguredBuildScan().isPublishIfAuthenticated());
