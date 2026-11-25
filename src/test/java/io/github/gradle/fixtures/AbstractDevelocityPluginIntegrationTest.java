@@ -157,6 +157,9 @@ public abstract class AbstractDevelocityPluginIntegrationTest {
 
     private Map<String, String> buildEnvs() {
         Map<String, String> ret = new HashMap<>(System.getenv());
+        // Don't leak the host's Develocity settings (e.g. CI agents set DEVELOCITY_SERVER_URL to a regional edge node)
+        ret.remove("DEVELOCITY_SERVER_URL");
+        ret.remove("DEVELOCITY_EDGE_DISCOVERY");
         ret.putAll(environmentVariables);
         if (!environmentVariables.containsKey("CI")) {
             ret.put("CI", "");
