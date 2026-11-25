@@ -31,7 +31,7 @@ import static io.github.gradle.conventions.customvalueprovider.ScanCustomValueNa
 
 public class DevelocityConventions {
     private static final Logger LOGGER = Logging.getLogger(DevelocityConventions.class);
-    private static final String DEFAULT_DEVELOCITY_SERVER = "https://ge.gradle.org";
+    private static final String DEFAULT_DEVELOCITY_SERVER = "https://develocity.gradle.org";
     private static final String AGREE_PUBLIC_BUILD_SCAN_TERM_OF_SERVICE = "agreePublicBuildScanTermOfService";
 
     private static final String DEVELOCITY_SERVER_URL_PROPERTY_NAME = "develocity.server.url";

@@ -32,7 +32,7 @@ class CICustomValueProviderIntegrationTest extends AbstractDevelocityPluginInteg
         withEnvironmentVariable("BUILD_ID", "teamcity_id");
         withEnvironmentVariable("BUILD_VCS_NUMBER", headCommitId);
 
-        succeeds("help", "-Ddevelocity.server.url=https://ge.gradle.org");
+        succeeds("help", "-Ddevelocity.server.url=https://develocity.gradle.org");
 
         assertTrue(getConfiguredBuildScan().containsLink("TeamCity Build", "https://teamcity"));
         assertTrue(getConfiguredBuildScan().containsValue("buildId", "teamcity_id"));
@@ -49,7 +49,7 @@ class CICustomValueProviderIntegrationTest extends AbstractDevelocityPluginInteg
         withEnvironmentVariable("GITHUB_REPOSITORY", "gradle/gradle");
         withEnvironmentVariable("GITHUB_SHA", headCommitId);
 
-        succeeds("help", "-Ddevelocity.server.url=https://ge.gradle.org");
+        succeeds("help", "-Ddevelocity.server.url=https://develocity.gradle.org");
 
         assertTrue(getConfiguredBuildScan().containsValue("buildId", "123 456"));
         assertTrue(getConfiguredBuildScan().containsBackgroundValue("gitBranchName", "myBranch"));
@@ -60,6 +60,6 @@ class CICustomValueProviderIntegrationTest extends AbstractDevelocityPluginInteg
     private void verifyGitCommitInformation() {
         assertTrue(getConfiguredBuildScan().containsValue("gitCommitId", headCommitId));
         assertTrue(getConfiguredBuildScan().containsLink("Source", String.format("https://github.com/gradle/gradle/commit/%s", headCommitId)));
-        assertTrue(getConfiguredBuildScan().containsLink("Git Commit Scans", "https://ge.gradle.org/scans?search.names=gitCommitId&search.values=" + headCommitId));
+        assertTrue(getConfiguredBuildScan().containsLink("Git Commit Scans", "https://develocity.gradle.org/scans?search.names=gitCommitId&search.values=" + headCommitId));
     }
 }

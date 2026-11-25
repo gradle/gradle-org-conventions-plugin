@@ -1,7 +1,7 @@
 # Develocity Conventions Plugin
 
 Inspired by https://github.com/spring-io/develocity-conventions, this plugin configures public [Gradle projects](https://github.com/gradle)
-to use the public Develocity instance at [ge.gradle.org](https://ge.gradle.org).
+to use the public Develocity instance at [develocity.gradle.org](https://develocity.gradle.org).
 
 Requires Java 17+ and Gradle 8.14+ and Develocity plugin 4.2+.
 
@@ -11,10 +11,10 @@ When applied as a settings plugin alongside the [Develocity Plugin](https://plug
 
 - If the build cache is enabled (via `--build-cache` or `org.gradle.caching=true`, see [the doc](https://guides.gradle.org/using-build-cache/)):
   - Enable the local cache.
-  - Enable [ge.gradle.org](https://ge.gradle.org) as remote cache with anonymous read access, enjoy faster build!
-  - Enable edge discovery by default so the nearest edge node is selected based on your preferred [location](https://ge.gradle.org/settings/location).
+  - Enable [develocity.gradle.org](https://develocity.gradle.org) as remote cache with anonymous read access, enjoy faster build!
+  - Enable edge discovery by default so the nearest edge node is selected based on your preferred [location](https://develocity.gradle.org/settings/location).
   - Enable pushing to remote cache on CI if required credentials are provided.
-- By default, build scans are published to `ge.gradle.org`. If you would like to publish to your own Develocity server, set `-Ddevelocity.server.url=https://ge.example.org/` or the `DEVELOCITY_SERVER_URL` environment variable. The URL can point directly at an edge node (for example `https://edge.example.org`) to use a specific build cache location when edge discovery is disabled.
+- By default, build scans are published to `develocity.gradle.org`. If you would like to publish to your own Develocity server, set `-Ddevelocity.server.url=https://ge.example.org/` or the `DEVELOCITY_SERVER_URL` environment variable. The URL can point directly at an edge node (for example `https://edge.example.org`) to use a specific build cache location when edge discovery is disabled.
   If you would like to publish to public build scan server (`scans.gradle.com`), add `-DagreePublicBuildScanTermOfService=yes` to your build.
   - For CI build (`CI` environment variable exists):
     - Add `CI` build scan tag.
@@ -88,9 +88,9 @@ To enable build scan publishing, you need to correctly authenticate as documente
 
 ## Change edge node location
 
-The remote build cache is served by geographically distributed edge nodes. With edge discovery enabled (the default), the nearest edge is picked automatically based on your preferred [location](https://ge.gradle.org/settings/location) at `ge.gradle.org`.
+The remote build cache is served by geographically distributed edge nodes. With edge discovery enabled (the default), the nearest edge is picked automatically based on your preferred [location](https://develocity.gradle.org/settings/location) at `develocity.gradle.org`.
 
-If you have a registered `ge.gradle.org` account, set your preferred location at [ge.gradle.org/settings/location](https://ge.gradle.org/settings/location) and edge discovery will route your builds accordingly.
+If you have a registered `develocity.gradle.org` account, set your preferred location at [develocity.gradle.org/settings/location](https://develocity.gradle.org/settings/location) and edge discovery will route your builds accordingly.
 
 If you do not have an account (and therefore cannot set a preferred location), point `develocity.server.url` / `DEVELOCITY_SERVER_URL` directly at an edge node:
 
